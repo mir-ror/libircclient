@@ -51,7 +51,6 @@ static void libirc_dcc_destroy_nolock (irc_session_t * session, irc_dcc_t dccid)
 		if ( dcc->sock >= 0 )
 			socket_close (&dcc->sock);
 
-		dcc->sock = -1;
 		dcc->state = LIBIRC_STATE_REMOVED;
 	}
 }
@@ -596,7 +595,6 @@ int irc_dcc_destroy (irc_session_t * session, irc_dcc_t dccid)
 	if ( dcc->sock >= 0 )
 		socket_close (&dcc->sock);
 
-	dcc->sock = -1;
 	dcc->state = LIBIRC_STATE_REMOVED;
 
 	libirc_mutex_unlock (&session->mutex_dcc);
@@ -767,10 +765,12 @@ int	irc_dcc_accept (irc_session_t * session, irc_dcc_t dccid, void * ctx, irc_dc
 	{
 		libirc_dcc_destroy_nolock (session, dccid);
 		libirc_mutex_unlock (&session->mutex_dcc);
-		return 0;
+		session->lasterror = LIBIRC_ERR_CONNECT;
+		return 1;
 	}
 
 	dcc->state = LIBIRC_STATE_CONNECTING;
+	libirc_mutex_unlock (&session->mutex_dcc);
 	return 0;
 }
 

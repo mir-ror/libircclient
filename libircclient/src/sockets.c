@@ -82,6 +82,8 @@ static int socket_close (socket_t * sock)
 #else
 	closesocket (*sock);
 #endif
+
+	*sock = -1;
 	return 0;
 }
 
