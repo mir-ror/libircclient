@@ -113,7 +113,7 @@ static void libirc_dcc_add_descriptors (irc_session_t * ircsession, fd_set *in_s
 		dcc_next = dcc->next;
 
 		// Remove timed-out sessions
-		if ( (dcc->state == LIBIRC_STATE_CONNECTED
+		if ( (dcc->state == LIBIRC_STATE_CONNECTING
 			|| dcc->state == LIBIRC_STATE_INIT
 			|| dcc->state == LIBIRC_STATE_LISTENING)
 		&& now - dcc->timeout > ircsession->dcc_timeout )
