@@ -109,9 +109,9 @@ void event_numeric (irc_session_t * session, unsigned int event, const char * or
 				event,
 				origin ? origin : "unknown",
 				params[0],
-				params[1] ? params[1] : "",
-				params[2] ? params[2] : "",
-				params[3] ? params[3] : "");
+				count > 1 ? params[1] : "",
+				count > 2 ? params[2] : "",
+				count > 3 ? params[3] : "");
 	}
 }
 

@@ -121,10 +121,16 @@ void event_numeric (irc_session_t * session, unsigned int event, const char * or
 {
 	if ( event > 400 )
 	{
-		printf ("ERROR: %s: %s%s\n", 
-				origin ? origin : "unknown",
-				params[0],
-				params[1] ? params[1] : "");
+		std::string fulltext;
+		for ( unsigned int i = 0; i < count; i++ )
+		{
+			if ( i > 0 )
+				fulltext += " ";
+
+			fulltext += params[i];
+		}
+
+		printf ("ERROR %d: %s: %s\n", event, origin ? origin : "?", fulltext.c_str());
 	}
 }
 
