@@ -16,7 +16,6 @@ EXPORTS
 	irc_cmd_kick
 	irc_cmd_ctcp_request
 	irc_cmd_ctcp_reply
-	irc_event_ctcp_internal
 	irc_target_get_nick
 	irc_target_get_host
 	irc_dcc_chat
