@@ -180,7 +180,7 @@ An initiated and connected session.</td></tr>
 Return code 0 means success. Other value means error, the error  code may be obtained through <a class="el" href="group__errors.html#a0">irc_errno()</a>.</dl>This function goes into forever loop, processing the IRC events, and  calling appropriate callbacks. This function will not return until the  server connection is terminated - either by server, or by calling  irc_cmd_quit. This function should be used, if you don't need asynchronous request processing (i.e. your bot just reacts on the events, and doesn't generate it asynchronously). Even in last case, you still can call irc_run, and start the asynchronous thread in event_connect handler. See examples.     </td>
   </tr>
 </table>
-<hr><address style="align: right;"><small>Generated on Sun Oct 31 16:39:19 2004 for libircclient by
+<hr><address style="align: right;"><small>Generated on Thu Mar 10 00:23:35 2005 for libircclient by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.18 </small></address>

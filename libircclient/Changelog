@@ -1,3 +1,12 @@
+2005-03-10 Georgy Yunaev
+   * libircclient 1.1 released.
+   * Fixed DCC buffer size which resulted extra callback on DCC tranfers 
+     (thanks flohimself).
+
+2004-11-12 Georgy Yunaev
+   * libircclient 1.0 released.
+   * Fixed compilation on FreeBSD.
+
 2004-10-31 Georgy Yunaev
    * When more than one DCC chat sessions were active, only the latest 
      generated callbacks.
