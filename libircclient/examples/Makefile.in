@@ -1,0 +1,37 @@
+# $Id$
+CC = @CC@
+CXX = @CXX@
+CFLAGS = -Wall @CFLAGS@
+INCLUDES=-I../include
+
+EXAMPLES=spammer censor irctest ircftp
+
+all:	$(EXAMPLES)
+
+spammer:	spammer.o
+	$(CC) -o spammer spammer.o ../src/libircclient.a -lpthread
+
+irctest:	irctest.o
+	$(CC) -o irctest irctest.o ../src/libircclient.a -lpthread
+
+censor:	censor.o
+	$(CXX) -o censor censor.o ../src/libircclient.a -lpthread
+
+ircftp:	ircftp.o
+	$(CXX) -o ircftp ircftp.o ../src/libircclient.a -lpthread
+
+
+clean:
+	-rm -f $(EXAMPLES) *.o *.exe
+
+distclean: clean
+	-rm -f Makefile *.log
+
+
+.c.o:
+	@echo "Compiling  $<"
+	@$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $<
+
+.cpp.o:
+	@echo "Compiling  $<"
+	@$(CXX) $(CFLAGS) $(INCLUDES) -c -o $@ $<

@@ -1,0 +1,251 @@
+.TH "DCC chat/send requests and replies." 3 "8 Sep 2004" "libirc" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+DCC chat/send requests and replies. \- 
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef void(* \fBirc_dcc_callback_t\fP )(\fBirc_session_t\fP *session, \fBirc_dcc_t\fP id, int status, void *ctx, const char *data, unsigned int length)"
+.br
+.RI "\fIA common DCC callback, used to inform you about the current DCC state or event.\fP"
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBirc_dcc_chat\fP (\fBirc_session_t\fP *session, void *ctx, const char *nick, \fBirc_dcc_callback_t\fP callback, \fBirc_dcc_t\fP *dccid)"
+.br
+.RI "\fIInitiates a DCC CHAT.\fP"
+.ti -1c
+.RI "int \fBirc_dcc_msg\fP (\fBirc_session_t\fP *session, \fBirc_dcc_t\fP dccid, const char *text)"
+.br
+.RI "\fISends the message to the specific DCC CHAT.\fP"
+.ti -1c
+.RI "int \fBirc_dcc_accept\fP (\fBirc_session_t\fP *session, \fBirc_dcc_t\fP dccid, void *ctx, \fBirc_dcc_callback_t\fP callback)"
+.br
+.RI "\fIAccepts a remote DCC CHAT or DCC RECVFILE request.\fP"
+.ti -1c
+.RI "int \fBirc_dcc_decline\fP (\fBirc_session_t\fP *session, \fBirc_dcc_t\fP dccid)"
+.br
+.RI "\fIDeclines a remote DCC CHAT or DCC RECVFILE request.\fP"
+.ti -1c
+.RI "int \fBirc_dcc_sendfile\fP (\fBirc_session_t\fP *session, void *ctx, const char *nick, const char *filename, \fBirc_dcc_callback_t\fP callback, \fBirc_dcc_t\fP *dccid)"
+.br
+.RI "\fISends a file via DCC.\fP"
+.ti -1c
+.RI "int \fBirc_dcc_destroy\fP (\fBirc_session_t\fP *session, \fBirc_dcc_t\fP dccid)"
+.br
+.RI "\fIDestroys a DCC session.\fP"
+.in -1c
+.SH "TYPEDEF DOCUMENTATION"
+.PP 
+.SS "typedef void(* irc_dcc_callback_t"
+.PP
+A common DCC callback, used to inform you about the current DCC state or event.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIsession\fP\fP
+An IRC session which generates the callback 
+.TP
+\fB\fIid\fP\fP
+A DCC session id. 
+.TP
+\fB\fIstatus\fP\fP
+An error status. 0 means no error, otherwise error code. 
+.TP
+\fB\fIctx\fP\fP
+A user-supplied context. 
+.TP
+\fB\fIdata\fP\fP
+Data supplied (if available) 
+.TP
+\fB\fIlength\fP\fP
+data length (if available)This callback is called for all DCC functions when state change occurs.
+.PP
+For DCC CHAT, callback called in next circumstances:
+.TP
+\fIstatus\fP is LIBIRC_ERR_CLOSED: connection is closed by remote peer.  After the callback, DCC session is automatically destroyed.
+.TP
+\fIstatus\fP is not 0 and is not LIBIRC_ERR_CLOSED: connection error,  accept error, recv error, send error. After the callback, DCC  session is automatically destroyed.
+.TP
+\fIstatus\fP is 0: new chat message received, \fIdata\fP contains the message (null-terminated string), \fIlength\fP contains the message length.
+.PP
+For DCC SEND, while file is sending, callback called in next circumstances:
+.TP
+\fIstatus\fP is not 0 and is not LIBIRC_ERR_CLOSED: connection error,  accept error, recv error, send error. File sent aborted. After the  callback, DCC session is automatically destroyed.
+.TP
+\fIstatus\fP is 0: new data received, \fIdata\fP contains the data received, \fIlength\fP contains the amount of data received.
+.PP
+For DCC RECV, while file is sending, callback called in next circumstances:
+.TP
+\fIstatus\fP is not 0 and is not LIBIRC_ERR_CLOSED: connection error,  accept error, recv error, send error. File sent aborted. After the  callback, DCC session is automatically destroyed.
+.TP
+\fIstatus\fP is 0, and \fIdata\fP is 0: file has been received successfully. After the callback, DCC session is automatically destroyed.
+.TP
+\fIstatus\fP is 0, and \fIdata\fP is not 0: new data received, \fIdata\fP contains  the data received, \fIlength\fP contains the amount of data received. 
+.PP
+.SH "FUNCTION DOCUMENTATION"
+.PP 
+.SS "int irc_dcc_accept (\fBirc_session_t\fP * session, \fBirc_dcc_t\fP dccid, void * ctx, \fBirc_dcc_callback_t\fP callback)"
+.PP
+Accepts a remote DCC CHAT or DCC RECVFILE request.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIsession\fP\fP
+An initiated and connected session. 
+.TP
+\fB\fIdccid\fP\fP
+A DCC session ID, returned by appropriate callback. 
+.TP
+\fB\fIctx\fP\fP
+A user-supplied DCC session context, which will be passed  to the DCC callback function. May be NULL. 
+.TP
+\fB\fInick\fP\fP
+A nick to DCC CHAT with. 
+.TP
+\fB\fIcallback\fP\fP
+A DCC callback function, which will be called when  anything is said by other party. Must not be NULL.
+.PP
+\fBReturns: \fP
+.in +1c
+Return code 0 means success. Other value means error, the error  code may be obtained through \fBirc_errno()\fP.This function accepts a remote DCC request - either DCC CHAT or DCC FILE. After the request is accepted, the supplied callback will be called, and you can start sending messages or receiving the file.
+.PP
+This function should be called only after either event_dcc_chat_req or event_dcc_send_req events are generated, and should react to them. It is possible not to call irc_dcc_accept or irc_dcc_decline immediately in  callback function - you may just return, and call it later. However, to prevent memory leaks, you must call either irc_dcc_decline or  irc_dcc_accept for any incoming DCC request.
+.PP
+\fBSee also: \fP
+.in +1c
+\fBirc_dcc_decline\fP event_dcc_chat_req event_dcc_send_req 
+.SS "int irc_dcc_chat (\fBirc_session_t\fP * session, void * ctx, const char * nick, \fBirc_dcc_callback_t\fP callback, \fBirc_dcc_t\fP * dccid)"
+.PP
+Initiates a DCC CHAT.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIsession\fP\fP
+An initiated and connected session. 
+.TP
+\fB\fIctx\fP\fP
+A user-supplied DCC session context, which will be passed to  the DCC callback function. May be NULL. 
+.TP
+\fB\fInick\fP\fP
+A nick to DCC CHAT with. 
+.TP
+\fB\fIcallback\fP\fP
+A DCC callback function, which will be called when  anything is said by other party. Must not be NULL. 
+.TP
+\fB\fIdccid\fP\fP
+On success, DCC session ID will be stored in this var.
+.PP
+\fBReturns: \fP
+.in +1c
+Return code 0 means success. Other value means error, the error  code may be obtained through \fBirc_errno()\fP. Any error, generated by the  IRC server, is available through event_numeric.This function requests a DCC CHAT between you and other user. For  newbies, DCC chat is like private chat, but it goes directly between two users, and bypasses IRC server. DCC CHAT request must be accepted  by other side before you can send anything.
+.PP
+When the chat is accepted, terminated, or some data is received, the  callback function is called. See the details in irc_dcc_callback_t  declaration.
+.PP
+\fBSee also: \fP
+.in +1c
+\fBirc_dcc_callback_t\fP \fBirc_dcc_msg\fP 
+.SS "int irc_dcc_decline (\fBirc_session_t\fP * session, \fBirc_dcc_t\fP dccid)"
+.PP
+Declines a remote DCC CHAT or DCC RECVFILE request.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIsession\fP\fP
+An initiated and connected session. 
+.TP
+\fB\fIdccid\fP\fP
+A DCC session ID, returned by appropriate callback.
+.PP
+\fBReturns: \fP
+.in +1c
+Return code 0 means success. Other value means error, the error  code may be obtained through \fBirc_errno()\fP.This function declines a remote DCC request - either DCC CHAT or DCC FILE.
+.PP
+This function should be called only after either event_dcc_chat_req or event_dcc_send_req events are generated, and should react to them. It is possible not to call irc_dcc_accept or irc_dcc_decline immediately in  callback function - you may just return, and call it later. However, to prevent memory leaks, you must call either irc_dcc_decline or  irc_dcc_accept for any incoming DCC request.
+.PP
+Do not use this function to close the accepted or initiated DCC session. Use irc_dcc_destroy instead.
+.PP
+\fBSee also: \fP
+.in +1c
+\fBirc_dcc_accept\fP event_dcc_chat_req event_dcc_send_req \fBirc_dcc_destroy\fP 
+.SS "int irc_dcc_destroy (\fBirc_session_t\fP * session, \fBirc_dcc_t\fP dccid)"
+.PP
+Destroys a DCC session.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIsession\fP\fP
+An initiated and connected session. 
+.TP
+\fB\fIdccid\fP\fP
+A DCC session ID.
+.PP
+\fBReturns: \fP
+.in +1c
+Return code 0 means success. Other value means error, the error  code may be obtained through \fBirc_errno()\fP.This function closes the DCC connection (if available), and destroys the DCC session, freeing the used resources. It can be called in any  moment, even from callbacks or from different threads.
+.PP
+Note that when DCC session is finished (either with success or failure), you should not destroy it - it will be destroyed automatically. 
+.SS "int irc_dcc_msg (\fBirc_session_t\fP * session, \fBirc_dcc_t\fP dccid, const char * text)"
+.PP
+Sends the message to the specific DCC CHAT.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIsession\fP\fP
+An IRC session. 
+.TP
+\fB\fIdccid\fP\fP
+A DCC session ID, which chat request must have been accepted. 
+.TP
+\fB\fItext\fP\fP
+Message text. Must not be NULL.
+.PP
+\fBReturns: \fP
+.in +1c
+Return code 0 means success. Other value means error, the error  code may be obtained through \fBirc_errno()\fP.This function is used to send the DCC CHAT messages. DCC CHAT request must be initiated and accepted first (or just accepted, if initiated by other side).
+.PP
+\fBSee also: \fP
+.in +1c
+\fBirc_dcc_chat\fP 
+.SS "int irc_dcc_sendfile (\fBirc_session_t\fP * session, void * ctx, const char * nick, const char * filename, \fBirc_dcc_callback_t\fP callback, \fBirc_dcc_t\fP * dccid)"
+.PP
+Sends a file via DCC.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIsession\fP\fP
+An initiated and connected session. 
+.TP
+\fB\fIctx\fP\fP
+A user-supplied DCC session context, which will be passed to  the DCC callback function. May be NULL. 
+.TP
+\fB\fInick\fP\fP
+A nick to send file via DCC to. 
+.TP
+\fB\fIfilename\fP\fP
+A file name to sent. Must be an existing file. 
+.TP
+\fB\fIcallback\fP\fP
+A DCC callback function, which will be called when  file sent operation is failed, progressed or completed. 
+.TP
+\fB\fIdccid\fP\fP
+On success, DCC session ID will be stored in this var.
+.PP
+\fBReturns: \fP
+.in +1c
+Return code 0 means success. Other value means error, the error  code may be obtained through \fBirc_errno()\fP. Any error, generated by the  IRC server, is available through event_numeric.This function generates a DCC SEND request to send the file. When it is accepted, the file is sent to the remote party, and the DCC session is closed. The send operation progress and result can be checked in  callback. See the details in irc_dcc_callback_t declaration.
+.PP
+\fBSee also: \fP
+.in +1c
+\fBirc_dcc_callback_t\fP 

@@ -1,0 +1,29 @@
+.TH "Getting libircclient version." 3 "8 Sep 2004" "libirc" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Getting libircclient version. \- 
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBirc_get_version\fP (unsigned int *high, unsigned int *low)"
+.br
+.RI "\fIObtains a libirc version.\fP"
+.in -1c
+.SH "FUNCTION DOCUMENTATION"
+.PP 
+.SS "void irc_get_version (unsigned int * high, unsigned int * low)"
+.PP
+Obtains a libirc version.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIhigh\fP\fP
+A pointer to receive the high version part. 
+.TP
+\fB\fIlow\fP\fP
+A pointer to receive the low version part.This function returns the libirc version. You can use the version either to check whether required options are available, or to output the version. The preferred printf-like format string to output the version is:
+.PP
+printf ('Version: d.%02d', high, low); 
