@@ -1,5 +1,14 @@
 /*
- * This program tests most features of libirc. It can join the specific
+ * Copyright (C) 2004 Georgy Yunaev tim@krasnogorsk.ru
+ *
+ * This example is free, and not covered by LGPL license. There is no 
+ * restriction applied to their modification, redistribution, using and so on.
+ * You can study them, modify them, use them in your own program - either 
+ * completely or partially. By using it you may give me some credits in your
+ * program, but you don't have to.
+ *
+ *
+ * This example tests most features of libirc. It can join the specific
  * channel, welcoming all the people there, and react on some messages -
  * 'help', 'quit', 'dcc chat', 'dcc send', 'ctcp'. Also it can reply to 
  * CTCP requests, receive DCC files and accept DCC chats.
@@ -12,6 +21,8 @@
  * - generating channel messages;
  * - handling dcc send and dcc chat events;
  * - initiating dcc send and dcc chat.
+ *
+ * $Id$
  */
 
 #include <stdio.h>

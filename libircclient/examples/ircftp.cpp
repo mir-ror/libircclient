@@ -1,17 +1,22 @@
 /*
- * This simple program 'guards' the specified channel for swearing. 
- * Whenever someone says a swear-word, it first warns the person via 
- * private message, second time it warns him in channel, and starting 
- * from the third time, it kicks the chuff out.
+ * Copyright (C) 2004 Georgy Yunaev tim@krasnogorsk.ru
  *
- * To keep it simple, this example reacts only on 'fuck' swear-word.
+ * This example is free, and not covered by LGPL license. There is no 
+ * restriction applied to their modification, redistribution, using and so on.
+ * You can study them, modify them, use them in your own program - either 
+ * completely or partially. By using it you may give me some credits in your
+ * program, but you don't have to.
+ *
+ *
+ * This example emulates a simple file server. Only 'list' and 'get' commands
+ * are supported.
  *
  * Features used:
  * - automatic nickname parsing using LIBIRC_OPTION_STRIPNICKS;
  * - handling privmsg events to parse commands;
  * - generating listings and DCC file transfer;
- * - handling 'nick' event to track nickname changes;
- * - handling 'part' event to cleanup;
+ *
+ * $Id$
  */
 
 #include <map>

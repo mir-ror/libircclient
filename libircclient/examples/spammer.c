@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2004 Georgy Yunaev tim@krasnogorsk.ru
+ *
+ * This example is free, and not covered by LGPL license. There is no 
+ * restriction applied to their modification, redistribution, using and so on.
+ * You can study them, modify them, use them in your own program - either 
+ * completely or partially. By using it you may give me some credits in your
+ * program, but you don't have to.
+ *
+ *
+ * This example spams the specified channels with words 'HAHA', 'HEHE' and 
+ * 'HUHU' using three threads. Its main purpose is to test multithreading 
+ * support of libircclient.
+ *
+ * $Id$
+ */
+
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
@@ -95,7 +112,7 @@ void event_join (irc_session_t * session, const char * event, const char * origi
 		if ( CREATE_THREAD (&tid, gen_spam, &spam1)
 		|| CREATE_THREAD (&tid, gen_spam, &spam2)
 		|| CREATE_THREAD (&tid, gen_spam, &spam3) )
-			printf ("pthread_create() failed: %s\n", strerror(errno));
+			printf ("CREATE_THREAD failed: %s\n", strerror(errno));
 		else
 			printf ("Spammer thread was started successfully.\n");
 	}
