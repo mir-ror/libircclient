@@ -12,13 +12,13 @@ cp ../../include/libirc_events.h  win32/include/
 cp ../../examples/* win32/examples/
 cp spammer.dsp win32/examples/
 cd win32
-zip -r ../libircclient-win32-vc-1.0.zip .
+zip -r ../libircclient-win32-vc-1.1.zip .
 cd ..
 rm -rf win32
 
 mkdir doc
 cp ../../doc/html/* doc/
 cd doc
-zip -r ../libircclient-dochtml-1.0.zip .
+zip -r ../libircclient-dochtml-1.1.zip .
 cd ..
 rm -rf doc
