@@ -100,4 +100,15 @@ static void event_notice (irc_session_t * session, const char * event,
 The idea is to parse the messages sent from NICKSERV, and if they're matched
 the specific patterns, react on them appropriately.
 
+\subsection faq4 What is CTCP, and why do I need my own handler?
+
+CTCP abbreviature is deciphered as "Client-to-Client Protocol". It is used 
+between the IRC clients to query the remote client for some data, or to send 
+some information - for example, /me messages are sent via CTCP. There is no
+standard list of possible CTCP requests, and different IRC clients often add
+their own CTCP codes. The built-in handler reacts on TIME, VERSION, PING and
+FINGER CTCP queries. If you need to react on other queries, you'll have to 
+write your own CTCP handler. See the source code of libirc_event_ctcp_internal
+to get an idea how to write it.
+
  */
