@@ -32,3 +32,4 @@ EXPORTS
 	irc_strerror
 	irc_option_set
 	irc_option_reset
+	irc_is_connected

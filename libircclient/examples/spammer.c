@@ -1,8 +1,22 @@
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
-#include <unistd.h>
-#include <pthread.h>
+
+#if defined (WIN32)
+	#include <windows.h>
+
+	#define CREATE_THREAD(id,func,param)	(CreateThread(0, 0, func, param, 0, id) == 0)
+	#define THREAD_FUNCTION(funcname)		static DWORD WINAPI funcname (LPVOID arg)
+	#define thread_id_t		DWORD
+	#define sleep(a)		Sleep (a*1000)
+#else
+	#include <unistd.h>
+	#include <pthread.h>
+
+	#define CREATE_THREAD(id,func,param)	(pthread_create (id, 0, func, (void *) param) != 0)
+	#define THREAD_FUNCTION(funcname)		static void * funcname (void * arg)
+	#define thread_id_t		pthread_t
+#endif
 
 #include "libircclient.h"
 
@@ -31,7 +45,7 @@ typedef struct
 } spam_params_t;
 
 
-static void * gen_spam (void * arg)
+THREAD_FUNCTION(gen_spam)
 {
 	spam_params_t * sp = (spam_params_t *) arg;
 
@@ -63,7 +77,7 @@ void event_join (irc_session_t * session, const char * event, const char * origi
 		static spam_params_t spam1;
 		static spam_params_t spam2;
 		static spam_params_t spam3;
-		pthread_t tid;
+		thread_id_t tid;
 
 		spam1.session = spam2.session = spam3.session = session;
 		spam1.channel = spam2.channel = spam3.channel = ctx->channel;
@@ -78,9 +92,9 @@ void event_join (irc_session_t * session, const char * event, const char * origi
 
 		printf ("We just joined the channel %s; starting the spam threads\n", params[1]);
 
-		if ( pthread_create (&tid, 0, gen_spam, (void *) &spam1)
-		|| pthread_create (&tid, 0, gen_spam, (void *) &spam2)
-		|| pthread_create (&tid, 0, gen_spam, (void *) &spam3) )
+		if ( CREATE_THREAD (&tid, gen_spam, &spam1)
+		|| CREATE_THREAD (&tid, gen_spam, &spam2)
+		|| CREATE_THREAD (&tid, gen_spam, &spam3) )
 			printf ("pthread_create() failed: %s\n", strerror(errno));
 		else
 			printf ("Spammer thread was started successfully.\n");
@@ -120,6 +134,7 @@ int main (int argc, char **argv)
 {
 	irc_callbacks_t	callbacks;
 	irc_ctx_t ctx;
+	irc_session_t * s;
 
 	if ( argc != 4 )
 	{
@@ -139,7 +154,7 @@ int main (int argc, char **argv)
     ctx.nick = argv[2];
 
 	// And create the IRC session; 0 means error
-	irc_session_t * s = irc_create_session (&callbacks);
+	s = irc_create_session (&callbacks);
 
 	if ( !s )
 	{

@@ -1,3 +1,11 @@
+2004-09-30
+   * libircclient 0.4 released
+   * exported an irc_is_connected method.
+   * fixed error output in examples.
+   * fixed several errors in Win32 build (there were no multithread support)
+   * add a Win32 dsp/dsw to build the library from VC6/7
+   * add a .dsp for an example.
+
 2004-09-14 Georgy Yunaev
    * libircclient 0.3 released
    * Fix CTCP time bug.
