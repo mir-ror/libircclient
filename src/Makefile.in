@@ -13,12 +13,12 @@ all:	lib
 lib:	libircclient.a
 
 install: lib
-	-mkdir @PREFIX@/include
-	-mkdir @PREFIX@/lib
-	cp ../include/libircclient.h @PREFIX@/include/libircclient.h
-	cp ../include/libirc_errors.h @PREFIX@/include/libirc_errors.h
-	cp ../include/libirc_events.h  @PREFIX@/include/libirc_events.h 
-	cp libirc.a  @PREFIX@/include/lib/libirc.a
+	-mkdir @prefix@/include
+	-mkdir @prefix@/lib
+	cp ../include/libircclient.h @prefix@/include/libircclient.h
+	cp ../include/libirc_errors.h @prefix@/include/libirc_errors.h
+	cp ../include/libirc_events.h  @prefix@/include/libirc_events.h 
+	cp libirc.a @prefix@/include/lib/libirc.a
 
 $(OBJS): utils.c dcc.c errors.c portable.c sockets.c colors.c
 

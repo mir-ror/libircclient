@@ -293,7 +293,7 @@ static void libirc_dcc_process_descriptors (irc_session_t * ircsession, fd_set *
 			{
 				int length, offset = 0, err = 0;
 		
-				unsigned int amount = (sizeof (dcc->incoming_buf) - 1) - dcc->incoming_offset;
+				unsigned int amount = sizeof (dcc->incoming_buf) - dcc->incoming_offset;
 
 				length = socket_recv (&dcc->sock, dcc->incoming_buf + dcc->incoming_offset, amount);
 
