@@ -22,8 +22,8 @@
 	#error This file should not be included directly, include just libircclient.h
 #endif
 
-#define LIBIRC_VERSION_HIGH			0x0000
-#define LIBIRC_VERSION_LOW			0x0008
+#define LIBIRC_VERSION_HIGH			0x0001
+#define LIBIRC_VERSION_LOW			0x0000
 
 #define LIBIRC_BUFFER_SIZE			1024
 #define LIBIRC_DCC_BUFFER_SIZE		1024
