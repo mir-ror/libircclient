@@ -306,14 +306,19 @@ typedef struct
 	irc_event_callback_t	event_umode;
 
 	/*!
-	 * The "ctcp" event is triggered when the client receives the CTCP request.
+	 * The "ctcp" event is triggered when the client receives the CTCP 
+	 * request. By default, the built-in CTCP request handler is used. The 
+	 * build-in handler automatically replies on most CTCP messages, so you
+     * will rarely need to override it.
      *
 	 * \param origin the person, who generates the message.
 	 * \param params[0] mandatory, the complete CTCP message, including its 
 	 *                  arguments.
 	 * 
 	 * Mirc generates PING, FINGER, VERSION, TIME and ACTION messages,
-	 * check the example to see how to react on them.
+	 * check the source code of \c libirc_event_ctcp_internal function to 
+	 * see how to write your own CTCP request handler. Also you may find 
+	 * useful this question in FAQ: \ref faq4
 	 */
 	irc_event_callback_t	event_ctcp_req;
 
@@ -324,6 +329,18 @@ typedef struct
 	 * \param params[0] mandatory, the CTCP message itself with its arguments.
 	 */
 	irc_event_callback_t	event_ctcp_rep;
+
+	/*!
+	 * The "action" event is triggered when the client receives the CTCP 
+	 * ACTION message. These messages usually looks like:\n
+     * \code
+     * [23:32:55] * Tim gonna sleep.
+     * \endcode
+     *
+	 * \param origin the person, who generates the message.
+	 * \param params[0] mandatory, the ACTION message.
+	 */
+	irc_event_callback_t	event_ctcp_action;
 
 	/*!
 	 * The "unknown" event is triggered upon receipt of any number of 
