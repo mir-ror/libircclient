@@ -92,21 +92,17 @@ static void event_privmsg (irc_session_t * session, const char * event, const ch
 		}
 	}
 
-/*	// Cleanup
+	// Cleanup
 	std::map<std::string, CIrcMud*>::iterator conn, conn_next;
 
-    for ( conn = gConnectionMap.begin(); conn != gConnectionMap.end(); conn = conn_next )
+    for ( conn = gConnectionMap.begin(); conn != gConnectionMap.end(); conn++ )
 	{
-		conn_next = conn;
-		conn_next++;
-
 		if ( !conn->second->IsAlive() )
 		{
 			delete conn->second;
-			gConnectionMap.erase(conn);
+			conn = gConnectionMap.erase(conn);
 		}
 	}
-*/
 }
 
 /*
