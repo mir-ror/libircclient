@@ -65,3 +65,43 @@ static int libirc_findcrorlf (char * buf, int length)
 
 	return 0;
 }
+
+
+static void libirc_event_ctcp_internal (irc_session_t * session, const char * event, const char * origin, const char ** params, unsigned int count)
+{
+	if ( origin )
+	{
+		char nickbuf[128], textbuf[256];
+		irc_target_get_nick (origin, nickbuf, sizeof(nickbuf));
+
+		if ( strstr (params[0], "PING") == params[0] )
+			irc_cmd_ctcp_reply (session, nickbuf, params[0]);
+		else if ( !strcmp (params[0], "VERSION") )
+		{
+			unsigned int high, low;
+			irc_get_version (&high, &low);
+
+			sprintf (textbuf, "VERSION libirc by Georgy Yunaev ver.%d.%d", high, low);
+			irc_cmd_ctcp_reply (session, nickbuf, textbuf);
+		}
+		else if ( !strcmp (params[0], "FINGER") )
+		{
+			sprintf (textbuf, "FINGER %s (%s) Idle 0 seconds", 
+				session->username ? session->username : "nobody",
+				session->realname ? session->realname : "noname");
+
+			irc_cmd_ctcp_reply (session, nickbuf, textbuf);
+		}
+		else if ( !strcmp (params[0], "TIME") )
+		{
+			time_t now = time(0);
+#if defined (ENABLE_THREADS) && defined (HAVE_LOCALTIME_R)
+			struct tm tmtmp, *ltime = localtime_r (&now, &tmtmp);
+#else
+			struct tm * ltime = localtime (&now);
+#endif
+			strftime (textbuf, sizeof(textbuf), "%C", ltime);
+			irc_cmd_ctcp_reply (session, nickbuf, textbuf);
+		}
+	}
+}

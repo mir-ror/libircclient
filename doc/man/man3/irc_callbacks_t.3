@@ -1,4 +1,4 @@
-.TH "irc_callbacks_t" 3 "30 Sep 2004" "Version 0.1" "libirc" \" -*- nroff -*-
+.TH "irc_callbacks_t" 3 "6 Oct 2004" "Version 0.5" "libircclient" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -114,7 +114,7 @@ The 'ctcp' event is triggered when the client receives the CTCP reply.
 
 .SS "\fBirc_event_callback_t\fP \fBirc_callbacks_t::event_ctcp_req\fP"
 .PP
-The 'ctcp' event is triggered when the client receives the CTCP request.
+The 'ctcp' event is triggered when the client receives the CTCP request. By default, the built-in CTCP request handler is used. The build-in handler automatically replies on most CTCP messages, so you will rarely need to override it.
 .PP
 \fBParameters:\fP
 .RS 4
@@ -123,7 +123,7 @@ The 'ctcp' event is triggered when the client receives the CTCP request.
 \fIparams[0]\fP mandatory, the complete CTCP message, including its arguments.
 .RE
 .PP
-Mirc generates PING, FINGER, VERSION, TIME and ACTION messages, check the example to see how to react on them.
+Mirc generates PING, FINGER, VERSION, TIME and ACTION messages, check the source code of \fClibirc_event_ctcp_internal\fP function to see how to write your own CTCP request handler. Also you may find useful this question in FAQ: \fBWhat is CTCP, and why do I need my own handler?\fP
 .SS "\fBirc_event_dcc_chat_t\fP \fBirc_callbacks_t::event_dcc_chat_req\fP"
 .PP
 The 'dcc chat' event is triggered when someone requests a DCC CHAT from you.
@@ -145,6 +145,11 @@ The 'invite' event is triggered upon receipt of an INVITE message, which means t
 \fIparams[0]\fP mandatory, contains your nick. 
 .br
 \fIparams[1]\fP mandatory, contains the channel name you're invited into.
+.RE
+.PP
+\fBSee also:\fP
+.RS 4
+\fBirc_cmd_invite\fP irc_cmd_chanmode_invite
 .RE
 .PP
 
@@ -188,7 +193,7 @@ The 'mode' event is triggered upon receipt of a MODE message, which means that s
 .br
 \fIparams[1]\fP mandatory, contains the changed channel mode, like '+t', '-i' and so on. 
 .br
-\fIparams[2]\fP optional, contains the mode argument (for example, a key for +k mode)
+\fIparams[2]\fP optional, contains the mode argument (for example, a key for +k mode, or user who got the channel operator status for +o mode)
 .RE
 .PP
 
@@ -220,7 +225,7 @@ The 'notice' event is triggered upon receipt of a NOTICE message which means tha
 
 .SS "\fBirc_eventcode_callback_t\fP \fBirc_callbacks_t::event_numeric\fP"
 .PP
-The 'numeric' event is triggered upon receipt of any numeric response from the server. There is a lot of such responses, see the full list in the RFC 1459.
+The 'numeric' event is triggered upon receipt of any numeric response from the server. There is a lot of such responses, see the full list here: \fBNumeric reply codes from RFC1459\fP.
 .PP
 See the params in \fBirc_eventcode_callback_t\fP specification.
 .SS "\fBirc_event_callback_t\fP \fBirc_callbacks_t::event_part\fP"
@@ -286,4 +291,4 @@ The 'unknown' event is triggered upon receipt of any number of unclassifiable mi
 
 .SH "Author"
 .PP 
-Generated automatically by Doxygen for libirc from the source code.
+Generated automatically by Doxygen for libircclient from the source code.

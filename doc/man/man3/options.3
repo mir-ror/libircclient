@@ -1,4 +1,4 @@
-.TH "Managing libircclient options." 3 "30 Sep 2004" "Version 0.1" "libirc" \" -*- nroff -*-
+.TH "Managing libircclient options." 3 "6 Oct 2004" "Version 0.5" "libircclient" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -20,11 +20,11 @@ Managing libircclient options. \-
 .ti -1c
 .RI "void \fBirc_option_set\fP (\fBirc_session_t\fP *session, unsigned int option)"
 .br
-.RI "\fISets the libirc option. \fP"
+.RI "\fISets the libircclient option. \fP"
 .ti -1c
 .RI "void \fBirc_option_reset\fP (\fBirc_session_t\fP *session, unsigned int option)"
 .br
-.RI "\fIResets the libirc option. \fP"
+.RI "\fIResets the libircclient option. \fP"
 .in -1c
 .SH "Define Documentation"
 .PP 
@@ -40,7 +40,7 @@ For every IRC server event, the event origin is sent in standard form: nick!host
 .PP 
 .SS "void irc_option_reset (\fBirc_session_t\fP * session, unsigned int option)"
 .PP
-Resets the libirc option. 
+Resets the libircclient option. 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -49,7 +49,7 @@ Resets the libirc option.
 \fIoption\fP An option from \fBlibirc_options.h\fP
 .RE
 .PP
-This function removes the previously set libirc option, changing libirc behavior. See the option list for the meaning for every option.
+This function removes the previously set libircclient option, changing libircclient behavior. See the option list for the meaning for every option.
 .PP
 \fBSee also:\fP
 .RS 4
@@ -59,7 +59,7 @@ This function removes the previously set libirc option, changing libirc behavior
 
 .SS "void irc_option_set (\fBirc_session_t\fP * session, unsigned int option)"
 .PP
-Sets the libirc option. 
+Sets the libircclient option. 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -68,7 +68,7 @@ Sets the libirc option.
 \fIoption\fP An option from \fBlibirc_options.h\fP
 .RE
 .PP
-This function sets the libirc option, changing libirc behavior. See the option list for the meaning for every option.
+This function sets the libircclient option, changing libircclient behavior. See the option list for the meaning for every option.
 .PP
 \fBSee also:\fP
 .RS 4

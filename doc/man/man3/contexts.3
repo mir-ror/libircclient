@@ -1,4 +1,4 @@
-.TH "Managing contexts." 3 "30 Sep 2004" "Version 0.1" "libirc" \" -*- nroff -*-
+.TH "Managing contexts." 3 "6 Oct 2004" "Version 0.5" "libircclient" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -45,7 +45,7 @@ Sets the IRC session context.
 \fIctx\fP A context.
 .RE
 .PP
-This function sets the user-defined context for this IRC session. This context is not used by libirc. Its purpose is to store session-specific user data, which may be obtained later by calling \fBirc_get_ctx()\fP. Note that libirc just 'carries out' this pointer. If you allocate some memory, and store its address in ctx (most common usage), it is your responsibility to free it before calling \fBirc_destroy_session()\fP.
+This function sets the user-defined context for this IRC session. This context is not used by libircclient. Its purpose is to store session-specific user data, which may be obtained later by calling \fBirc_get_ctx()\fP. Note that libircclient just 'carries out' this pointer. If you allocate some memory, and store its address in ctx (most common usage), it is your responsibility to free it before calling \fBirc_destroy_session()\fP.
 .PP
 \fBSee also:\fP
 .RS 4

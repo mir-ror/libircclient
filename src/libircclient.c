@@ -47,6 +47,10 @@ irc_session_t * irc_create_session (irc_callbacks_t	* callbacks)
 	session->dcc_timeout = 60;
 
 	memcpy (&session->callbacks, callbacks, sizeof(irc_callbacks_t));
+
+	if ( !session->callbacks.event_ctcp_req )
+		session->callbacks.event_ctcp_req = libirc_event_ctcp_internal;
+
 	return session;
 }
 
@@ -453,6 +457,14 @@ static void libirc_process_incoming_data (irc_session_t * session, int process_l
 
 					if ( strstr(ctcp_buf, "DCC ") == ctcp_buf )
 						libirc_dcc_request (session, prefix, ctcp_buf);
+					else if ( strstr(ctcp_buf, "ACTION ") == ctcp_buf
+					&& session->callbacks.event_ctcp_action )
+					{
+						params[0] = ctcp_buf;
+						paramindex = 1;
+
+						(*session->callbacks.event_ctcp_action) (session, "ACTION", prefix, params, paramindex);
+					}
 					else
 					{
 						params[0] = ctcp_buf;
@@ -903,46 +915,6 @@ void irc_get_version (unsigned int * high, unsigned int * low)
 {
 	*high = LIBIRC_VERSION_HIGH;
     *low = LIBIRC_VERSION_LOW;
-}
-
-
-void irc_event_ctcp_internal (irc_session_t * session, const char * event, const char * origin, const char ** params, unsigned int count)
-{
-	if ( origin )
-	{
-		char nickbuf[128], textbuf[256];
-		irc_target_get_nick (origin, nickbuf, sizeof(nickbuf));
-
-		if ( strstr (params[0], "PING") == params[0] )
-			irc_cmd_ctcp_reply (session, nickbuf, params[0]);
-		else if ( !strcmp (params[0], "VERSION") )
-		{
-			unsigned int high, low;
-			irc_get_version (&high, &low);
-
-			sprintf (textbuf, "VERSION libirc by Georgy Yunaev ver.%d.%d", high, low);
-			irc_cmd_ctcp_reply (session, nickbuf, textbuf);
-		}
-		else if ( !strcmp (params[0], "FINGER") )
-		{
-			sprintf (textbuf, "FINGER %s (%s) Idle 0 seconds", 
-				session->username ? session->username : "nobody",
-				session->realname ? session->realname : "noname");
-
-			irc_cmd_ctcp_reply (session, nickbuf, textbuf);
-		}
-		else if ( !strcmp (params[0], "TIME") )
-		{
-			time_t now = time(0);
-#if defined (ENABLE_THREADS) && defined (HAVE_LOCALTIME_R)
-			struct tm tmtmp, *ltime = localtime_r (&now, &tmtmp);
-#else
-			struct tm * ltime = localtime (&now);
-#endif
-			strftime (textbuf, sizeof(textbuf), "%C", ltime);
-			irc_cmd_ctcp_reply (session, nickbuf, textbuf);
-		}
-	}
 }
 
 

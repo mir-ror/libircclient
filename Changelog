@@ -1,4 +1,10 @@
-2004-10-03
+2004-10-06 Georgy Yunaev
+   * CHANGED BEHAVIOR: the built-in CTCP handler is used if not set. 
+     Therefore, irc_event_ctcp_internal() is not public anymore.
+   * Added a small (as yet) FAQ.
+   * Add extra numeric codes from RFC2812.
+
+2004-10-03 Georgy Yunaev
    * Libircclient error codes are now well-documented.
    * Modules documentation is extended.
    * Added new methods: irc_cmd_part, irc_cmd_invite, irc_cmd_names, 
@@ -11,7 +17,7 @@
    * All the numeric reply codes from RFC1459 are now documented. 
    * Numeric reply codes for every command are now described.
 
-2004-09-30
+2004-09-30 Georgy Yunaev
    * libircclient 0.4 released
    * exported an irc_is_connected method.
    * fixed error output in examples.
