@@ -1,0 +1,958 @@
+/* 
+ * Copyright (C) 2004 Georgy Yunaev tim@krasnogorsk.ru
+ *
+ * This library is free software; you can redistribute it and/or modify it 
+ * under the terms of the GNU Lesser General Public License as published by 
+ * the Free Software Foundation; either version 2 of the License, or (at your 
+ * option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public 
+ * License for more details.
+ *
+ * $Id$
+ */
+
+#include "config.h"
+
+
+#include <stdio.h>
+#include <stdarg.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <arpa/inet.h>	
+#include <netinet/in.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <ctype.h>
+#include <time.h>
+
+
+#if defined (ENABLE_THREADS)
+	#include <pthread.h>
+	#define LOCK_SESSION(s)		pthread_mutex_lock(&s->mutex_session)
+	#define UNLOCK_SESSION(s)	pthread_mutex_unlock(&s->mutex_session)
+	#define LOCK_DCC_MUTEX(s)	pthread_mutex_lock(&s->mutex_dcc)
+	#define UNLOCK_DCC_MUTEX(s)	pthread_mutex_unlock(&s->mutex_dcc)
+
+	#if !defined (PTHREAD_MUTEX_RECURSIVE)
+		#define PTHREAD_MUTEX_RECURSIVE	PTHREAD_MUTEX_RECURSIVE_NP
+	#endif
+#else
+	#define LOCK_SESSION(s)
+	#define UNLOCK_SESSION(s)
+	#define LOCK_DCC_MUTEX(s)
+	#define UNLOCK_DCC_MUTEX(s)
+#endif
+
+#ifndef O_BINARY
+	#define O_BINARY	0
+#endif
+
+
+#define DEBUG_ENABLED(s)	((s)->option & LIBIRC_OPTION_DEBUG)
+
+
+#include "libircclient.h"
+#include "utils.c"
+#include "dcc.c"
+#include "errors.c"
+
+
+irc_session_t * irc_create_session (irc_callbacks_t	* callbacks)
+{
+#if defined (ENABLE_THREADS)
+	pthread_mutexattr_t	attr;
+#endif
+	irc_session_t * session = malloc (sizeof(irc_session_t));
+
+	if ( !session )
+		return 0;
+
+	memset (session, 0, sizeof(irc_session_t));
+	session->sock = -1;
+
+#if defined (ENABLE_THREADS)
+	if ( pthread_mutexattr_init (&attr)
+	|| pthread_mutexattr_settype (&attr, PTHREAD_MUTEX_RECURSIVE)
+	|| pthread_mutex_init (&session->mutex_session, &attr)
+	|| pthread_mutex_init (&session->mutex_dcc, &attr) )
+	{
+		free (session);
+		return 0;
+	}
+#endif
+
+	session->dcc_last_id = 1;
+	session->dcc_timeout = 60;
+
+	memcpy (&session->callbacks, callbacks, sizeof(irc_callbacks_t));
+	return session;
+}
+
+
+void irc_destroy_session (irc_session_t * session)
+{
+	if ( session->sock >= 0 )
+		close (session->sock);
+
+	if ( session->realname )
+		free (session->realname);
+
+	if ( session->username )
+		free (session->username);
+
+	if ( session->nick )
+		free (session->nick);
+
+	if ( session->server )
+		free (session->server);
+
+	if ( session->server_password )
+		free (session->server_password);
+
+#if defined (ENABLE_THREADS)
+	pthread_mutex_destroy (&session->mutex_session);
+#endif
+
+	/* 
+	 * delete DCC data 
+	 * libirc_remove_dcc_session removes the DCC session from the list.
+	 */
+	while ( session->dcc_sessions )
+		libirc_remove_dcc_session (session, session->dcc_sessions, 0);
+
+	free (session);
+}
+
+
+int irc_connect (irc_session_t * session,
+			const char * server, 
+			unsigned short port,
+			const char * server_password,
+			const char * nick,
+			const char * username,
+			const char * realname)
+{
+	struct sockaddr_in saddr;
+
+	// Check and copy all the specified fields
+	if ( !server || !nick )
+	{
+		session->lasterror = LIBIRC_ERR_INVAL;
+		return 1;
+	}
+
+	if ( session->state != LIBIRC_STATE_INIT )
+	{
+		session->lasterror = LIBIRC_ERR_STATE;
+		return 1;
+	}
+
+	if ( username )
+		session->username = strdup (username);
+
+	if ( server_password )
+		session->server_password = strdup (server_password);
+
+	if ( realname )
+		session->realname = strdup (realname);
+
+	session->nick = strdup (nick);
+	session->server = strdup (server);
+
+	memset (&saddr, 0, sizeof(saddr));
+	saddr.sin_family = AF_INET;
+	saddr.sin_port = htons (port);
+	saddr.sin_addr.s_addr = inet_addr (server);
+
+    if ( saddr.sin_addr.s_addr == INADDR_NONE )
+    {
+		struct hostent *hp;
+#if defined HAVE_GETHOSTBYNAME_R
+		int tmp_errno;
+		struct hostent tmp_hostent;
+		char buf[2048];
+
+      	if ( gethostbyname_r (server, &tmp_hostent, buf, sizeof(buf), &hp, &tmp_errno) )
+      		hp = 0;
+#else
+      	hp = gethostbyname (server);
+#endif
+		if ( !hp )
+		{
+			session->lasterror = LIBIRC_ERR_RESOLV;
+			return 1;
+		}
+
+		memcpy (&saddr.sin_addr, hp->h_addr, (size_t) hp->h_length);
+    }
+
+    // create the IRC server socket
+	if ( (session->sock = socket (PF_INET, SOCK_STREAM, 0)) < 0 )
+	{
+		session->lasterror = LIBIRC_ERR_SOCKET;
+		return 1;
+	}
+
+    // make in non-blocking, so connect() call won't block
+    if ( fcntl (session->sock, F_SETFL, fcntl (session->sock, F_GETFL,0 ) | O_NONBLOCK) == -1 )
+	{
+		session->lasterror = LIBIRC_ERR_SOCKET;
+		return 1;
+	}
+
+    // and connect to the IRC server
+    if ( connect (session->sock, (struct sockaddr *) &saddr, sizeof(saddr)) < 0 )
+    {
+		if ( errno != EINPROGRESS && errno != EWOULDBLOCK ) 
+			return LIBIRC_ERR_CONNECT;
+    }
+
+    session->state = LIBIRC_STATE_CONNECTING;
+    session->motd_received = 0; // reset in case of reconnect
+	return 0;
+}
+
+
+int irc_run (irc_session_t * session)
+{
+	if ( session->state != LIBIRC_STATE_CONNECTING )
+	{
+		session->lasterror = LIBIRC_ERR_STATE;
+		return 1;
+	}
+
+	while ( session->state == LIBIRC_STATE_CONNECTED 
+	|| session->state == LIBIRC_STATE_CONNECTING )
+	{
+		struct timeval tv;
+		fd_set in_set, out_set;
+		int maxfd = 0;
+
+		tv.tv_usec = 0;
+		tv.tv_sec = 1;
+
+		// Init sets
+		FD_ZERO (&in_set);
+		FD_ZERO (&out_set);
+
+		irc_add_select_descriptors (session, &in_set, &out_set, &maxfd);
+
+		if ( select (maxfd + 1, &in_set, &out_set, 0, &tv) < 0 )
+		{
+			if ( errno == EINTR )
+				continue;
+
+			session->lasterror = LIBIRC_ERR_TERMINATED;
+			return 1;
+		}
+
+		if ( irc_process_select_descriptors (session, &in_set, &out_set) )
+			return 1;
+	}
+
+	return 0;
+}
+
+
+int irc_add_select_descriptors (irc_session_t * session, fd_set *in_set, fd_set *out_set, int * maxfd)
+{
+	if ( session->sock < 0 
+	|| session->state == LIBIRC_STATE_INIT
+	|| session->state == LIBIRC_STATE_DISCONNECTED )
+	{
+		session->lasterror = LIBIRC_ERR_STATE;
+		return 1;
+	}
+
+	LOCK_SESSION(session);
+
+	switch (session->state)
+	{
+	case LIBIRC_STATE_CONNECTING:
+		// While connection, only out_set descriptor should be set
+		libirc_add_to_set (session->sock, out_set, maxfd);
+		break;
+
+	case LIBIRC_STATE_CONNECTED:
+		// Add input descriptor if there is space in input buffer
+		if ( session->incoming_offset < (sizeof (session->incoming_buf) - 1) )
+			libirc_add_to_set (session->sock, in_set, maxfd);
+
+		// Add output descriptor if there is something in output buffer
+		if ( libirc_findcrlf (session->outgoing_buf, session->outgoing_offset) > 0 )
+			libirc_add_to_set (session->sock, out_set, maxfd);
+
+		break;
+	}
+
+	UNLOCK_SESSION(session);
+
+	libirc_dcc_add_descriptors (session, in_set, out_set, maxfd);
+	return 0;
+}
+
+
+static void libirc_process_incoming_data (irc_session_t * session, int process_length)
+{
+	#define MAX_PARAMS_ALLOWED 10
+	char buf[2*512], *p, *s;
+	const char * command = 0, *prefix = 0, *params[MAX_PARAMS_ALLOWED+1];
+	int code = 0, paramindex = 0;
+
+	if ( process_length > sizeof(buf) )
+		abort(); // should be impossible
+
+	memcpy (buf, session->incoming_buf, process_length);
+	buf[process_length] = '\0';
+
+	memset (params, 0, sizeof(params));
+	p = buf;
+
+    /*
+     * From RFC 1459:
+	 *  <message>  ::= [':' <prefix> <SPACE> ] <command> <params> <crlf>
+	 *  <prefix>   ::= <servername> | <nick> [ '!' <user> ] [ '@' <host> ]
+	 *  <command>  ::= <letter> { <letter> } | <number> <number> <number>
+	 *  <SPACE>    ::= ' ' { ' ' }
+	 *  <params>   ::= <SPACE> [ ':' <trailing> | <middle> <params> ]
+	 *  <middle>   ::= <Any *non-empty* sequence of octets not including SPACE
+	 *                 or NUL or CR or LF, the first of which may not be ':'>
+	 *  <trailing> ::= <Any, possibly *empty*, sequence of octets not including
+	 *                   NUL or CR or LF>
+ 	 */
+
+	// Parse <prefix>
+	if ( buf[0] == ':' )
+	{
+		while ( *p && *p != ' ')
+			p++;
+
+		*p++ = '\0';
+
+		// we use buf+1 to skip the leading colon
+		prefix = buf + 1;
+
+		// If LIBIRC_OPTION_STRIPNICKS is set, we should 'clean up' nick 
+		// right here
+		if ( session->options & LIBIRC_OPTION_STRIPNICKS )
+		{
+			for ( s = buf + 1; *s; s++ )
+			{
+				if ( *s == '@' || *s == '!' )
+				{
+					*s = '\0';
+					break;
+				}
+			}
+		}
+	}
+
+	// Parse <command>
+	if ( isdigit (p[0]) && isdigit (p[1]) && isdigit (p[2]) )
+	{
+		p[3] = '\0';
+		code = atoi (p);
+		p += 4;
+	}
+	else
+	{
+		s = p;
+
+		while ( *p && *p != ' ')
+			p++;
+
+		*p++ = '\0';
+
+		command = s;
+	}
+
+	// Parse middle/params
+	while ( *p &&  paramindex < MAX_PARAMS_ALLOWED )
+	{
+		// beginning from ':', this is the last param
+		if ( *p == ':' )
+		{
+			params[paramindex++] = p + 1; // skip :
+			break;
+		}
+
+		// Just a param
+		for ( s = p; *p && *p != ' '; p++ )
+			;
+
+		params[paramindex++] = s;
+
+		if ( !*p )
+			break;
+
+		*p++ = '\0';
+	}
+
+	// Handle PING/PONG
+	if ( command && !strcmp (command, "PING") && params[0] )
+	{
+		irc_send_raw (session, "PONG %s", params[0]);
+		return;
+	}
+
+	// and dump
+	if ( code )
+	{
+		// We use session->motd_received to check whether it is the first
+		// RPL_ENDOFMOTD or ERR_NOMOTD after the connection.
+		if ( (code == 376 || code == 422) && !session->motd_received )
+		{
+			session->motd_received = 1;
+
+			if ( session->callbacks.event_connect )
+				(*session->callbacks.event_connect) (session, "CONNECT", prefix, params, paramindex);
+		}
+
+		if ( session->callbacks.event_numeric )
+			(*session->callbacks.event_numeric) (session, code, prefix, params, paramindex);
+	}
+	else
+	{
+		if ( !strcmp (command, "NICK") )
+		{
+			if ( session->callbacks.event_nick )
+				(*session->callbacks.event_nick) (session, command, prefix, params, paramindex);
+		}
+		else if ( !strcmp (command, "QUIT") )
+		{
+			if ( session->callbacks.event_quit )
+				(*session->callbacks.event_quit) (session, command, prefix, params, paramindex);
+		}
+		else if ( !strcmp (command, "JOIN") )
+		{
+			if ( session->callbacks.event_join )
+				(*session->callbacks.event_join) (session, command, prefix, params, paramindex);
+		}
+		else if ( !strcmp (command, "PART") )
+		{
+			if ( session->callbacks.event_part )
+				(*session->callbacks.event_part) (session, command, prefix, params, paramindex);
+		}
+		else if ( !strcmp (command, "MODE") )
+		{
+			if ( session->callbacks.event_mode )
+				(*session->callbacks.event_mode) (session, command, prefix, params, paramindex);
+		}
+		else if ( !strcmp (command, "TOPIC") )
+		{
+			if ( session->callbacks.event_topic )
+				(*session->callbacks.event_topic) (session, command, prefix, params, paramindex);
+		}
+		else if ( !strcmp (command, "KICK") )
+		{
+			if ( session->callbacks.event_kick )
+				(*session->callbacks.event_kick) (session, command, prefix, params, paramindex);
+		}
+		else if ( !strcmp (command, "PRIVMSG") )
+		{
+			if ( paramindex > 1 )
+			{ 
+				unsigned int msglen = strlen (params[1]);
+
+				/* 
+				 * Check for CTCP request (a CTCP message starts from 0x01 
+				 * and ends by 0x01
+                 */
+				if ( params[1][0] == 0x01 && params[1][msglen-1] == 0x01 )
+				{
+					char ctcp_buf[128];
+
+					msglen -= 2;
+					if ( msglen > sizeof(ctcp_buf) - 1 )
+						msglen = sizeof(ctcp_buf) - 1;
+
+					memcpy (ctcp_buf, params[1] + 1, msglen);
+					ctcp_buf[msglen] = '\0';
+
+					if ( strstr(ctcp_buf, "DCC ") == ctcp_buf )
+						libirc_dcc_request (session, prefix, ctcp_buf);
+					else
+					{
+						params[0] = ctcp_buf;
+						paramindex = 1;
+
+						if ( session->callbacks.event_ctcp_req )
+							(*session->callbacks.event_ctcp_req) (session, "CTCP", prefix, params, paramindex);
+					}
+				}
+				else if ( !strcmp (params[0], session->nick) )
+				{
+					if ( session->callbacks.event_privmsg )
+						(*session->callbacks.event_privmsg) (session, command, prefix, params, paramindex);
+				}
+				else
+				{
+					if ( session->callbacks.event_channel )
+						(*session->callbacks.event_channel) (session, command, prefix, params, paramindex);
+				}
+			}
+		}
+		else if ( !strcmp (command, "NOTICE") )
+		{
+			unsigned int msglen = strlen (params[1]);
+
+			/* 
+			 * Check for CTCP request (a CTCP message starts from 0x01 
+			 * and ends by 0x01
+             */
+			if ( paramindex > 1 && params[1][0] == 0x01 && params[1][msglen-1] == 0x01 )
+			{
+				char ctcp_buf[512];
+
+				msglen -= 2;
+				if ( msglen > sizeof(ctcp_buf) - 1 )
+					msglen = sizeof(ctcp_buf) - 1;
+
+				memcpy (ctcp_buf, params[1] + 1, msglen);
+				ctcp_buf[msglen] = '\0';
+
+				params[0] = ctcp_buf;
+				paramindex = 1;
+
+				if ( session->callbacks.event_ctcp_rep )
+					(*session->callbacks.event_ctcp_rep) (session, "CTCP", prefix, params, paramindex);
+			}
+			else
+			{
+				if ( session->callbacks.event_notice )
+					(*session->callbacks.event_notice) (session, command, prefix, params, paramindex);
+			}
+		}
+		else if ( !strcmp (command, "INVITE") )
+		{
+			if ( session->callbacks.event_invite )
+				(*session->callbacks.event_invite) (session, command, prefix, params, paramindex);
+		}
+		else if ( !strcmp (command, "KILL") )
+		{
+			; /* ignore this event - not all servers generate this */
+		}
+
+	/*
+	 * The "umode" event is triggered when the client changes its personal 
+	 * mode flags.
+
+	irc_event_callback_t	event_umode;
+		else if ( !strcmp (command, "QUIT") )
+		{
+			if ( session->callbacks.event_quit )
+				(*session->callbacks.event_quit) (session, command, prefix, params, paramindex);
+		}
+	 */
+	/*
+	 * The "unknown" event is triggered upon receipt of any number of 
+	 * unclassifiable miscellaneous messages, which aren't handled by the
+     * library.
+	 */
+	 	else
+			if ( session->callbacks.event_unknown )
+				(*session->callbacks.event_unknown) (session, command, prefix, params, paramindex);
+	}
+}
+
+
+int irc_process_select_descriptors (irc_session_t * session, fd_set *in_set, fd_set *out_set)
+{
+	char buf[256], hname[256];
+
+	if ( session->sock < 0 
+	|| session->state == LIBIRC_STATE_INIT
+	|| session->state == LIBIRC_STATE_DISCONNECTED )
+	{
+		session->lasterror = LIBIRC_ERR_STATE;
+		return 1;
+	}
+
+	libirc_dcc_process_descriptors (session, in_set, out_set);
+
+	// Handle "connection succeed" / "connection failed"
+	if ( session->state == LIBIRC_STATE_CONNECTING 
+	&& FD_ISSET (session->sock, out_set) )
+	{
+		// Now we have to determine whether the socket is connected 
+		// or the connect is failed
+		struct sockaddr_in saddr, laddr;
+		socklen_t slen = sizeof(saddr);
+		socklen_t llen = sizeof(laddr);
+
+		if ( getsockname (session->sock, (struct sockaddr*)&laddr, &llen) < 0
+		|| getpeername (session->sock, (struct sockaddr*)&saddr, &slen) < 0 )
+		{
+			// connection failed
+			session->lasterror = LIBIRC_ERR_CONNECT;
+			session->state = LIBIRC_STATE_DISCONNECTED;
+			return 1;
+		}
+
+		memcpy (&session->local_addr, &laddr.sin_addr, sizeof(session->local_addr));
+
+#if defined (ENABLE_DEBUG)
+		if ( DEBUG_ENABLED(session) )
+			fprintf (stderr, "[DEBUG] Detected local address: %s\n", inet_ntoa(session->local_addr));
+#endif
+
+		session->state = LIBIRC_STATE_CONNECTED;
+
+		// Get the hostname
+    	if ( gethostname (hname, sizeof(hname)) < 0 )
+    		strcpy (hname, "unknown");
+
+		// Prepare the data, which should be sent to the server
+		if ( session->server_password )
+		{
+			snprintf (buf, sizeof(buf), "PASS %s", session->server_password);
+			irc_send_raw (session, buf);
+		}
+
+		snprintf (buf, sizeof(buf), "NICK %s", session->nick);
+		irc_send_raw (session, buf);
+
+		/*
+		 * RFC 1459 states that "hostname and servername are normally 
+         * ignored by the IRC server when the USER command comes from 
+         * a directly connected client (for security reasons)", therefore 
+         * we don't need them.
+         */
+		snprintf (buf, sizeof(buf), "USER %s unknown unknown :%s", 
+				session->username ? session->username : "nobody",
+				session->realname ? session->realname : "noname");
+		irc_send_raw (session, buf);
+
+		return 0;
+	}
+
+	if ( session->state != LIBIRC_STATE_CONNECTED )
+		return 1;
+
+	// Hey, we've got something to read!
+	if ( FD_ISSET (session->sock, in_set) )
+	{
+		int length, offset;
+		
+		unsigned int amount = (sizeof (session->incoming_buf) - 1) - session->incoming_offset;
+		length = read (session->sock, session->incoming_buf + session->incoming_offset, amount);
+
+		if ( length <= 0 )
+		{
+			session->lasterror = (length == 0 ? LIBIRC_ERR_CLOSED : LIBIRC_ERR_TERMINATED);
+			session->state = LIBIRC_STATE_DISCONNECTED;
+			return 1;
+		}
+
+		session->incoming_offset += length;
+
+		// process the incoming data
+		while ( (offset = libirc_findcrlf (session->incoming_buf, session->incoming_offset)) > 0 )
+		{
+#if defined (ENABLE_DEBUG)
+			if ( DEBUG_ENABLED(session) )
+				libirc_dump_data ("RECV", session->incoming_buf, offset);
+#endif
+			// parse the string
+			libirc_process_incoming_data (session, offset - 2);
+
+			if ( session->incoming_offset - offset > 0 )
+				memmove (session->incoming_buf, session->incoming_buf + offset, session->incoming_offset - offset);
+
+			session->incoming_offset -= offset;
+		}
+	}
+
+	// We can write a stored buffer
+	if ( FD_ISSET (session->sock, out_set) )
+	{
+		int length, offset;
+
+		// Because outgoing_buf could be changed asynchronously, we should 
+		// lock any change
+		LOCK_SESSION(session);
+
+		offset = libirc_findcrlf (session->outgoing_buf, session->outgoing_offset);
+
+		if ( offset > 0 )
+		{
+#if defined (ENABLE_DEBUG)
+			if ( DEBUG_ENABLED(session) )
+				libirc_dump_data ("SEND", session->outgoing_buf, offset);
+#endif
+
+			length = write (session->sock, session->outgoing_buf, offset);
+
+			if ( length <= 0 )
+			{
+				session->lasterror = (length == 0 ? LIBIRC_ERR_CLOSED : LIBIRC_ERR_TERMINATED);
+				session->state = LIBIRC_STATE_DISCONNECTED;
+				UNLOCK_SESSION(session);
+				return 1;
+			}
+
+			if ( session->outgoing_offset - length > 0 )
+				memmove (session->outgoing_buf, session->outgoing_buf + length, session->outgoing_offset - length);
+
+			session->outgoing_offset -= length;
+		}
+
+		UNLOCK_SESSION(session);
+	}
+
+	return 0;
+}
+
+
+int irc_send_raw (irc_session_t * session, const char * format, ...)
+{
+	char buf[1024];
+	va_list va_alist;
+
+	if ( session->state != LIBIRC_STATE_CONNECTED )
+	{
+		session->lasterror = LIBIRC_ERR_STATE;
+		return 1;
+	}
+
+	va_start (va_alist, format);
+	vsnprintf (buf, sizeof(buf), format, va_alist);
+	va_end (va_alist);
+
+	LOCK_SESSION(session);
+
+	if ( (strlen(buf) + 2) >= (sizeof(session->outgoing_buf) - session->outgoing_offset) )
+	{
+		UNLOCK_SESSION(session);
+		session->lasterror = LIBIRC_ERR_NOMEM;
+		return 1;
+	}
+
+	strcpy (session->outgoing_buf + session->outgoing_offset, buf);
+	session->outgoing_offset += strlen (buf);
+	session->outgoing_buf[session->outgoing_offset++] = 0x0D;
+	session->outgoing_buf[session->outgoing_offset++] = 0x0A;
+
+	UNLOCK_SESSION(session);
+	return 0;
+}
+
+
+int irc_cmd_quit (irc_session_t * session, const char * reason)
+{
+	return irc_send_raw (session, "QUIT :%s", reason ? reason : "quit");
+}
+
+
+int irc_cmd_join (irc_session_t * session, const char * channel, const char * key)
+{
+	if ( key )
+		return irc_send_raw (session, "JOIN %s :%s", channel, key);
+	else
+		return irc_send_raw (session, "JOIN %s", channel);
+}
+
+
+int irc_cmd_part (irc_session_t * session, const char * channel)
+{
+	return irc_send_raw (session, "PART %s", channel);
+}
+
+
+int irc_cmd_mode (irc_session_t * session, const char * channel, const char * mode, const char * user)
+{
+	if ( user )
+		return irc_send_raw (session, "MODE %s %s %s", channel, mode, user);
+	else
+		return irc_send_raw (session, "MODE %s %s", channel, mode);
+}
+
+
+int irc_cmd_topic (irc_session_t * session, const char * channel, const char * topic)
+{
+	if ( topic )
+		return irc_send_raw (session, "TOPIC %s :%s", channel, topic);
+	else
+		return irc_send_raw (session, "TOPIC %s", channel);
+}
+
+//BAD!
+int irc_cmd_names (irc_session_t * session, const char * channel)
+{
+	return irc_send_raw (session, "NAMES %s", channel);
+}
+
+//BAD!
+int irc_cmd_list (irc_session_t * session, const char * channel)
+{
+	return irc_send_raw (session, "LIST %s", channel);
+}
+
+
+int irc_cmd_invite (irc_session_t * session, const char * nick, const char * channel)
+{
+	return irc_send_raw (session, "INVITE %s %s", nick, channel);
+}
+
+
+int irc_cmd_kick (irc_session_t * session, const char * nick, const char * channel, const char * comment)
+{
+	if ( comment )
+		return irc_send_raw (session, "KICK %s %s :%s", channel, nick, comment);
+	else
+		return irc_send_raw (session, "KICK %s %s", channel, nick);
+}
+
+
+int irc_cmd_msg (irc_session_t * session, const char * nch, const char * text)
+{
+	return irc_send_raw (session, "PRIVMSG %s :%s", nch, text);
+}
+
+
+int irc_cmd_notice (irc_session_t * session, const char * nch, const char * text)
+{
+	return irc_send_raw (session, "NOTICE %s :%s", nch, text);
+}
+
+void irc_target_get_nick (const char * target, char *nick, size_t size)
+{
+	char *p = strstr (target, "!");
+	unsigned int len;
+
+	if ( p )
+		len = p - target;
+	else
+		len = strlen (target);
+
+	if ( len > size-1 )
+		len = size - 1;
+
+	memcpy (nick, target, len);
+	nick[len] = '\0';
+}
+
+
+void irc_target_get_host (const char * target, char *host, size_t size)
+{
+	unsigned int len;
+	const char *p = strstr (target, "!");
+
+	if ( !p )
+		p = target;
+
+	len = strlen (p);
+
+	if ( len > size-1 )
+		len = size - 1;
+
+	memcpy (host, p, len);
+	host[len] = '\0';
+}
+
+
+int irc_cmd_ctcp_request (irc_session_t * session, const char * nick, const char * reply)
+{
+	return irc_send_raw (session, "PRIVMSG %s :\x01%s\x01", nick, reply);
+}
+
+int irc_cmd_ctcp_reply (irc_session_t * session, const char * nick, const char * reply)
+{
+	return irc_send_raw (session, "NOTICE %s :\x01%s\x01", nick, reply);
+}
+
+
+void irc_get_version (unsigned int * high, unsigned int * low)
+{
+	*high = LIBIRC_VERSION_HIGH;
+    *low = LIBIRC_VERSION_LOW;
+}
+
+
+void irc_event_ctcp_internal (irc_session_t * session, const char * event, const char * origin, const char ** params, unsigned int count)
+{
+	if ( origin )
+	{
+		char nickbuf[128], textbuf[256];
+		irc_target_get_nick (origin, nickbuf, sizeof(nickbuf));
+
+		if ( strstr (params[0], "PING") == params[0] )
+			irc_cmd_ctcp_reply (session, nickbuf, params[0]);
+		else if ( !strcmp (params[0], "VERSION") )
+		{
+			unsigned int high, low;
+			irc_get_version (&high, &low);
+
+			sprintf (textbuf, "VERSION libirc by Georgy Yunaev ver.%d.%d", high, low);
+			irc_cmd_ctcp_reply (session, nickbuf, textbuf);
+		}
+		else if ( !strcmp (params[0], "FINGER") )
+		{
+			sprintf (textbuf, "FINGER %s (%s) Idle 0 seconds", 
+				session->username ? session->username : "nobody",
+				session->realname ? session->realname : "noname");
+
+			irc_cmd_ctcp_reply (session, nickbuf, textbuf);
+		}
+		else if ( !strcmp (params[0], "TIME") )
+		{
+			time_t now = time(0);
+
+			strcpy (textbuf, "TIME ");
+#if defined (ENABLE_THREADS)
+			ctime_r (&now, textbuf + strlen(textbuf));
+#else
+			strcpy (textbuf + strlen(textbuf), ctime(&now));
+#endif
+			irc_cmd_ctcp_reply (session, nickbuf, textbuf);
+		}
+	}
+}
+
+
+void irc_set_ctx (irc_session_t * session, void * ctx)
+{
+	session->ctx = ctx;
+}
+
+
+void * irc_get_ctx (irc_session_t * session)
+{
+	return session->ctx;
+}
+
+
+void irc_disconnect (irc_session_t * session)
+{
+	if ( session->sock >= 0 )
+		close (session->sock);
+
+	session->sock = -1;
+	session->state = LIBIRC_STATE_INIT;
+}
+
+
+int irc_cmd_me (irc_session_t * session, const char * nch, const char * text)
+{
+	return irc_send_raw (session, "PRIVMSG %s :\x01" "ACTION %s\x01", nch, text);
+}
+
+
+void irc_option_set (irc_session_t * session, unsigned int option)
+{
+	session->options |= option;
+}
+
+
+void irc_option_reset (irc_session_t * session, unsigned int option)
+{
+	session->options &= ~option;
+}
