@@ -15,13 +15,14 @@
  */
 
 #include "portable.c"
+#include "sockets.c"
 
 #include "libircclient.h"
 #include "libirc_session.h"
 
 #include "utils.c"
-#include "dcc.c"
 #include "errors.c"
+#include "dcc.c"
 
 #define IS_DEBUG_ENABLED(s)	((s)->option & LIBIRC_OPTION_DEBUG)
 
@@ -58,7 +59,7 @@ irc_session_t * irc_create_session (irc_callbacks_t	* callbacks)
 void irc_destroy_session (irc_session_t * session)
 {
 	if ( session->sock >= 0 )
-		closesocket (session->sock);
+		socket_close (&session->sock);
 
 	if ( session->realname )
 		free (session->realname);
@@ -153,25 +154,18 @@ int irc_connect (irc_session_t * session,
     }
 
     // create the IRC server socket
-	if ( (session->sock = socket (PF_INET, SOCK_STREAM, 0)) < 0 )
-	{
-		session->lasterror = LIBIRC_ERR_SOCKET;
-		return 1;
-	}
-
-    // make in non-blocking, so connect() call won't block
-	if ( libirc_make_socket_unblocking(session->sock) )
+	if ( socket_create (PF_INET, SOCK_STREAM, &session->sock)
+	|| socket_make_nonblocking (&session->sock) )
 	{
 		session->lasterror = LIBIRC_ERR_SOCKET;
 		return 1;
 	}
 
     // and connect to the IRC server
-    if ( connect (session->sock, (struct sockaddr *) &saddr, sizeof(saddr)) < 0 )
+    if ( socket_connect (&session->sock, (struct sockaddr *) &saddr, sizeof(saddr)) )
     {
-		if ( GetSocketError() != EINPROGRESS 
-		&& GetSocketError() != EWOULDBLOCK ) 
-			return LIBIRC_ERR_CONNECT;
+    	session->lasterror = LIBIRC_ERR_CONNECT;
+		return 1;
     }
 
     session->state = LIBIRC_STATE_CONNECTING;
@@ -212,7 +206,7 @@ int irc_run (irc_session_t * session)
 
 		if ( select (maxfd + 1, &in_set, &out_set, 0, &tv) < 0 )
 		{
-			if ( GetSocketError() == EINTR )
+			if ( socket_error() == EINTR )
 				continue;
 
 			session->lasterror = LIBIRC_ERR_TERMINATED;
@@ -629,7 +623,7 @@ int irc_process_select_descriptors (irc_session_t * session, fd_set *in_set, fd_
 		int length, offset;
 		
 		unsigned int amount = (sizeof (session->incoming_buf) - 1) - session->incoming_offset;
-		length = recv (session->sock, session->incoming_buf + session->incoming_offset, amount, 0);
+		length = socket_recv (&session->sock, session->incoming_buf + session->incoming_offset, amount);
 
 		if ( length <= 0 )
 		{
@@ -660,13 +654,12 @@ int irc_process_select_descriptors (irc_session_t * session, fd_set *in_set, fd_
 	// We can write a stored buffer
 	if ( FD_ISSET (session->sock, out_set) )
 	{
-		int length, offset;
+		int length;
 
 		// Because outgoing_buf could be changed asynchronously, we should 
 		// lock any change
 		libirc_mutex_lock (&session->mutex_session);
-
-		length = send (session->sock, session->outgoing_buf, session->outgoing_offset, 0);
+		length = socket_send (&session->sock, session->outgoing_buf, session->outgoing_offset);
 
 		if ( length <= 0 )
 		{
@@ -927,7 +920,7 @@ void * irc_get_ctx (irc_session_t * session)
 void irc_disconnect (irc_session_t * session)
 {
 	if ( session->sock >= 0 )
-		closesocket (session->sock);
+		socket_close (&session->sock);
 
 	session->sock = -1;
 	session->state = LIBIRC_STATE_INIT;
