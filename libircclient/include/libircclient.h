@@ -245,6 +245,21 @@ void irc_disconnect (irc_session_t * session);
 
 
 /*!
+ * \fn int irc_is_connected (irc_session_t * session)
+ * \brief Checks whether the session is connecting/connected to the IRC server.
+ *
+ * \param session An IRC session.
+ *
+ * \return Return code 1 means that session is connecting or connected to the
+ *   IRC server, zero value means that the session has been disconnected.
+ *
+ * \sa irc_connect irc_run
+ * \ingroup conndisc
+ */
+int irc_is_connected (irc_session_t * session);
+
+
+/*!
  * \fn int irc_run (irc_session_t * session)
  * \brief Goes into forever-loop, processing IRC events and generating 
  *  callbacks.

@@ -176,6 +176,13 @@ int irc_connect (irc_session_t * session,
 }
 
 
+int irc_is_connected (irc_session_t * session)
+{
+	return (session->state == LIBIRC_STATE_CONNECTED 
+	|| session->state == LIBIRC_STATE_CONNECTING) ? 1 : 0;
+}
+
+
 int irc_run (irc_session_t * session)
 {
 	if ( session->state != LIBIRC_STATE_CONNECTING )
@@ -184,8 +191,7 @@ int irc_run (irc_session_t * session)
 		return 1;
 	}
 
-	while ( session->state == LIBIRC_STATE_CONNECTED 
-	|| session->state == LIBIRC_STATE_CONNECTING )
+	while ( irc_is_connected(session) )
 	{
 		struct timeval tv;
 		fd_set in_set, out_set;
