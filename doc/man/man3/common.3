@@ -1,4 +1,4 @@
-.TH "Getting libircclient version." 3 "8 Sep 2004" "libirc" \" -*- nroff -*-
+.TH "Getting libircclient version." 3 "12 Sep 2004" "Version 0.1" "libirc" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -9,21 +9,21 @@ Getting libircclient version. \-
 .ti -1c
 .RI "void \fBirc_get_version\fP (unsigned int *high, unsigned int *low)"
 .br
-.RI "\fIObtains a libirc version.\fP"
+.RI "\fIObtains a libirc version. \fP"
 .in -1c
-.SH "FUNCTION DOCUMENTATION"
+.SH "Function Documentation"
 .PP 
 .SS "void irc_get_version (unsigned int * high, unsigned int * low)"
 .PP
-Obtains a libirc version.
+Obtains a libirc version. 
 .PP
-\fBParameters: \fP
-.in +1c
-.TP
-\fB\fIhigh\fP\fP
-A pointer to receive the high version part. 
-.TP
-\fB\fIlow\fP\fP
-A pointer to receive the low version part.This function returns the libirc version. You can use the version either to check whether required options are available, or to output the version. The preferred printf-like format string to output the version is:
+\fBParameters:\fP
+.RS 4
+\fIhigh\fP A pointer to receive the high version part. 
+.br
+\fIlow\fP A pointer to receive the low version part.
+.RE
 .PP
-printf ('Version: d.%02d', high, low); 
+This function returns the libirc version. You can use the version either to check whether required options are available, or to output the version. The preferred printf-like format string to output the version is:
+.PP
+printf ('Version: %d.%02d', high, low); 

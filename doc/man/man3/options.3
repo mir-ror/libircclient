@@ -1,4 +1,4 @@
-.TH "Managing libircclient options." 3 "8 Sep 2004" "libirc" \" -*- nroff -*-
+.TH "Managing libircclient options." 3 "12 Sep 2004" "Version 0.1" "libirc" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -12,7 +12,7 @@ Managing libircclient options. \-
 .ti -1c
 .RI "#define \fBLIBIRC_OPTION_STRIPNICKS\fP   (1 << 2)"
 .br
-.RI "\fIallows to strip origins automatically.\fP"
+.RI "\fIallows to strip origins automatically. \fP"
 .in -1c
 .SS "Functions"
 
@@ -20,53 +20,59 @@ Managing libircclient options. \-
 .ti -1c
 .RI "void \fBirc_option_set\fP (\fBirc_session_t\fP *session, unsigned int option)"
 .br
-.RI "\fISets the libirc option.\fP"
+.RI "\fISets the libirc option. \fP"
 .ti -1c
 .RI "void \fBirc_option_reset\fP (\fBirc_session_t\fP *session, unsigned int option)"
 .br
-.RI "\fIResets the libirc option.\fP"
+.RI "\fIResets the libirc option. \fP"
 .in -1c
-.SH "DEFINE DOCUMENTATION"
+.SH "Define Documentation"
 .PP 
 .SS "#define LIBIRC_OPTION_DEBUG   (1 << 1)"
 .PP
 enables additional debug output 
 .SS "#define LIBIRC_OPTION_STRIPNICKS   (1 << 2)"
 .PP
-allows to strip origins automatically.
+allows to strip origins automatically. 
 .PP
-For every IRC server event, the event origin is sent in standard form: nick!host@ircserver, i.e. like tim!home@irc.krasnogorsk.ru. Such origins can not be used in IRC commands, and need to be stripped (i.e. host and  server part should be cut off) before using. This can be done either  explicitly, by calling \fBirc_target_get_nick()\fP, or implicitly for all the  events - by setting this option with \fBirc_option_set()\fP. 
-.SH "FUNCTION DOCUMENTATION"
+For every IRC server event, the event origin is sent in standard form: nick!host@ircserver, i.e. like tim!home@irc.krasnogorsk.ru. Such origins can not be used in IRC commands, and need to be stripped (i.e. host and server part should be cut off) before using. This can be done either explicitly, by calling \fBirc_target_get_nick()\fP, or implicitly for all the events - by setting this option with \fBirc_option_set()\fP. 
+.SH "Function Documentation"
 .PP 
 .SS "void irc_option_reset (\fBirc_session_t\fP * session, unsigned int option)"
 .PP
-Resets the libirc option.
+Resets the libirc option. 
 .PP
-\fBParameters: \fP
-.in +1c
-.TP
-\fB\fIsession\fP\fP
-An initiated session. 
-.TP
-\fB\fIoption\fP\fP
-An option from \fBlibirc_options.h\fPThis function removes the previously set libirc option, changing libirc  behavior. See the option list for the meaning for every option.
+\fBParameters:\fP
+.RS 4
+\fIsession\fP An initiated session. 
+.br
+\fIoption\fP An option from \fBlibirc_options.h\fP
+.RE
 .PP
-\fBSee also: \fP
-.in +1c
+This function removes the previously set libirc option, changing libirc behavior. See the option list for the meaning for every option.
+.PP
+\fBSee also:\fP
+.RS 4
 \fBirc_option_set\fP 
+.RE
+.PP
+
 .SS "void irc_option_set (\fBirc_session_t\fP * session, unsigned int option)"
 .PP
-Sets the libirc option.
+Sets the libirc option. 
 .PP
-\fBParameters: \fP
-.in +1c
-.TP
-\fB\fIsession\fP\fP
-An initiated session. 
-.TP
-\fB\fIoption\fP\fP
-An option from \fBlibirc_options.h\fPThis function sets the libirc option, changing libirc behavior. See the option list for the meaning for every option.
+\fBParameters:\fP
+.RS 4
+\fIsession\fP An initiated session. 
+.br
+\fIoption\fP An option from \fBlibirc_options.h\fP
+.RE
 .PP
-\fBSee also: \fP
-.in +1c
+This function sets the libirc option, changing libirc behavior. See the option list for the meaning for every option.
+.PP
+\fBSee also:\fP
+.RS 4
 \fBirc_option_reset\fP 
+.RE
+.PP
+
