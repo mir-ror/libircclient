@@ -666,32 +666,26 @@ int irc_process_select_descriptors (irc_session_t * session, fd_set *in_set, fd_
 		// lock any change
 		libirc_mutex_lock (&session->mutex_session);
 
-		offset = libirc_findcrlf (session->outgoing_buf, session->outgoing_offset);
+		length = send (session->sock, session->outgoing_buf, session->outgoing_offset, 0);
 
-		if ( offset > 0 )
+		if ( length <= 0 )
 		{
-#if defined (ENABLE_DEBUG)
-			if ( IS_DEBUG_ENABLED(session) )
-				libirc_dump_data ("SEND", session->outgoing_buf, offset);
-#endif
+			session->lasterror = (length == 0 ? LIBIRC_ERR_CLOSED : LIBIRC_ERR_TERMINATED);
+			session->state = LIBIRC_STATE_DISCONNECTED;
 
-			length = send (session->sock, session->outgoing_buf, offset, 0);
-
-			if ( length <= 0 )
-			{
-				session->lasterror = (length == 0 ? LIBIRC_ERR_CLOSED : LIBIRC_ERR_TERMINATED);
-				session->state = LIBIRC_STATE_DISCONNECTED;
-
-				libirc_mutex_unlock (&session->mutex_session);
-				return 1;
-			}
-
-			if ( session->outgoing_offset - length > 0 )
-				memmove (session->outgoing_buf, session->outgoing_buf + length, session->outgoing_offset - length);
-
-			session->outgoing_offset -= length;
+			libirc_mutex_unlock (&session->mutex_session);
+			return 1;
 		}
 
+#if defined (ENABLE_DEBUG)
+		if ( IS_DEBUG_ENABLED(session) )
+			libirc_dump_data ("SEND", session->outgoing_buf, length);
+#endif
+
+		if ( session->outgoing_offset - length > 0 )
+			memmove (session->outgoing_buf, session->outgoing_buf + length, session->outgoing_offset - length);
+
+		session->outgoing_offset -= length;
 		libirc_mutex_unlock (&session->mutex_session);
 	}
 
