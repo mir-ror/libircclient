@@ -72,7 +72,7 @@ void irc_destroy_session (irc_session_t * session)
 		free (session->server_password);
 
 #if defined (ENABLE_THREADS)
-	pthread_mutex_destroy (&session->mutex_session);
+	libirc_mutex_destroy (&session->mutex_session);
 #endif
 
 	/* 

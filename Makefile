@@ -21,4 +21,4 @@ distclean:
 
 distro: distclean
 	doxygen
-	(cd .. && tar zcf libircclient-0.3.tar.gz libircclient-0.3)
+	(cd .. && tar zcf libircclient-0.4.tar.gz libircclient-0.4)
