@@ -236,8 +236,8 @@ int irc_run (irc_session_t * session)
 		fd_set in_set, out_set;
 		int maxfd = 0;
 
-		tv.tv_usec = 0;
-		tv.tv_sec = 1;
+		tv.tv_usec = 250000;
+		tv.tv_sec = 0;
 
 		// Init sets
 		FD_ZERO (&in_set);
