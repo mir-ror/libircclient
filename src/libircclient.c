@@ -14,53 +14,10 @@
  * $Id$
  */
 
-#include "config.h"
+#include "portable.c"
 
 
-#include <stdio.h>
-#include <stdarg.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdlib.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <arpa/inet.h>	
-#include <netinet/in.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <ctype.h>
-#include <time.h>
-
-
-#if defined (ENABLE_THREADS)
-	#include <pthread.h>
-	#define LOCK_SESSION(s)		pthread_mutex_lock(&s->mutex_session)
-	#define UNLOCK_SESSION(s)	pthread_mutex_unlock(&s->mutex_session)
-	#define LOCK_DCC_MUTEX(s)	pthread_mutex_lock(&s->mutex_dcc)
-	#define UNLOCK_DCC_MUTEX(s)	pthread_mutex_unlock(&s->mutex_dcc)
-
-	#if !defined (PTHREAD_MUTEX_RECURSIVE)
-		#define PTHREAD_MUTEX_RECURSIVE	PTHREAD_MUTEX_RECURSIVE_NP
-	#endif
-#else
-	#define LOCK_SESSION(s)
-	#define UNLOCK_SESSION(s)
-	#define LOCK_DCC_MUTEX(s)
-	#define UNLOCK_DCC_MUTEX(s)
-#endif
-
-#ifndef O_BINARY
-	#define O_BINARY	0
-#endif
-
-#ifndef INADDR_NONE
-	#define INADDR_NONE 	0xFFFFFFFF
-#endif
-
-
-#define DEBUG_ENABLED(s)	((s)->option & LIBIRC_OPTION_DEBUG)
+#define IS_DEBUG_ENABLED(s)	((s)->option & LIBIRC_OPTION_DEBUG)
 
 
 #include "libircclient.h"
@@ -71,9 +28,6 @@
 
 irc_session_t * irc_create_session (irc_callbacks_t	* callbacks)
 {
-#if defined (ENABLE_THREADS)
-	pthread_mutexattr_t	attr;
-#endif
 	irc_session_t * session = malloc (sizeof(irc_session_t));
 
 	if ( !session )
@@ -82,16 +36,12 @@ irc_session_t * irc_create_session (irc_callbacks_t	* callbacks)
 	memset (session, 0, sizeof(irc_session_t));
 	session->sock = -1;
 
-#if defined (ENABLE_THREADS)
-	if ( pthread_mutexattr_init (&attr)
-	|| pthread_mutexattr_settype (&attr, PTHREAD_MUTEX_RECURSIVE)
-	|| pthread_mutex_init (&session->mutex_session, &attr)
-	|| pthread_mutex_init (&session->mutex_dcc, &attr) )
+	if ( libirc_mutex_init (&session->mutex_session)
+	|| libirc_mutex_init (&session->mutex_dcc) )
 	{
 		free (session);
 		return 0;
 	}
-#endif
 
 	session->dcc_last_id = 1;
 	session->dcc_timeout = 60;
@@ -104,7 +54,7 @@ irc_session_t * irc_create_session (irc_callbacks_t	* callbacks)
 void irc_destroy_session (irc_session_t * session)
 {
 	if ( session->sock >= 0 )
-		close (session->sock);
+		closesocket (session->sock);
 
 	if ( session->realname )
 		free (session->realname);
@@ -276,7 +226,7 @@ int irc_add_select_descriptors (irc_session_t * session, fd_set *in_set, fd_set 
 		return 1;
 	}
 
-	LOCK_SESSION(session);
+	libirc_mutex_lock (&session->mutex_session);
 
 	switch (session->state)
 	{
@@ -297,7 +247,7 @@ int irc_add_select_descriptors (irc_session_t * session, fd_set *in_set, fd_set 
 		break;
 	}
 
-	UNLOCK_SESSION(session);
+	libirc_mutex_unlock (&session->mutex_session);
 
 	libirc_dcc_add_descriptors (session, in_set, out_set, maxfd);
 	return 0;
@@ -604,7 +554,7 @@ int irc_process_select_descriptors (irc_session_t * session, fd_set *in_set, fd_
 		memcpy (&session->local_addr, &laddr.sin_addr, sizeof(session->local_addr));
 
 #if defined (ENABLE_DEBUG)
-		if ( DEBUG_ENABLED(session) )
+		if ( IS_DEBUG_ENABLED(session) )
 			fprintf (stderr, "[DEBUG] Detected local address: %s\n", inet_ntoa(session->local_addr));
 #endif
 
@@ -662,7 +612,7 @@ int irc_process_select_descriptors (irc_session_t * session, fd_set *in_set, fd_
 		while ( (offset = libirc_findcrlf (session->incoming_buf, session->incoming_offset)) > 0 )
 		{
 #if defined (ENABLE_DEBUG)
-			if ( DEBUG_ENABLED(session) )
+			if ( IS_DEBUG_ENABLED(session) )
 				libirc_dump_data ("RECV", session->incoming_buf, offset);
 #endif
 			// parse the string
@@ -682,14 +632,14 @@ int irc_process_select_descriptors (irc_session_t * session, fd_set *in_set, fd_
 
 		// Because outgoing_buf could be changed asynchronously, we should 
 		// lock any change
-		LOCK_SESSION(session);
+		libirc_mutex_lock (&session->mutex_session);
 
 		offset = libirc_findcrlf (session->outgoing_buf, session->outgoing_offset);
 
 		if ( offset > 0 )
 		{
 #if defined (ENABLE_DEBUG)
-			if ( DEBUG_ENABLED(session) )
+			if ( IS_DEBUG_ENABLED(session) )
 				libirc_dump_data ("SEND", session->outgoing_buf, offset);
 #endif
 
@@ -699,7 +649,8 @@ int irc_process_select_descriptors (irc_session_t * session, fd_set *in_set, fd_
 			{
 				session->lasterror = (length == 0 ? LIBIRC_ERR_CLOSED : LIBIRC_ERR_TERMINATED);
 				session->state = LIBIRC_STATE_DISCONNECTED;
-				UNLOCK_SESSION(session);
+
+				libirc_mutex_unlock (&session->mutex_session);
 				return 1;
 			}
 
@@ -709,7 +660,7 @@ int irc_process_select_descriptors (irc_session_t * session, fd_set *in_set, fd_
 			session->outgoing_offset -= length;
 		}
 
-		UNLOCK_SESSION(session);
+		libirc_mutex_unlock (&session->mutex_session);
 	}
 
 	return 0;
@@ -731,11 +682,11 @@ int irc_send_raw (irc_session_t * session, const char * format, ...)
 	vsnprintf (buf, sizeof(buf), format, va_alist);
 	va_end (va_alist);
 
-	LOCK_SESSION(session);
+	libirc_mutex_lock (&session->mutex_session);
 
 	if ( (strlen(buf) + 2) >= (sizeof(session->outgoing_buf) - session->outgoing_offset) )
 	{
-		UNLOCK_SESSION(session);
+		libirc_mutex_unlock (&session->mutex_session);
 		session->lasterror = LIBIRC_ERR_NOMEM;
 		return 1;
 	}
@@ -745,7 +696,7 @@ int irc_send_raw (irc_session_t * session, const char * format, ...)
 	session->outgoing_buf[session->outgoing_offset++] = 0x0D;
 	session->outgoing_buf[session->outgoing_offset++] = 0x0A;
 
-	UNLOCK_SESSION(session);
+	libirc_mutex_unlock (&session->mutex_session);
 	return 0;
 }
 
@@ -936,7 +887,7 @@ void * irc_get_ctx (irc_session_t * session)
 void irc_disconnect (irc_session_t * session)
 {
 	if ( session->sock >= 0 )
-		close (session->sock);
+		closesocket (session->sock);
 
 	session->sock = -1;
 	session->state = LIBIRC_STATE_INIT;
