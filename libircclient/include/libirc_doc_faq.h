@@ -26,7 +26,7 @@
 
 \section faq FAQ
 
-\subsection faq1 Why the IRC server generates all these event_numeric events, and what they are?
+\subsection faq1 Why the IRC server generates all these event_numeric events, and what is their meaning?
 
 The IRC protocol itself is asynchronous and server-driven. 
 For you, this means the following:
@@ -116,9 +116,9 @@ to get an idea how to write it.
 Because this is a channel mode, not a user mode. The user mode \c +o means that
 this user is an IRC network operator, not just a channel operator.
 
-\subsection faq6 Why I get a LIBIRC_ERR_SOCKET error using static library under Win32?
+\subsection faq6 Why do I get a LIBIRC_ERR_SOCKET error while using static library under Win32?
 
-Because if you use static library, you have to initialize winsock manually:
+Because if you use static library, you have to initialize Winsock manually:
 
 \code
 WORD wVersionRequested = MAKEWORD (1, 1);
