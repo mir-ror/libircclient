@@ -415,8 +415,19 @@ static void libirc_process_incoming_data (irc_session_t * session, int process_l
 		}
 		else if ( !strcmp (command, "MODE") )
 		{
-			if ( session->callbacks.event_mode )
-				(*session->callbacks.event_mode) (session, command, prefix, params, paramindex);
+			if ( paramindex > 0 && !strcmp (params[0], session->nick) )
+			{
+				params[0] = params[1];
+				paramindex = 1;
+
+				if ( session->callbacks.event_umode )
+					(*session->callbacks.event_umode) (session, command, prefix, params, paramindex);
+			}
+			else
+			{
+				if ( session->callbacks.event_mode )
+					(*session->callbacks.event_mode) (session, command, prefix, params, paramindex);
+			}
 		}
 		else if ( !strcmp (command, "TOPIC") )
 		{
