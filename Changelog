@@ -1,6 +1,9 @@
-2004-10-17 Georgy Yunaev
+2004-10-31 Georgy Yunaev
    * When more than one DCC chat sessions were active, only the latest 
      generated callbacks.
+   * libircclient 0.8 released.
+
+2004-10-17 Georgy Yunaev
    * libircclient 0.7 released.
    * Fixed DCC chat lockup in multithread programs (thanks olifozzy).
 
