@@ -20,5 +20,4 @@ distclean:
 	-rm -f include/config.h config.cache config.status config.log core
 
 distro: distclean
-	doxygen
-	(cd .. && tar zcf libircclient-1.0.tar.gz libircclient-1.0)
+	(cd .. && tar zcf libircclient-1.1.tar.gz libircclient-1.1)
