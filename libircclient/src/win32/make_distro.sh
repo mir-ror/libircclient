@@ -2,7 +2,6 @@
 
 mkdir -p win32/lib
 mkdir -p win32/include
-mkdir -p win32/doc
 mkdir -p win32/examples
 cp libdynamic-release/*.lib win32/lib/
 cp libdynamic-release/*.dll win32/lib/

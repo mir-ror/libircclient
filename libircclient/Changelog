@@ -1,3 +1,7 @@
+2004-10-10 Georgy Yunaev
+   * libircclient 0.5 released.
+   * Added color support.
+
 2004-10-07 Georgy Yunaev
    * CTCP TIME reply was malformed on some platforms with buggy locales.
    * Socket stuff rewritten to be signal-safe and more portable.
