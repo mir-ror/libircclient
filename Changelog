@@ -1,3 +1,9 @@
+2004-10-15 Georgy Yunaev
+   * Win32 static library does not have dllmain anymore (thanks olifozzy).
+   * DCC chat crashed if there were several DCC session, and one of them was 
+     closed (thanks olifozzy).
+   * DCC chat speed increased when several messages are stored in buffer.
+
 2004-10-10 Georgy Yunaev
    * libircclient 0.6 released.
    * Added color support.
