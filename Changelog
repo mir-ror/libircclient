@@ -1,3 +1,10 @@
+2004-09-14 Georgy Yunaev
+   * libircclient 0.3 released
+   * Fix CTCP time bug.
+   * Added working Win32 Visual Studio build, and libs.
+   * Added ircmud example, which allows people to play MUD through IRC client.
+   * Some stuff rewritten in more portable way.
+
 2004-09-13 Georgy Yunaev
    * Fix solaris x86/sparc compilation.
 

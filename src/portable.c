@@ -33,7 +33,9 @@
 	#include <ctype.h>
 	#include <time.h>
 
-	#define closesocket close
+	typedef int					socket_t;
+	#define closesocket 		close
+	#define	GetSocketError()	errno
 
 	#if defined (ENABLE_THREADS)
 		#include <pthread.h>
@@ -46,15 +48,29 @@
 #else
 	#include <windows.h>
 	#include <winsock.h>
+	#include <time.h>
+	#include <stdio.h>
+	#include <stdarg.h>
+	#include <string.h>
+	#include <stdlib.h>
+	#include <sys/stat.h>
 
 	#if defined (ENABLE_THREADS)
 		typedef CRITICAL_SECTION	port_mutex_t;
 	#endif
-#endif
 
+	#define inline
+	#define snprintf			_snprintf
+	#define vsnprintf			_vsnprintf
+	#define GetSocketError()	WSAGetLastError()
 
-#ifndef O_BINARY
-	#define O_BINARY	0
+	#define EWOULDBLOCK			WSAEWOULDBLOCK
+	#define EINPROGRESS			WSAEINPROGRESS
+	#define EINTR				WSAEINTR
+
+	typedef unsigned int	socklen_t;
+	typedef SOCKET			socket_t;
+
 #endif
 
 #ifndef INADDR_NONE
@@ -118,4 +134,43 @@ static inline void libirc_mutex_destroy (port_mutex_t * mutex) {}
 static inline void libirc_mutex_lock (port_mutex_t * mutex) {}
 static inline void libirc_mutex_unlock (port_mutex_t * mutex) {}
 
+#endif
+
+
+static int libirc_make_socket_unblocking (int sock)
+{
+#if !defined (WIN32)
+	return fcntl (sock, F_SETFL, fcntl (sock, F_GETFL,0 ) | O_NONBLOCK) != 0;
+#else
+	unsigned long mode = 0;
+	return ioctlsocket (sock, FIONBIO, &mode) == SOCKET_ERROR;
+#endif
+}
+
+
+/*
+ * Stub for WIN32 dll to initialize winsock API
+ */
+#if defined (WIN32)
+BOOL WINAPI DllMain (HINSTANCE hinstDll, DWORD fdwReason, LPVOID lpvReserved)
+{
+	WORD wVersionRequested = MAKEWORD (1, 1);
+    WSADATA wsaData;
+
+	switch(fdwReason)
+	{
+		case DLL_PROCESS_ATTACH:
+			if ( WSAStartup (wVersionRequested, &wsaData) != 0 )
+				return FALSE;
+
+			DisableThreadLibraryCalls (hinstDll);
+			break;
+
+		case DLL_PROCESS_DETACH:
+			WSACleanup();
+			break;
+	}
+
+	return TRUE;
+}
 #endif

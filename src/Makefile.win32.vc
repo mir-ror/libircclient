@@ -1,0 +1,56 @@
+#   $Id$
+CC     = cl
+LINK   = link
+CFLAGS = -nologo -MT -W3 -GX -DWIN32 -I../include
+LFLAGS = -nologo -dll -incremental:no -opt:ref -release
+LIBNAME = libircclient
+OBJS = libircclient.obj
+
+# static library
+IRCST = $(LIBNAME)-static.lib
+
+# dynamic library .lib
+IRCDNL = $(LIBNAME).lib
+
+# dynamic library .dll
+IRCDND = $(LIBNAME).dll
+
+all:	$(IRCST) $(IRCDNL) $(IRCDND)
+
+$(OBJS): utils.c dcc.c errors.c portable.c
+
+
+$(IRCST): $(OBJS)
+	lib -out:$(IRCST) $(OBJS)
+
+
+$(IRCDND): $(OBJS) $(IRCDNL)
+	link $(OBJS) libircclient.exp $(LFLAGS) -out:$(IRCDND) wsock32.lib
+
+
+$(IRCDNL): libircclient.def
+	lib -nologo -def:libircclient.def -out:$(IRCDNL) $(OBJS)
+
+distro:
+	rm -rf win32
+	mkdir win32
+	mkdir win32\lib
+	mkdir win32\include
+	cp *.lib win32/lib/
+	cp *.dll win32/lib/
+	cp *.lib win32/lib/
+	cp ../include/libircclient.h win32/include/
+	cp ../include/libirc_errors.h	win32/include/
+	cp ../include/libirc_events.h  win32/include/
+	cd win32
+	zip -r ../libircclient-win32-vc-0.3.zip .
+
+clean:
+	-del $(IRCDNL)
+	-del $(IRCDND)
+	-del $(IRCST)
+	-del $(OBJS)
+	-rm -rf win32
+
+.c.obj:
+    $(CC) -c $(CFLAGS) /Fo$(<R).obj $<

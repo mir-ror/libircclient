@@ -44,7 +44,7 @@ struct irc_session_s
 	unsigned int	outgoing_offset;
 	port_mutex_t	mutex_session;
 
-	int				sock;
+	socket_t		sock;
 	int				state;
 	int				motd_received;
 

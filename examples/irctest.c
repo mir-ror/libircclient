@@ -42,7 +42,11 @@ void addlog (const char * fmt, ...)
 	va_list va_alist;
 
 	va_start (va_alist, fmt);
+#if defined (WIN32)
+	_vsnprintf (buf, sizeof(buf), fmt, va_alist);
+#else
 	vsnprintf (buf, sizeof(buf), fmt, va_alist);
+#endif
 	va_end (va_alist);
 
 	printf ("%s\n", buf);
@@ -245,6 +249,7 @@ int main (int argc, char **argv)
 {
 	irc_callbacks_t	callbacks;
 	irc_ctx_t ctx;
+	irc_session_t * s;
 
 	if ( argc != 4 )
 	{
@@ -275,7 +280,7 @@ int main (int argc, char **argv)
 	callbacks.event_dcc_chat_req = irc_event_dcc_chat;
 	callbacks.event_dcc_send_req = irc_event_dcc_send;
 
-	irc_session_t * s = irc_create_session (&callbacks);
+	s = irc_create_session (&callbacks);
 
 	if ( !s )
 	{

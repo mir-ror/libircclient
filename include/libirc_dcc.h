@@ -31,7 +31,7 @@ struct irc_dcc_session_s
 
 	irc_dcc_t		id;
 	void		*	ctx;
-	int				sock;		/*!< DCC socket */
+	socket_t		sock;		/*!< DCC socket */
 	int				dccmode;	/*!< Boolean value to differ chat vs send 
 	                             requests. Changes the cb behavior - when
 	                             it is chat, data is sent by lines with 
@@ -40,8 +40,8 @@ struct irc_dcc_session_s
 	int				state;
 	time_t			timeout;
 
-	int				fd; // RENAME IT
-	int				received_file_size;
+	FILE		*	dccsend_file_fp;
+	unsigned int	received_file_size;
 	unsigned int	file_confirm_offset;
 
 	struct sockaddr_in	remote_addr;

@@ -62,8 +62,10 @@ static void libirc_remove_dcc_session (irc_session_t * session, irc_dcc_session_
 	if ( dcc->sock >= 0 )
 		closesocket (dcc->sock);
 
-	if ( dcc->fd >= 0 )
-		close (dcc->fd);
+	if ( dcc->dccsend_file_fp )
+		fclose (dcc->dccsend_file_fp);
+
+	dcc->dccsend_file_fp = 0;
 
 	libirc_mutex_destroy (&dcc->mutex_outbuf);
 
@@ -134,10 +136,10 @@ static void libirc_dcc_add_descriptors (irc_session_t * ircsession, fd_set *in_s
          */
 		if ( dcc->state == LIBIRC_STATE_CONNECTED
 		&& dcc->dccmode == LIBIRC_DCC_SENDFILE
-		&& dcc->fd >= 0
+		&& dcc->dccsend_file_fp
 		&& dcc->outgoing_offset == 0 )
 		{
-			int len = read (dcc->fd, dcc->outgoing_buf, sizeof (dcc->outgoing_buf));
+			int len = fread (dcc->outgoing_buf, 1, sizeof (dcc->outgoing_buf), dcc->dccsend_file_fp);
 
 			if ( len <= 0 )
 			{
@@ -231,7 +233,7 @@ static void libirc_dcc_process_descriptors (irc_session_t * ircsession, fd_set *
 			do 
 			{
 				nsock = accept (dcc->sock, (struct sockaddr *) &dcc->remote_addr, &len);
-			} while ( nsock < 0 && errno == EINTR );
+			} while ( nsock < 0 && GetSocketError() == EINTR );
 
 			if ( nsock < 0 )
 				err = LIBIRC_ERR_ACCEPT;
@@ -298,7 +300,7 @@ static void libirc_dcc_process_descriptors (irc_session_t * ircsession, fd_set *
 				int length, offset = 0, err = 0;
 		
 				unsigned int amount = (sizeof (dcc->incoming_buf) - 1) - dcc->incoming_offset;
-				length = read (dcc->sock, dcc->incoming_buf + dcc->incoming_offset, amount);
+				length = recv (dcc->sock, dcc->incoming_buf + dcc->incoming_offset, amount, 0);
 
 				if ( length < 0 )
 				{
@@ -308,10 +310,10 @@ static void libirc_dcc_process_descriptors (irc_session_t * ircsession, fd_set *
 				{
 					err = LIBIRC_ERR_CLOSED;
 
-					if ( dcc->fd >= 0 )
+					if ( dcc->dccsend_file_fp )
 					{
-						close (dcc->fd);
-						dcc->fd = -1;
+						fclose (dcc->dccsend_file_fp);
+						dcc->dccsend_file_fp = 0;
 					}
 				}
 				else
@@ -429,7 +431,7 @@ static void libirc_dcc_process_descriptors (irc_session_t * ircsession, fd_set *
 		
 				if ( offset > 0 )
 				{
-					length = write (dcc->sock, dcc->outgoing_buf, offset);
+					length = send (dcc->sock, dcc->outgoing_buf, offset, 0);
 
 					if ( length < 0 )
 						err = LIBIRC_ERR_WRITE;
@@ -516,7 +518,7 @@ static int libirc_new_dcc_session (irc_session_t * session, unsigned long ip, un
 	// setup
 	memset (dcc, 0, sizeof(irc_dcc_session_t));
 
-	dcc->fd = -1;
+	dcc->dccsend_file_fp = 0;
 
 	if ( libirc_mutex_init (&dcc->mutex_outbuf) )
 		goto cleanup_exit_error;
@@ -547,7 +549,7 @@ static int libirc_new_dcc_session (irc_session_t * session, unsigned long ip, un
 	else
 	{
 		// make socket non-blocking, so connect() call won't block
-		if ( fcntl (dcc->sock, F_SETFL, fcntl (dcc->sock, F_GETFL,0 ) | O_NONBLOCK) == -1 )
+		if ( libirc_make_socket_unblocking (dcc->sock) )
 			goto cleanup_exit_error;
 
 		memset (&dcc->remote_addr, 0, sizeof(dcc->remote_addr));
@@ -764,7 +766,7 @@ int	irc_dcc_accept (irc_session_t * session, irc_dcc_t dccid, void * ctx, irc_dc
 
 	// Initiate the connect
  	if ( connect (dcc->sock, (struct sockaddr *) &dcc->remote_addr, sizeof(dcc->remote_addr)) < 0
-	&& ( errno != EINPROGRESS && errno != EWOULDBLOCK ) )
+	&& ( GetSocketError() != EINPROGRESS && GetSocketError() != EWOULDBLOCK ) )
 	{
 		libirc_dcc_destroy_nolock (session, dccid);
 		libirc_mutex_unlock (&session->mutex_dcc);
@@ -798,13 +800,13 @@ int	irc_dcc_decline (irc_session_t * session, irc_dcc_t dccid)
 
 int	irc_dcc_sendfile (irc_session_t * session, void * ctx, const char * nick, const char * filename, irc_dcc_callback_t callback, irc_dcc_t * dccid)
 {
-	struct stat	stfile;
 	struct sockaddr_in saddr;
 	socklen_t len = sizeof(saddr);
 	char cmdbuf[128], notbuf[128];
 	irc_dcc_session_t * dcc;
 	const char * p;
 	int err;
+	long filesize;
 
 	if ( !session || !dccid || !filename || !callback )
 	{
@@ -818,29 +820,26 @@ int	irc_dcc_sendfile (irc_session_t * session, void * ctx, const char * nick, co
 		return 1;
 	}
 
-	if ( stat (filename, &stfile) != 0 )
-	{
-		session->lasterror = LIBIRC_ERR_OPENFILE;
-		return 1;
-	}
-
-	// We can't send directory
-	if ( !S_ISREG (stfile.st_mode) || stfile.st_size == 0 )
-	{
-		session->lasterror = LIBIRC_ERR_NODCCSEND;
-		return 1;
-	}
-
 	if ( (err = libirc_new_dcc_session (session, 0, 0, LIBIRC_DCC_SENDFILE, ctx, &dcc)) != 0 )
 	{
 		session->lasterror = err;
 		return 1;
 	}
 
-	if ( (dcc->fd = open (filename, O_RDONLY|O_BINARY)) == -1 )
+	if ( (dcc->dccsend_file_fp = fopen (filename, "rb")) == 0 )
 	{
 		libirc_remove_dcc_session (session, dcc, 1);
 		session->lasterror = LIBIRC_ERR_OPENFILE;
+		return 1;
+	}
+
+	/* Get file length */
+	if ( fseek (dcc->dccsend_file_fp, 0, SEEK_END)
+	|| (filesize = ftell (dcc->dccsend_file_fp)) == -1
+	|| fseek (dcc->dccsend_file_fp, 0, SEEK_SET) )
+	{
+		libirc_remove_dcc_session (session, dcc, 1);
+		session->lasterror = LIBIRC_ERR_NODCCSEND;
 		return 1;
 	}
 
@@ -859,7 +858,7 @@ int	irc_dcc_sendfile (irc_session_t * session, void * ctx, const char * nick, co
 		p++; // skip directory slash
 
 	sprintf (notbuf, "DCC Send %s (%s)", p, inet_ntoa (saddr.sin_addr));
-	sprintf (cmdbuf, "DCC SEND %s %lu %u %lu", p, (unsigned long) ntohl (saddr.sin_addr.s_addr), ntohs (saddr.sin_port), (unsigned long) stfile.st_size);
+	sprintf (cmdbuf, "DCC SEND %s %lu %u %ld", p, (unsigned long) ntohl (saddr.sin_addr.s_addr), ntohs (saddr.sin_port), filesize);
 
 	if ( irc_cmd_notice (session, nick, notbuf)
 	|| irc_cmd_ctcp_request (session, nick, cmdbuf) )
