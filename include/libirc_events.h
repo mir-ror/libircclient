@@ -211,8 +211,8 @@ typedef struct
 	irc_event_callback_t	event_part;
            
 	/*!
-	 * The "mode" event is triggered upon receipt of a MODE message, which
-     * means that someone on a channel with the client has changed the
+	 * The "mode" event is triggered upon receipt of a channel MODE message,
+	 * which means that someone on a channel with the client has changed the
 	 * channel's parameters.
      *
 	 * \param origin the person, who changed the channel mode.
@@ -224,6 +224,16 @@ typedef struct
 	 *      +o mode)
 	 */
 	irc_event_callback_t	event_mode;
+
+	/*!
+	 * The "umode" event is triggered upon receipt of a user MODE message, 
+	 * which means that your user mode has been changed.
+     *
+	 * \param origin the person, who changed the channel mode.
+	 * \param params[0] mandatory, contains the user changed mode, like 
+	 *        '+t', '-i' and so on.
+	 */
+	irc_event_callback_t	event_umode;
 
 	/*!
 	 * The "topic" event is triggered upon receipt of a TOPIC message, which
@@ -298,12 +308,6 @@ typedef struct
      * \sa irc_cmd_invite irc_cmd_chanmode_invite
 	 */
 	irc_event_callback_t	event_invite;
-
-	/*!
-	 * The "umode" event is triggered when the client changes its personal 
-	 * mode flags.
-	 */
-	irc_event_callback_t	event_umode;
 
 	/*!
 	 * The "ctcp" event is triggered when the client receives the CTCP 
