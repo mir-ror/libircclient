@@ -55,6 +55,10 @@
 	#define O_BINARY	0
 #endif
 
+#ifndef INADDR_NONE
+	#define INADDR_NONE 	0xFFFFFFFF
+#endif
+
 
 #define DEBUG_ENABLED(s)	((s)->option & LIBIRC_OPTION_DEBUG)
 
@@ -905,13 +909,12 @@ void irc_event_ctcp_internal (irc_session_t * session, const char * event, const
 		else if ( !strcmp (params[0], "TIME") )
 		{
 			time_t now = time(0);
-
-			strcpy (textbuf, "TIME ");
-#if defined (ENABLE_THREADS)
-			ctime_r (&now, textbuf + strlen(textbuf));
+#if defined (ENABLE_THREADS) && defined (HAVE_LOCALTIME_R)
+			struct tm tmtmp, *ltime = localtime_r (&now, &tmtmp);
 #else
-			strcpy (textbuf + strlen(textbuf), ctime(&now));
+			struct tm * ltime = localtime (&now);
 #endif
+			strftime (textbuf + strlen(textbuf), sizeof(textbuf) - strlen(textbuf), "%C", ltime);
 			irc_cmd_ctcp_reply (session, nickbuf, textbuf);
 		}
 	}
