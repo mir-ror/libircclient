@@ -151,6 +151,15 @@
 <tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="group__options.html#ga3">irc_option_reset</a> (<a class="el" href="libircclient_8h.html#a1">irc_session_t</a> *session, unsigned int option)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Resets the libircclient option.  <a href="group__options.html#ga3"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>char *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="group__colors.html#ga0">irc_color_strip_from_mirc</a> (const char *message)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Removes all the color codes and format options.  <a href="group__colors.html#ga0"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>char *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="group__colors.html#ga1">irc_color_convert_from_mirc</a> (const char *message)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Converts all the color codes and format options to libircclient colors.  <a href="group__colors.html#ga1"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>char *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="group__colors.html#ga2">irc_color_convert_to_mirc</a> (const char *message)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Converts all the color codes from libircclient format to mIRC.  <a href="group__colors.html#ga2"></a><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 This file defines all prototypes and functions to use libircclient. 
@@ -237,7 +246,7 @@ A libircclient IRC session.
 This structure describes an IRC session. Its members are internal to libircclient, and should not be used directly.     </td>
   </tr>
 </table>
-<hr size="1"><address style="align: right;"><small>Generated on Thu Oct 7 23:12:46 2004 for libircclient by
+<hr size="1"><address style="align: right;"><small>Generated on Sun Oct 10 20:18:37 2004 for libircclient by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 ></a> 1.3.8 </small></address>
 </body>

@@ -1394,7 +1394,7 @@ char * irc_color_convert_from_mirc (const char * message);
  * described using plain text commands written between square brackets. The 
  * possible codes are:
  * - [B] ... [/B] - bold format mode. Everything between [B] and [/B] is written in \b bold.
- * - [I] ... [/I] - italic/reverse format mode. Everything between [I] and [/I] is written in \i italic, or reversed (yowever, because some clients are incapable of rendering italic text, most clients display this as normal text with the background and foreground colors swapped).
+ * - [I] ... [/I] - italic/reverse format mode. Everything between [I] and [/I] is written in \c italic, or reversed (however, because some clients are incapable of rendering italic text, most clients display this as normal text with the background and foreground colors swapped).
  * - [U] ... [/U] - underline format mode. Everything between [U] and [/U] is written underlined.
  * - [COLOR=RED] ... [/COLOR] - write the text using specified foreground color. The color is set by using the \c COLOR keyword, and equal sign followed by text color code (see below).
  * - [COLOR=RED/BLUE] ... [/COLOR] - write the text using specified foreground and background color. The color is set by using the \c COLOR keyword, an equal sign followed by text foreground color code, a dash and a text background color code.
