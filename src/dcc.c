@@ -104,7 +104,7 @@ static void libirc_dcc_add_descriptors (irc_session_t * ircsession, fd_set *in_s
 	// Preprocessing DCC list:
 	// - ask DCC send callbacks for data;
 	// - remove unused DCC structures
-	for ( dcc = ircsession->dcc_sessions; dcc; dcc = dcc->next )
+	for ( dcc = ircsession->dcc_sessions; dcc; dcc = dcc_next )
 	{
 		dcc_next = dcc->next;
 
@@ -420,10 +420,7 @@ static void libirc_dcc_process_descriptors (irc_session_t * ircsession, fd_set *
                  */
 				libirc_mutex_lock (&dcc->mutex_outbuf);
 
-				if ( dcc->dccmode == LIBIRC_DCC_CHAT )
-					offset = libirc_findcrlf (dcc->outgoing_buf, dcc->outgoing_offset);
-				else
-					offset = dcc->outgoing_offset;
+				offset = dcc->outgoing_offset;
 		
 				if ( offset > 0 )
 				{
@@ -447,8 +444,10 @@ static void libirc_dcc_process_descriptors (irc_session_t * ircsession, fd_set *
 							dcc->state = LIBIRC_STATE_CONFIRM_SIZE;
 
 							libirc_mutex_unlock (&ircsession->mutex_dcc);
+							libirc_mutex_unlock (&dcc->mutex_outbuf);
 							(*dcc->cb)(ircsession, dcc->id, err, dcc->ctx, 0, offset);
 							libirc_mutex_lock (&ircsession->mutex_dcc);
+							libirc_mutex_lock (&dcc->mutex_outbuf);
 						}
 
 						if ( dcc->outgoing_offset - length > 0 )
@@ -471,12 +470,15 @@ static void libirc_dcc_process_descriptors (irc_session_t * ircsession, fd_set *
 							if ( dcc->received_file_size == dcc->file_confirm_offset )
                             {
 								libirc_mutex_unlock (&ircsession->mutex_dcc);
+								libirc_mutex_unlock (&dcc->mutex_outbuf);
 								(*dcc->cb)(ircsession, dcc->id, 0, dcc->ctx, 0, 0);
-								libirc_mutex_lock (&ircsession->mutex_dcc);
 								libirc_dcc_destroy_nolock (ircsession, dcc->id);
                             }
                             else
+                            {
+                            	/* Continue to receive the file */
 								dcc->state = LIBIRC_STATE_CONNECTED;
+							}
 						}
 					}
 				}
