@@ -113,7 +113,20 @@ to get an idea how to write it.
 
 \subsection faq5 Why don't I receive event_umode when I am made +o (a channel operator)?
 
-Because this IS channel mode, not user mode. User mode \c +o is an IRC network
-operator, not just a channel operator.
+Because this is a channel mode, not a user mode. The user mode \c +o means that
+this user is an IRC network operator, not just a channel operator.
 
+\subsection faq6 Why I get a LIBIRC_ERR_SOCKET error using static library under Win32?
+
+Because if you use static library, you have to initialize winsock manually:
+
+\code
+WORD wVersionRequested = MAKEWORD (1, 1);
+WSADATA wsaData;
+
+if ( WSAStartup (wVersionRequested, &wsaData) != 0 )
+	// report an error
+
+// And now we can use libircclient
+\endcode
  */

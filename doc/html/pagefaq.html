@@ -46,7 +46,17 @@ The idea is to parse the messages sent from NICKSERV, and if they're matched the
 What is CTCP, and why do I need my own handler?</a></h3>
 CTCP abbreviature is deciphered as "Client-to-Client Protocol". It is used between the IRC clients to query the remote client for some data, or to send some information - for example, /me messages are sent via CTCP. There is no standard list of possible CTCP requests, and different IRC clients often add their own CTCP codes. The built-in handler reacts on TIME, VERSION, PING and FINGER CTCP queries. If you need to react on other queries, you'll have to write your own CTCP handler. See the source code of libirc_event_ctcp_internal to get an idea how to write it.<h3><a class="anchor" name="faq5">
 Why don't I receive event_umode when I am made +o (a channel operator)?</a></h3>
-Because this IS channel mode, not user mode. User mode <code>+o</code> is an IRC network operator, not just a channel operator. <hr size="1"><address style="align: right;"><small>Generated on Sun Oct 10 20:35:05 2004 for libircclient by
+Because this is a channel mode, not a user mode. The user mode <code>+o</code> means that this user is an IRC network operator, not just a channel operator.<h3><a class="anchor" name="faq6">
+Why I get a LIBIRC_ERR_SOCKET error using static library under Win32?</a></h3>
+Because if you use static library, you have to initialize winsock manually:<p>
+<div class="fragment"><pre>WORD wVersionRequested = MAKEWORD (1, 1);
+WSADATA wsaData;
+
+<span class="keywordflow">if</span> ( WSAStartup (wVersionRequested, &amp;wsaData) != 0 )
+    <span class="comment">// report an error</span>
+
+<span class="comment">// And now we can use libircclient</span>
+</pre></div><hr size="1"><address style="align: right;"><small>Generated on Sun Oct 17 15:18:26 2004 for libircclient by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 ></a> 1.3.8 </small></address>
 </body>
