@@ -5,12 +5,15 @@ CFLAGS = -Wall @CFLAGS@
 LIBS = ../src/libircclient.a -lpthread @LIBS@
 INCLUDES=-I../include
 
-EXAMPLES=spammer censor irctest ircftp
+EXAMPLES=spammer censor irctest ircftp colors
 
 all:	$(EXAMPLES)
 
 spammer:	spammer.o
 	$(CC) -o spammer spammer.o $(LIBS)
+
+colors:		colors.o
+	$(CXX) -o colors colors.o $(LIBS)
 
 irctest:	irctest.o
 	$(CC) -o irctest irctest.o $(LIBS)

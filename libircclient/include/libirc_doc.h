@@ -156,3 +156,7 @@
 /*!
  * \defgroup rfcnumbers  Numeric reply codes from RFC1459
  */
+
+/*!
+ * \defgroup colors  Messages colors manipulation
+ */
