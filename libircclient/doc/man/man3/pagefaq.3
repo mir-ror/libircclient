@@ -1,4 +1,4 @@
-.TH "pagefaq" 3 "10 Oct 2004" "Version 0.6" "libircclient" \" -*- nroff -*-
+.TH "pagefaq" 3 "17 Oct 2004" "Version 0.6" "libircclient" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -62,4 +62,19 @@ The idea is to parse the messages sent from NICKSERV, and if they're matched the
 .SS "What is CTCP, and why do I need my own handler?"
 CTCP abbreviature is deciphered as 'Client-to-Client Protocol'. It is used between the IRC clients to query the remote client for some data, or to send some information - for example, /me messages are sent via CTCP. There is no standard list of possible CTCP requests, and different IRC clients often add their own CTCP codes. The built-in handler reacts on TIME, VERSION, PING and FINGER CTCP queries. If you need to react on other queries, you'll have to write your own CTCP handler. See the source code of libirc_event_ctcp_internal to get an idea how to write it.
 .SS "Why don't I receive event_umode when I am made +o (a channel operator)?"
-Because this IS channel mode, not user mode. User mode \fC+o\fP is an IRC network operator, not just a channel operator. 
+Because this is a channel mode, not a user mode. The user mode \fC+o\fP means that this user is an IRC network operator, not just a channel operator.
+.SS "Why I get a LIBIRC_ERR_SOCKET error using static library under Win32?"
+Because if you use static library, you have to initialize winsock manually:
+.PP
+.PP
+.nf
+WORD wVersionRequested = MAKEWORD (1, 1);
+WSADATA wsaData;
+
+if ( WSAStartup (wVersionRequested, &wsaData) != 0 )
+    // report an error
+
+// And now we can use libircclient
+.fi
+.PP
+

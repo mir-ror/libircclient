@@ -1,3 +1,7 @@
+2004-10-17 Georgy Yunaev
+   * libircclient 0.7 released.
+   * Fixed DCC chat lockup in multithread programs (thanks olifozzy).
+
 2004-10-15 Georgy Yunaev
    * Win32 static library does not have dllmain anymore (thanks olifozzy).
    * DCC chat crashed if there were several DCC session, and one of them was 
