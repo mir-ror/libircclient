@@ -20,7 +20,7 @@ install: lib
 	cp ../include/libirc_events.h  @PREFIX@/include/libirc_events.h 
 	cp libirc.a  @PREFIX@/include/lib/libirc.a
 
-$(OBJS): utils.c dcc.c errors.c portable.c sockets.c
+$(OBJS): utils.c dcc.c errors.c portable.c sockets.c colors.c
 
 libircclient.a: $(OBJS)
 	$(AR) libircclient.a $(OBJS)

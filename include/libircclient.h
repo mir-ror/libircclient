@@ -1342,6 +1342,93 @@ void irc_option_set (irc_session_t * session, unsigned int option);
 void irc_option_reset (irc_session_t * session, unsigned int option);
 
 
+/*!
+ * \fn char * irc_color_strip_from_mirc (const char * message)
+ * \brief Removes all the color codes and format options.
+ *
+ * \param message A message from IRC
+ *
+ * \return Returns a new plain text message with stripped mIRC color codes.
+ * Note that the memory for the new message is allocated using malloc(), so
+ * you should free it using free() when it is not used anymore. If memory 
+ * allocation failed, returns 0.
+ *
+ * \sa irc_color_convert_from_mirc irc_color_convert_to_mirc
+ * \ingroup colors
+ */
+char * irc_color_strip_from_mirc (const char * message);
+
+
+/*!
+ * \fn char * irc_color_convert_from_mirc (const char * message)
+ * \brief Converts all the color codes and format options to libircclient colors.
+ *
+ * \param message A message from IRC
+ *
+ * \return Returns a new message with converted mIRC color codes and format
+ * options. See the irc_color_convert_to_mirc() help to see how the colors 
+ * are converted.\n
+ * Note that the memory for the new message is allocated using malloc(), so
+ * you should free it using free() when it is not used anymore. If memory 
+ * allocation failed, returns 0.
+ *
+ * \sa irc_color_strip_from_mirc irc_color_convert_to_mirc
+ * \ingroup colors
+ */
+char * irc_color_convert_from_mirc (const char * message);
+
+
+/*!
+ * \fn char * irc_color_convert_to_mirc (const char * message)
+ * \brief Converts all the color codes from libircclient format to mIRC.
+ *
+ * \param message A message with color codes
+ *
+ * \return Returns a new message with converted color codes and format
+ * options, or 0 if memory could not be allocated. Note that the memory for 
+ * the new message is allocated using malloc(), so you should free it using 
+ * free() when it is not used anymore.
+ *
+ * The color system of libircclient is designed to be easy to use, and 
+ * portable between different IRC clients. Every color or format option is 
+ * described using plain text commands written between square brackets. The 
+ * possible codes are:
+ * - [B] ... [/B] - bold format mode. Everything between [B] and [/B] is written in \b bold.
+ * - [I] ... [/I] - italic/reverse format mode. Everything between [I] and [/I] is written in \i italic, or reversed (yowever, because some clients are incapable of rendering italic text, most clients display this as normal text with the background and foreground colors swapped).
+ * - [U] ... [/U] - underline format mode. Everything between [U] and [/U] is written underlined.
+ * - [COLOR=RED] ... [/COLOR] - write the text using specified foreground color. The color is set by using the \c COLOR keyword, and equal sign followed by text color code (see below).
+ * - [COLOR=RED/BLUE] ... [/COLOR] - write the text using specified foreground and background color. The color is set by using the \c COLOR keyword, an equal sign followed by text foreground color code, a dash and a text background color code.
+ * 
+ * The supported text colors are:
+ * - WHITE
+ * - BLACK
+ * - DARKBLUE
+ * - DARKGREEN
+ * - RED
+ * - BROWN
+ * - PURPLE
+ * - OLIVE
+ * - YELLOW
+ * - GREEN
+ * - TEAL
+ * - CYAN
+ * - BLUE
+ * - MAGENTA
+ * - DARKGRAY
+ * - LIGHTGRAY
+ * 
+ * Examples of color sequences:
+ * \code
+ * Hello, [B]Tim[/B]. 
+ * [U]Arsenal[/U] got a [COLOR=RED]red card[/COLOR]
+ * The tree[U]s[/U] are [COLOR=GREEN/BLACK]green[/COLOR]
+ * \endcode
+ *
+ * \sa irc_color_strip_from_mirc irc_color_convert_from_mirc
+ * \ingroup colors
+ */
+char * irc_color_convert_to_mirc (const char * message);
+
 #ifdef	__cplusplus
 }
 #endif

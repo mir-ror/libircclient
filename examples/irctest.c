@@ -4,8 +4,6 @@
  * 'help', 'quit', 'dcc chat', 'dcc send', 'ctcp'. Also it can reply to 
  * CTCP requests, receive DCC files and accept DCC chats.
  *
- * To keep it simple, this example reacts only on 'fuck' swear-word.
- *
  * Features used:
  * - nickname parsing;
  * - handling 'channel' event to track the messages;

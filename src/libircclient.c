@@ -22,6 +22,7 @@
 
 #include "utils.c"
 #include "errors.c"
+#include "colors.c"
 #include "dcc.c"
 
 #define IS_DEBUG_ENABLED(s)	((s)->option & LIBIRC_OPTION_DEBUG)
