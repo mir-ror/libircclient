@@ -1,5 +1,18 @@
 /*
- * This program will test automatic color replacement features.
+ * Copyright (C) 2004 Georgy Yunaev tim@krasnogorsk.ru
+ *
+ * This example is free, and not covered by LGPL license. There is no 
+ * restriction applied to their modification, redistribution, using and so on.
+ * You can study them, modify them, use them in your own program - either 
+ * completely or partially. By using it you may give me some credits in your
+ * program, but you don't have to.
+ *
+ *
+ * This program will test automatic color replacement features. It uses the 
+ * colors itself, generates colored string in reaction to 'test' word, and
+ * dumps the de-colored messages.
+ *
+ * $Id$
  */
 
 #include <string>
