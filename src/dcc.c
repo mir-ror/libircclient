@@ -159,7 +159,7 @@ static void libirc_dcc_add_descriptors (irc_session_t * ircsession, fd_set *in_s
 			libirc_remove_dcc_session (ircsession, dcc, 0);
 	}
 
-	for ( dcc = ircsession->dcc_sessions; dcc; dcc = dcc_next )
+	for ( dcc = ircsession->dcc_sessions; dcc; dcc = dcc->next )
 	{
 		switch (dcc->state)
 		{
@@ -497,7 +497,6 @@ static void libirc_dcc_process_descriptors (irc_session_t * ircsession, fd_set *
 					libirc_dcc_destroy_nolock (ircsession, dcc->id);
 				}
 			}
-			break;
 		}
 	}
 
