@@ -82,6 +82,7 @@ void dump_event (irc_session_t * session, const char * event, const char * origi
 void event_join (irc_session_t * session, const char * event, const char * origin, const char ** params, unsigned int count)
 {
 	dump_event (session, event, origin, params, count);
+	irc_cmd_user_mode (session, "+i");
 	irc_cmd_msg (session, params[0], "Hi all");
 }
 
@@ -252,13 +253,6 @@ void event_numeric (irc_session_t * session, unsigned int event, const char * or
 }
 
 
-void event_ctcp (irc_session_t * session, const char * event, const char * origin, const char ** params, unsigned int count)
-{
-	dump_event (session, event, origin, params, count);
-	irc_event_ctcp_internal (session, event, origin, params, count);
-}
-
-
 int main (int argc, char **argv)
 {
 	irc_callbacks_t	callbacks;
@@ -286,8 +280,8 @@ int main (int argc, char **argv)
 	callbacks.event_notice = dump_event;
 	callbacks.event_invite = dump_event;
 	callbacks.event_umode = dump_event;
-	callbacks.event_ctcp_req = event_ctcp;
 	callbacks.event_ctcp_rep = dump_event;
+	callbacks.event_ctcp_action = dump_event;
 	callbacks.event_unknown = dump_event;
 	callbacks.event_numeric = event_numeric;
 
