@@ -123,7 +123,7 @@ static inline void libirc_mutex_unlock (port_mutex_t * mutex)
 /*
  * Stub for WIN32 dll to initialize winsock API
  */
-#if defined (WIN32)
+#if defined (_USRDLL)
 BOOL WINAPI DllMain (HINSTANCE hinstDll, DWORD fdwReason, LPVOID lpvReserved)
 {
 	WORD wVersionRequested = MAKEWORD (1, 1);
