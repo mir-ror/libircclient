@@ -42,10 +42,7 @@ struct irc_session_s
 
 	char 			outgoing_buf[LIBIRC_BUFFER_SIZE];
 	unsigned int	outgoing_offset;
-
-#if defined (ENABLE_THREADS)
-	pthread_mutex_t	mutex_session;
-#endif
+	port_mutex_t	mutex_session;
 
 	int				sock;
 	int				state;
@@ -60,10 +57,7 @@ struct irc_session_s
 	struct in_addr	local_addr;
 	irc_dcc_t		dcc_last_id;
 	irc_dcc_session_t * dcc_sessions;
-
-#if defined (ENABLE_THREADS)
-	pthread_mutex_t	mutex_dcc;
-#endif
+	port_mutex_t	mutex_dcc;
 
 	irc_callbacks_t	callbacks;
 };

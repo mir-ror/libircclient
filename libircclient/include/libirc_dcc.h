@@ -51,10 +51,7 @@ struct irc_dcc_session_s
 
 	char 			outgoing_buf[LIBIRC_DCC_BUFFER_SIZE];
 	unsigned int	outgoing_offset;
-
-#if defined (ENABLE_THREADS)
-	pthread_mutex_t	mutex_outbuf;
-#endif
+	port_mutex_t	mutex_outbuf;
 
 	irc_dcc_callback_t		cb;
 };
