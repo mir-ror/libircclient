@@ -1,0 +1,9 @@
+2004-09-12 Georgy Yunaev
+     select() timeout decreased to 0.25sec (was 1 sec). The reason: when
+     the output buffer is empty, and server doesn't send anything, but a
+     command was asynchronously added, it will be processed only after 
+     select() timeout.
+
+
+2004-09-08 Georgy Yunaev
+     libircclient 0.1 released
