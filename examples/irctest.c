@@ -127,7 +127,7 @@ void dcc_recv_callback (irc_session_t * session, irc_dcc_t id, int status, void 
 		break;
 
 	default:
-		printf ("DCC %d: error\n", id);
+		printf ("DCC %d: error %s\n", id, irc_strerror(status));
 		break;
 	}
 }
