@@ -460,7 +460,7 @@ static void libirc_process_incoming_data (irc_session_t * session, int process_l
 					else if ( strstr(ctcp_buf, "ACTION ") == ctcp_buf
 					&& session->callbacks.event_ctcp_action )
 					{
-						params[0] = ctcp_buf;
+						params[0] = ctcp_buf + 7; // the length of "ACTION "
 						paramindex = 1;
 
 						(*session->callbacks.event_ctcp_action) (session, "ACTION", prefix, params, paramindex);
