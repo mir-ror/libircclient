@@ -113,7 +113,7 @@ to get an idea how to write it.
 
 \subsection faq5 Why don't I receive event_umode when I am made +o (a channel operator)?
 
-Because this IS channel mode, not user mode. User mode \c+o is an IRC network
+Because this IS channel mode, not user mode. User mode \c +o is an IRC network
 operator, not just a channel operator.
 
  */

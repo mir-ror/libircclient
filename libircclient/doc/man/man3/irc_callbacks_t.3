@@ -1,4 +1,4 @@
-.TH "irc_callbacks_t" 3 "6 Oct 2004" "Version 0.5" "libircclient" \" -*- nroff -*-
+.TH "irc_callbacks_t" 3 "7 Oct 2004" "Version 0.5" "libircclient" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -32,6 +32,9 @@ irc_callbacks_t \- Event callbacks structure.
 .RI "\fBirc_event_callback_t\fP \fBevent_mode\fP"
 .br
 .ti -1c
+.RI "\fBirc_event_callback_t\fP \fBevent_umode\fP"
+.br
+.ti -1c
 .RI "\fBirc_event_callback_t\fP \fBevent_topic\fP"
 .br
 .ti -1c
@@ -50,13 +53,13 @@ irc_callbacks_t \- Event callbacks structure.
 .RI "\fBirc_event_callback_t\fP \fBevent_invite\fP"
 .br
 .ti -1c
-.RI "\fBirc_event_callback_t\fP \fBevent_umode\fP"
-.br
-.ti -1c
 .RI "\fBirc_event_callback_t\fP \fBevent_ctcp_req\fP"
 .br
 .ti -1c
 .RI "\fBirc_event_callback_t\fP \fBevent_ctcp_rep\fP"
+.br
+.ti -1c
+.RI "\fBirc_event_callback_t\fP \fBevent_ctcp_action\fP"
 .br
 .ti -1c
 .RI "\fBirc_event_callback_t\fP \fBevent_unknown\fP"
@@ -100,6 +103,26 @@ The 'channel' event is triggered upon receipt of a PRIVMSG message to an entire 
 .SS "\fBirc_event_callback_t\fP \fBirc_callbacks_t::event_connect\fP"
 .PP
 The 'on_connect' event is triggered when the client successfully connects to the server, and could send commands to the server. No extra params supplied; \fIparams\fP is 0.
+.SS "\fBirc_event_callback_t\fP \fBirc_callbacks_t::event_ctcp_action\fP"
+.PP
+The 'action' event is triggered when the client receives the CTCP ACTION message. These messages usually looks like:
+.br
+ 
+.PP
+.nf
+ [23:32:55] * Tim gonna sleep.
+
+.fi
+.PP
+.PP
+\fBParameters:\fP
+.RS 4
+\fIorigin\fP the person, who generates the message. 
+.br
+\fIparams[0]\fP mandatory, the ACTION message.
+.RE
+.PP
+
 .SS "\fBirc_event_callback_t\fP \fBirc_callbacks_t::event_ctcp_rep\fP"
 .PP
 The 'ctcp' event is triggered when the client receives the CTCP reply.
@@ -183,7 +206,7 @@ The 'kick' event is triggered upon receipt of a KICK message, which means that s
 
 .SS "\fBirc_event_callback_t\fP \fBirc_callbacks_t::event_mode\fP"
 .PP
-The 'mode' event is triggered upon receipt of a MODE message, which means that someone on a channel with the client has changed the channel's parameters.
+The 'mode' event is triggered upon receipt of a channel MODE message, which means that someone on a channel with the client has changed the channel's parameters.
 .PP
 \fBParameters:\fP
 .RS 4
@@ -284,7 +307,16 @@ The 'topic' event is triggered upon receipt of a TOPIC message, which means that
 
 .SS "\fBirc_event_callback_t\fP \fBirc_callbacks_t::event_umode\fP"
 .PP
-The 'umode' event is triggered when the client changes its personal mode flags.
+The 'umode' event is triggered upon receipt of a user MODE message, which means that your user mode has been changed.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIorigin\fP the person, who changed the channel mode. 
+.br
+\fIparams[0]\fP mandatory, contains the user changed mode, like '+t', '-i' and so on.
+.RE
+.PP
+
 .SS "\fBirc_event_callback_t\fP \fBirc_callbacks_t::event_unknown\fP"
 .PP
 The 'unknown' event is triggered upon receipt of any number of unclassifiable miscellaneous messages, which aren't handled by the library.
