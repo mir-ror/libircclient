@@ -33,10 +33,6 @@
 	#include <ctype.h>
 	#include <time.h>
 
-	typedef int					socket_t;
-	#define closesocket 		close
-	#define	GetSocketError()	errno
-
 	#if defined (ENABLE_THREADS)
 		#include <pthread.h>
 		typedef pthread_mutex_t		port_mutex_t;
@@ -62,19 +58,6 @@
 	#define inline
 	#define snprintf			_snprintf
 	#define vsnprintf			_vsnprintf
-	#define GetSocketError()	WSAGetLastError()
-
-	#define EWOULDBLOCK			WSAEWOULDBLOCK
-	#define EINPROGRESS			WSAEINPROGRESS
-	#define EINTR				WSAEINTR
-
-	typedef unsigned int	socklen_t;
-	typedef SOCKET			socket_t;
-
-#endif
-
-#ifndef INADDR_NONE
-	#define INADDR_NONE 	0xFFFFFFFF
 #endif
 
 
@@ -135,17 +118,6 @@ static inline void libirc_mutex_unlock (port_mutex_t * mutex)
 	static inline void libirc_mutex_unlock (port_mutex_t * mutex) {}
 
 #endif
-
-
-static int libirc_make_socket_unblocking (int sock)
-{
-#if !defined (WIN32)
-	return fcntl (sock, F_SETFL, fcntl (sock, F_GETFL,0 ) | O_NONBLOCK) != 0;
-#else
-	unsigned long mode = 0;
-	return ioctlsocket (sock, FIONBIO, &mode) == SOCKET_ERROR;
-#endif
-}
 
 
 /*

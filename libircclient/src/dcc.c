@@ -49,7 +49,7 @@ static void libirc_dcc_destroy_nolock (irc_session_t * session, irc_dcc_t dccid)
 	if ( dcc )
 	{
 		if ( dcc->sock >= 0 )
-			closesocket (dcc->sock);
+			socket_close (&dcc->sock);
 
 		dcc->sock = -1;
 		dcc->state = LIBIRC_STATE_REMOVED;
@@ -60,7 +60,7 @@ static void libirc_dcc_destroy_nolock (irc_session_t * session, irc_dcc_t dccid)
 static void libirc_remove_dcc_session (irc_session_t * session, irc_dcc_session_t * dcc, int lock_list)
 {
 	if ( dcc->sock >= 0 )
-		closesocket (dcc->sock);
+		socket_close (&dcc->sock);
 
 	if ( dcc->dccsend_file_fp )
 		fclose (dcc->dccsend_file_fp);
@@ -230,12 +230,7 @@ static void libirc_dcc_process_descriptors (irc_session_t * ircsession, fd_set *
 			int nsock, err = 0;
 
 			// New connection is available; accept it.
-			do 
-			{
-				nsock = accept (dcc->sock, (struct sockaddr *) &dcc->remote_addr, &len);
-			} while ( nsock < 0 && GetSocketError() == EINTR );
-
-			if ( nsock < 0 )
+			if ( socket_accept (&dcc->sock, &nsock, (struct sockaddr *) &dcc->remote_addr, &len) )
 				err = LIBIRC_ERR_ACCEPT;
 
 			// On success, change the active socket and change the state
@@ -243,7 +238,7 @@ static void libirc_dcc_process_descriptors (irc_session_t * ircsession, fd_set *
 			{
 				// close the listen socket, and replace it by a newly 
 				// accepted
-				closesocket (dcc->sock);
+				socket_close (&dcc->sock);
 				dcc->sock = nsock;
 				dcc->state = LIBIRC_STATE_CONNECTED;
 			}
@@ -300,7 +295,8 @@ static void libirc_dcc_process_descriptors (irc_session_t * ircsession, fd_set *
 				int length, offset = 0, err = 0;
 		
 				unsigned int amount = (sizeof (dcc->incoming_buf) - 1) - dcc->incoming_offset;
-				length = recv (dcc->sock, dcc->incoming_buf + dcc->incoming_offset, amount, 0);
+
+				length = socket_recv (&dcc->sock, dcc->incoming_buf + dcc->incoming_offset, amount);
 
 				if ( length < 0 )
 				{
@@ -431,7 +427,7 @@ static void libirc_dcc_process_descriptors (irc_session_t * ircsession, fd_set *
 		
 				if ( offset > 0 )
 				{
-					length = send (dcc->sock, dcc->outgoing_buf, offset, 0);
+					length = socket_send (&dcc->sock, dcc->outgoing_buf, offset);
 
 					if ( length < 0 )
 						err = LIBIRC_ERR_WRITE;
@@ -523,7 +519,7 @@ static int libirc_new_dcc_session (irc_session_t * session, unsigned long ip, un
 	if ( libirc_mutex_init (&dcc->mutex_outbuf) )
 		goto cleanup_exit_error;
 
-	if ( (dcc->sock = socket(AF_INET, SOCK_STREAM, 0)) < 0 )
+	if ( socket_create (PF_INET, SOCK_STREAM, &dcc->sock) )
 		goto cleanup_exit_error;
 
 	if ( !ip )
@@ -549,7 +545,7 @@ static int libirc_new_dcc_session (irc_session_t * session, unsigned long ip, un
 	else
 	{
 		// make socket non-blocking, so connect() call won't block
-		if ( libirc_make_socket_unblocking (dcc->sock) )
+		if ( socket_make_nonblocking (&dcc->sock) )
 			goto cleanup_exit_error;
 
 		memset (&dcc->remote_addr, 0, sizeof(dcc->remote_addr));
@@ -578,7 +574,7 @@ static int libirc_new_dcc_session (irc_session_t * session, unsigned long ip, un
 
 cleanup_exit_error:
 	if ( dcc->sock >= 0 )
-		closesocket (dcc->sock);
+		socket_close (&dcc->sock);
 
 	free (dcc);
 	return LIBIRC_ERR_SOCKET;
@@ -596,7 +592,7 @@ int irc_dcc_destroy (irc_session_t * session, irc_dcc_t dccid)
 		return 1;
 
 	if ( dcc->sock >= 0 )
-		closesocket (dcc->sock);
+		socket_close (&dcc->sock);
 
 	dcc->sock = -1;
 	dcc->state = LIBIRC_STATE_REMOVED;
@@ -765,8 +761,7 @@ int	irc_dcc_accept (irc_session_t * session, irc_dcc_t dccid, void * ctx, irc_dc
 	dcc->ctx = ctx;
 
 	// Initiate the connect
- 	if ( connect (dcc->sock, (struct sockaddr *) &dcc->remote_addr, sizeof(dcc->remote_addr)) < 0
-	&& ( GetSocketError() != EINPROGRESS && GetSocketError() != EWOULDBLOCK ) )
+    if ( socket_connect (&dcc->sock, (struct sockaddr *) &dcc->remote_addr, sizeof(dcc->remote_addr)) )
 	{
 		libirc_dcc_destroy_nolock (session, dccid);
 		libirc_mutex_unlock (&session->mutex_dcc);
