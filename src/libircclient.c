@@ -384,6 +384,19 @@ static void libirc_process_incoming_data (irc_session_t * session, int process_l
 	{
 		if ( !strcmp (command, "NICK") )
 		{
+			/*
+			 * If we're changed our nick, we should save it.
+             */
+			char nickbuf[256];
+
+			irc_target_get_nick (prefix, nickbuf, sizeof(nickbuf));
+
+			if ( !strcmp (nickbuf, session->nick) && paramindex > 0 )
+			{
+				free (session->nick);
+				session->nick = strdup (params[0]);
+			}
+
 			if ( session->callbacks.event_nick )
 				(*session->callbacks.event_nick) (session, command, prefix, params, paramindex);
 		}
@@ -716,6 +729,12 @@ int irc_cmd_quit (irc_session_t * session, const char * reason)
 
 int irc_cmd_join (irc_session_t * session, const char * channel, const char * key)
 {
+	if ( !channel )
+	{
+		session->lasterror = LIBIRC_ERR_STATE;
+		return 1;
+	}
+
 	if ( key )
 		return irc_send_raw (session, "JOIN %s :%s", channel, key);
 	else
@@ -725,48 +744,71 @@ int irc_cmd_join (irc_session_t * session, const char * channel, const char * ke
 
 int irc_cmd_part (irc_session_t * session, const char * channel)
 {
+	if ( !channel )
+	{
+		session->lasterror = LIBIRC_ERR_STATE;
+		return 1;
+	}
+
 	return irc_send_raw (session, "PART %s", channel);
-}
-
-
-int irc_cmd_mode (irc_session_t * session, const char * channel, const char * mode, const char * user)
-{
-	if ( user )
-		return irc_send_raw (session, "MODE %s %s %s", channel, mode, user);
-	else
-		return irc_send_raw (session, "MODE %s %s", channel, mode);
 }
 
 
 int irc_cmd_topic (irc_session_t * session, const char * channel, const char * topic)
 {
+	if ( !channel )
+	{
+		session->lasterror = LIBIRC_ERR_STATE;
+		return 1;
+	}
+
 	if ( topic )
 		return irc_send_raw (session, "TOPIC %s :%s", channel, topic);
 	else
 		return irc_send_raw (session, "TOPIC %s", channel);
 }
 
-//BAD!
 int irc_cmd_names (irc_session_t * session, const char * channel)
 {
+	if ( !channel )
+	{
+		session->lasterror = LIBIRC_ERR_STATE;
+		return 1;
+	}
+
 	return irc_send_raw (session, "NAMES %s", channel);
 }
 
-//BAD!
+
 int irc_cmd_list (irc_session_t * session, const char * channel)
 {
-	return irc_send_raw (session, "LIST %s", channel);
+	if ( channel )
+		return irc_send_raw (session, "LIST %s", channel);
+	else
+		return irc_send_raw (session, "LIST");
 }
 
 
 int irc_cmd_invite (irc_session_t * session, const char * nick, const char * channel)
 {
+	if ( !channel || !nick )
+	{
+		session->lasterror = LIBIRC_ERR_STATE;
+		return 1;
+	}
+
 	return irc_send_raw (session, "INVITE %s %s", nick, channel);
 }
 
 
 int irc_cmd_kick (irc_session_t * session, const char * nick, const char * channel, const char * comment)
 {
+	if ( !channel || !nick )
+	{
+		session->lasterror = LIBIRC_ERR_STATE;
+		return 1;
+	}
+
 	if ( comment )
 		return irc_send_raw (session, "KICK %s %s :%s", channel, nick, comment);
 	else
@@ -776,12 +818,24 @@ int irc_cmd_kick (irc_session_t * session, const char * nick, const char * chann
 
 int irc_cmd_msg (irc_session_t * session, const char * nch, const char * text)
 {
+	if ( !nch || !text )
+	{
+		session->lasterror = LIBIRC_ERR_STATE;
+		return 1;
+	}
+
 	return irc_send_raw (session, "PRIVMSG %s :%s", nch, text);
 }
 
 
 int irc_cmd_notice (irc_session_t * session, const char * nch, const char * text)
 {
+	if ( !nch || !text )
+	{
+		session->lasterror = LIBIRC_ERR_STATE;
+		return 1;
+	}
+
 	return irc_send_raw (session, "NOTICE %s :%s", nch, text);
 }
 
@@ -823,11 +877,24 @@ void irc_target_get_host (const char * target, char *host, size_t size)
 
 int irc_cmd_ctcp_request (irc_session_t * session, const char * nick, const char * reply)
 {
+	if ( !nick || !reply )
+	{
+		session->lasterror = LIBIRC_ERR_STATE;
+		return 1;
+	}
+
 	return irc_send_raw (session, "PRIVMSG %s :\x01%s\x01", nick, reply);
 }
 
+
 int irc_cmd_ctcp_reply (irc_session_t * session, const char * nick, const char * reply)
 {
+	if ( !nick || !reply )
+	{
+		session->lasterror = LIBIRC_ERR_STATE;
+		return 1;
+	}
+
 	return irc_send_raw (session, "NOTICE %s :\x01%s\x01", nick, reply);
 }
 
@@ -903,6 +970,12 @@ void irc_disconnect (irc_session_t * session)
 
 int irc_cmd_me (irc_session_t * session, const char * nch, const char * text)
 {
+	if ( !nch || !text )
+	{
+		session->lasterror = LIBIRC_ERR_STATE;
+		return 1;
+	}
+
 	return irc_send_raw (session, "PRIVMSG %s :\x01" "ACTION %s\x01", nch, text);
 }
 
@@ -916,4 +989,51 @@ void irc_option_set (irc_session_t * session, unsigned int option)
 void irc_option_reset (irc_session_t * session, unsigned int option)
 {
 	session->options &= ~option;
+}
+
+
+int irc_cmd_channel_mode (irc_session_t * session, const char * channel, const char * mode)
+{
+	if ( !channel )
+	{
+		session->lasterror = LIBIRC_ERR_INVAL;
+		return 1;
+	}
+
+	if ( mode )
+		return irc_send_raw (session, "MODE %s %s", channel, mode);
+	else
+		return irc_send_raw (session, "MODE %s", channel);
+}
+
+
+int irc_cmd_user_mode (irc_session_t * session, const char * mode)
+{
+	if ( mode )
+		return irc_send_raw (session, "MODE %s %s", session->nick, mode);
+	else
+		return irc_send_raw (session, "MODE %s", session->nick);
+}
+
+
+int irc_cmd_nick (irc_session_t * session, const char * newnick)
+{
+	if ( !newnick )
+	{
+		session->lasterror = LIBIRC_ERR_INVAL;
+		return 1;
+	}
+
+	return irc_send_raw (session, "NICK %s", newnick);
+}
+
+int irc_cmd_whois (irc_session_t * session, const char * nick)
+{
+	if ( !nick )
+	{
+		session->lasterror = LIBIRC_ERR_INVAL;
+		return 1;
+	}
+
+	return irc_send_raw (session, "WHOIS %s %s", nick, nick);
 }

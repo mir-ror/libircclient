@@ -33,3 +33,13 @@ EXPORTS
 	irc_option_set
 	irc_option_reset
 	irc_is_connected
+	irc_cmd_part
+	irc_cmd_invite
+	irc_cmd_names
+	irc_cmd_list
+	irc_cmd_topic
+	irc_cmd_channel_mode
+	irc_cmd_user_mode
+	irc_cmd_nick
+	irc_cmd_whois
+

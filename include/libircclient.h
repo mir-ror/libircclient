@@ -19,11 +19,11 @@
  * \author Georgy Yunaev
  * \version 1.0
  * \date 09.2004
- * \brief This file defines all prototypes and functions to use libirc.
+ * \brief This file defines all prototypes and functions to use libircclient.
  *
- * libirc is a small but powerful library, which implements client-server IRC
+ * libircclient is a small but powerful library, which implements client-server IRC
  * protocol. It is designed to be small, fast, portable and compatible to RFC
- * standards, and most IRC clients. libirc features include:
+ * standards, and most IRC clients. libircclient features include:
  * - Full multi-threading support.
  * - Single threads handles all the IRC processing.
  * - Support for single-threaded applications, and socket-based applications, 
@@ -38,7 +38,7 @@
  * - Compatible with RFC 1459 and most IRC clients.
  * - Free, licensed under LGPL license.
  *
- * Note that to use libirc, only libirc.h should be included into your 
+ * Note that to use libircclient, only libircclient.h should be included into your 
  * program. Do not include other libirc_* headers.
  */
 
@@ -56,17 +56,17 @@
 extern "C" {
 #endif
 
-/*! \brief A libirc IRC session.
+/*! \brief A libircclient IRC session.
  *
  * This structure describes an IRC session. Its members are internal to 
- * libirc, and should not be used directly.
+ * libircclient, and should not be used directly.
  */
 typedef struct irc_session_s	irc_session_t;
 
-/*! \brief A libirc DCC session.
+/*! \brief A libircclient DCC session.
  *
- * This structure describes a DCC session used by libirc. 
- * Its members are internal to libirc, and should not be used directly.
+ * This structure describes a DCC session used by libircclient. 
+ * Its members are internal to libircclient, and should not be used directly.
  */
 typedef struct irc_dcc_session_s	irc_dcc_session_t;
 
@@ -92,28 +92,30 @@ typedef unsigned int				irc_dcc_t;
  *
  * This callback is called for all DCC functions when state change occurs.
  *
- * For DCC CHAT, callback called in next circumstances:
+ * For DCC CHAT, the callback is called in next circumstances:
  * - \a status is LIBIRC_ERR_CLOSED: connection is closed by remote peer. 
- *      After the callback, DCC session is automatically destroyed.
- * - \a status is not 0 and is not LIBIRC_ERR_CLOSED: connection error, 
- *      accept error, recv error, send error. After the callback, DCC 
- *      session is automatically destroyed.
+ *      After returning from the callback, the DCC session is automatically 
+ *      destroyed.
+ * - \a status is neither 0 nor LIBIRC_ERR_CLOSED: socket I/O error 
+ *      (connect error, accept error, recv error, send error). After returning 
+ *      from the callback, the DCC session is automatically destroyed.
  * - \a status is 0: new chat message received, \a data contains the message
  *      (null-terminated string), \a length contains the message length.
  *      
  * For DCC SEND, while file is sending, callback called in next circumstances:
- * - \a status is not 0 and is not LIBIRC_ERR_CLOSED: connection error, 
- *      accept error, recv error, send error. File sent aborted. After the 
- *      callback, DCC session is automatically destroyed.
+ * - \a status is neither 0 nor LIBIRC_ERR_CLOSED: socket I/O error 
+ *      (connect error, accept error, recv error, send error). After returning 
+ *      from the callback, the DCC session is automatically destroyed.
  * - \a status is 0: new data received, \a data contains the data received,
  *      \a length contains the amount of data received.
  *      
  * For DCC RECV, while file is sending, callback called in next circumstances:
- * - \a status is not 0 and is not LIBIRC_ERR_CLOSED: connection error, 
- *      accept error, recv error, send error. File sent aborted. After the 
- *      callback, DCC session is automatically destroyed.
+ * - \a status is neither 0 nor LIBIRC_ERR_CLOSED: socket I/O error 
+ *      (connect error, accept error, recv error, send error). After returning 
+ *      from the callback, the DCC session is automatically destroyed.
  * - \a status is 0, and \a data is 0: file has been received successfully.
- *      After the callback, DCC session is automatically destroyed.
+ *      After returning from the callback, the DCC session is automatically 
+ *      destroyed.
  * - \a status is 0, and \a data is not 0: new data received, \a data contains 
  *      the data received, \a length contains the amount of data received.
  *
@@ -192,7 +194,7 @@ void irc_destroy_session (irc_session_t * session);
  * \param server_password  An IRC server password, if the server requires it.
  *                May be NULL, in this case password will not be send to the 
  *                IRC server.
- * \param nick    A nick, which libirc will use to login to the IRC server.
+ * \param nick    A nick, which libircclient will use to login to the IRC server.
  *                Must not be NULL.
  * \param username A username of the account, which is used to connect to the
  *                IRC server. This is for information only, will be shown in
@@ -207,10 +209,10 @@ void irc_destroy_session (irc_session_t * session);
  *
  * \return Return code 0 means success. Other value means error, the error 
  *  code may be obtained through irc_errno(). Any error, generated by the 
- *  IRC server, is available through event_numeric.
+ *  IRC server, is available through irc_callbacks_t::event_numeric.
  *
  * This function prepares and initiates a connection to the IRC server. The
- * connection is done asynchronously (see ::event_connect), so the success 
+ * connection is done asynchronously (see irc_callbacks_t::event_connect), so the success 
  * return value means that connection was initiated (but not completed!)
  * successfully.
  *
@@ -236,7 +238,7 @@ int irc_connect (irc_session_t * session,
  *  code may be obtained through irc_errno().
  *
  * This function closes the IRC connection. After that connection is closed,
- * libirc automatically leaves irc_run loop.
+ * libircclient automatically leaves irc_run loop.
  *
  * \sa irc_connect irc_run
  * \ingroup conndisc
@@ -248,7 +250,7 @@ void irc_disconnect (irc_session_t * session);
  * \fn int irc_is_connected (irc_session_t * session)
  * \brief Checks whether the session is connecting/connected to the IRC server.
  *
- * \param session An IRC session.
+ * \param session An initialized IRC session.
  *
  * \return Return code 1 means that session is connecting or connected to the
  *   IRC server, zero value means that the session has been disconnected.
@@ -336,13 +338,13 @@ int irc_process_select_descriptors (irc_session_t * session, fd_set *in_set, fd_
  *
  * \return Return code 0 means success. Other value means error, the error 
  *  code may be obtained through irc_errno(). Any error, generated by the 
- *  IRC server, is available through event_numeric.
+ *  IRC server, is available through irc_callbacks_t::event_numeric.
  *
  * This function sends the raw data as-is to the IRC server. Use it to 
- * generate a server command, which is not (yet) provided by libirc 
+ * generate a server command, which is not (yet) provided by libircclient 
  * directly.
  *
- * \ingroup sendcmds
+ * \ingroup ircmd_oth
  */
 int irc_send_raw (irc_session_t * session, const char * format, ...);
 
@@ -356,13 +358,13 @@ int irc_send_raw (irc_session_t * session, const char * format, ...);
  *
  * \return Return code 0 means success. Other value means error, the error 
  *  code may be obtained through irc_errno(). Any error, generated by the 
- *  IRC server, is available through event_numeric.
+ *  IRC server, is available through irc_callbacks_t::event_numeric.
  *
  * This function sends the QUIT command to the IRC server. This command 
  * forces the IRC server to close the IRC connection, and terminate the 
  * session.
  *
- * \ingroup sendcmds
+ * \ingroup ircmd_oth
  */
 int irc_cmd_quit (irc_session_t * session, const char * reason);
 
@@ -377,16 +379,414 @@ int irc_cmd_quit (irc_session_t * session, const char * reason);
  *
  * \return Return code 0 means success. Other value means error, the error 
  *  code may be obtained through irc_errno(). Any error, generated by the 
- *  IRC server, is available through event_numeric.
+ *  IRC server, is available through irc_callbacks_t::event_numeric.
  *
  * This function is used to JOIN the IRC channel. If the channel is not exist,
  * it will be automatically created by the IRC server. Note that to JOIN the
  * password-protected channel, you must know the password, and specify it in
  * the \a key argument.
  *
- * \ingroup sendcmds
+ * If join is successful, the irc_callbacks_t::event_join is called (with \a origin == 
+ * your nickname), then you are sent the channel's topic 
+ * (using ::LIBIRC_RFC_RPL_TOPIC) and the list of users who are on the 
+ * channel (using ::LIBIRC_RFC_RPL_NAMREPLY), which includes the user 
+ * joining - namely you.
+ *
+ * Possible error responces for this command from the RFC1459:
+ * - ::LIBIRC_RFC_ERR_NEEDMOREPARAMS
+ * - ::LIBIRC_RFC_ERR_BANNEDFROMCHAN
+ * - ::LIBIRC_RFC_ERR_INVITEONLYCHAN
+ * - ::LIBIRC_RFC_ERR_BADCHANNELKEY
+ * - ::LIBIRC_RFC_ERR_CHANNELISFULL
+ * - ::LIBIRC_RFC_ERR_BADCHANMASK
+ * - ::LIBIRC_RFC_ERR_NOSUCHCHANNEL
+ * - ::LIBIRC_RFC_ERR_TOOMANYCHANNELS
+ *
+ * And on success the following replies returned:
+ * - ::LIBIRC_RFC_RPL_TOPIC
+ * - ::LIBIRC_RFC_RPL_NAMREPLY
+ * 
+ * \ingroup ircmd_ch
  */
 int irc_cmd_join (irc_session_t * session, const char * channel, const char * key);
+
+
+/*!
+ * \fn int irc_cmd_part (irc_session_t * session, const char * channel)
+ * \brief Leaves the IRC channel.
+ *
+ * \param session An initiated and connected session.
+ * \param channel A channel name to leave. Must not be NULL.
+ *
+ * \return Return code 0 means success. Other value means error, the error 
+ *  code may be obtained through irc_errno(). Any error, generated by the 
+ *  IRC server, is available through irc_callbacks_t::event_numeric.
+ *
+ * This function is used to leave the IRC channel you've already joined to.
+ * An attempt to leave the channel you aren't in results a ::LIBIRC_RFC_ERR_NOTONCHANNEL
+ * server error.
+ *
+ * Possible error responces for this command from the RFC1459:
+ * - ::LIBIRC_RFC_ERR_NEEDMOREPARAMS
+ * - ::LIBIRC_RFC_ERR_NOSUCHCHANNEL
+ * - ::LIBIRC_RFC_ERR_NOTONCHANNEL
+ *
+ * \ingroup ircmd_ch
+ */
+int irc_cmd_part (irc_session_t * session, const char * channel);
+
+
+/*!
+ * \fn int irc_cmd_invite (irc_session_t * session, const char * nick, const char * channel)
+ * \brief Invites a user to invite-only channel.
+ *
+ * \param session An initiated and connected session.
+ * \param nick    A nick to invite. Must not be NULL.
+ * \param channel A channel name to invite to. Must not be NULL.
+ *
+ * \return Return code 0 means success. Other value means error, the error 
+ *  code may be obtained through irc_errno(). Any error, generated by the 
+ *  IRC server, is available through irc_callbacks_t::event_numeric.
+ *
+ * This function is used to invite someone to invite-only channel. 
+ * "Invite-only" is a channel mode, which restricts anyone, except invided,
+ * to join this channel. After invitation, the user could join this channel.
+ * The user, who is invited, will receive the irc_callbacks_t::event_invite event.
+ * Note that you must be a channel operator to INVITE the users.
+ *
+ * Possible error responces for this command from the RFC1459:
+ * - ::LIBIRC_RFC_ERR_NEEDMOREPARAMS
+ * - ::LIBIRC_RFC_ERR_NOSUCHNICK
+ * - ::LIBIRC_RFC_ERR_NOTONCHANNEL
+ * - ::LIBIRC_RFC_ERR_ERR_USERONCHANNEL
+ * - ::LIBIRC_RFC_ERR_ERR_CHANOPRIVSNEEDED
+ *
+ * And on success one of the following replies returned:
+ * - ::LIBIRC_RFC_RPL_INVITING
+ * - ::LIBIRC_RFC_RPL_AWAY
+ *
+ * \sa irc_callbacks_t::event_invite irc_cmd_channel_mode
+ * \ingroup ircmd_ch
+ */
+int irc_cmd_invite (irc_session_t * session, const char * nick, const char * channel);
+
+
+/*!
+ * \fn int irc_cmd_names (irc_session_t * session, const char * channel)
+ * \brief Obtains a list of users who're in channel.
+ *
+ * \param session An initiated and connected session.
+ * \param channel A channel name(s) to obtain user list. Must not be NULL. 
+ *                It is possible to specify more than a single channel, but 
+ *                several channel names should be separated by a comma.
+ *
+ * \return Return code 0 means success. Other value means error, the error 
+ *  code may be obtained through irc_errno(). Any error, generated by the 
+ *  IRC server, is available through irc_callbacks_t::event_numeric.
+ *
+ * This function is used to ask the IRC server for the list of the users 
+ * who're in specified channel. You can list all nicknames that are visible 
+ * to you on any channel that you can see. The list of users will be returned 
+ * using ::RPL_NAMREPLY and ::RPL_ENDOFNAMES numeric codes.
+ *
+ * The channel names are returned by irc_callbacks_t::event_numeric 
+ * using the following reply codes:
+ * - ::LIBIRC_RFC_RPL_NAMREPLY
+ * - ::LIBIRC_RFC_RPL_ENDOFNAMES
+ *
+ * \ingroup ircmd_ch
+ */
+int irc_cmd_names (irc_session_t * session, const char * channel);
+
+
+/*!
+ * \fn int irc_cmd_list (irc_session_t * session, const char * channel)
+ * \brief Obtains a list of active server channels with their topics.
+ *
+ * \param session An initiated and connected session.
+ * \param channel A channel name(s) to list. May be NULL, in which case all the
+ *                channels will be listed. It is possible to specify more than 
+ *                a single channel, but several channel names should be 
+ *                separated by a comma.
+ *
+ * \return Return code 0 means success. Other value means error, the error 
+ *  code may be obtained through irc_errno(). Any error, generated by the 
+ *  IRC server, is available through irc_callbacks_t::event_numeric.
+ *
+ * This function is used to ask the IRC server for the active (existing) 
+ * channels list. The list will be returned using ::LIBIRC_RFC_RPL_LISTSTART - 
+ * ::LIBIRC_RFC_RPL_LIST - ::LIBIRC_RFC_RPL_LISTEND sequence.
+ * Note that "private" channels are listed (without their topics) as channel 
+ * "Prv" unless the client generating the LIST query is actually on that 
+ * channel. Likewise, secret channels are 
+ * not listed at all unless the client is a member of the channel in question.
+ *
+ * Possible error responces for this command from the RFC1459:
+ * - ::LIBIRC_RFC_ERR_NOSUCHSERVER
+ *
+ * And the channel list is returned using the following reply codes:
+ * - ::LIBIRC_RFC_RPL_LISTSTART
+ * - ::LIBIRC_RFC_RPL_LISTEND
+ * - ::LIBIRC_RFC_RPL_LIST
+ *
+ * \ingroup ircmd_ch
+ */
+int irc_cmd_list (irc_session_t * session, const char * channel);
+
+
+/*!
+ * \fn int irc_cmd_topic (irc_session_t * session, const char * channel, const char * topic)
+ * \brief Views or changes the channel topic.
+ *
+ * \param session An initiated and connected session.
+ * \param channel A channel name to invite to. Must not be NULL.
+ * \param topic   A new topic to change. If NULL, the old topic will be 
+ *                returned, and topic won't changed.
+ *
+ * \return Return code 0 means success. Other value means error, the error 
+ *  code may be obtained through irc_errno(). Any error, generated by the 
+ *  IRC server, is available through irc_callbacks_t::event_numeric.
+ *
+ * The irc_cmd_topic() is used to change or view the topic of a channel.
+ * The topic for \a channel is returned if \a topic is NULL. If the \a topic
+ * is not NULL, the topic for the \a channel will be changed. Note that, 
+ * depending on \a +t channel mode, you may be required to be a channel 
+ * operator to change the channel topic.
+ *
+ * If the command succeed, the IRC server will generate a ::RPL_NOTOPIC or 
+ * ::RPL_TOPIC message, containing either old or changed topic. Also the IRC
+ * server can (but not have to) generate the non-RFC ::RPL_TOPIC_EXTRA message,
+ * containing the nick of person, who's changed the topic, and the time of 
+ * latest topic change.
+ *
+ * Possible error responces for this command from the RFC1459:
+ * - ::LIBIRC_RFC_ERR_NEEDMOREPARAMS
+ * - ::LIBIRC_RFC_ERR_CHANOPRIVSNEEDED
+ * - ::LIBIRC_RFC_ERR_NOTONCHANNEL
+ *
+ * And the topic information is returned using one of following reply codes:
+ * - ::LIBIRC_RFC_RPL_NOTOPIC
+ * - ::LIBIRC_RFC_RPL_TOPIC
+ *
+ * \sa irc_callbacks_t::event_topic irc_cmd_channel_mode
+ * \ingroup ircmd_ch
+ */
+int irc_cmd_topic (irc_session_t * session, const char * channel, const char * topic);
+
+
+/*!
+ * \fn int irc_cmd_channel_mode (irc_session_t * session, const char * channel, const char * mode)
+ * \brief Views or changes the channel mode.
+ *
+ * \param session An initiated and connected session.
+ * \param channel A channel name to invite to. Must not be NULL.
+ * \param mode    A channel mode, described below. If NULL, the channel mode is
+ *                not changed, just the old mode is returned.
+ *
+ * \return Return code 0 means success. Other value means error, the error 
+ *  code may be obtained through irc_errno(). Any error, generated by the 
+ *  IRC server, is available through irc_callbacks_t::event_numeric.
+ *
+ * The irc_cmd_channel_mode() is used to change or view the channel modes.
+ * The \a channel mode is returned if the \a mode is NULL. If the \a mode
+ * is not NULL, the mode for the \a channel will be changed. Note that, 
+ * only channel operators can change the channel modes.
+ *
+ * Channel mode is represended by the letters combination. Every letter has
+ * its own meaning in channel modes. Most channel mode letters are boolean
+ * (i.e. could only be set or reset), but a few channel mode letters accept a 
+ * parameter. All channel options are set by adding a plus sign before the 
+ * letter, and reset by adding a minus sign before the letter.
+ * 
+ * Here is the list of 'standard' channel modes:
+ *
+ * - \a o \a nickname - gives (+o nick) or takes (-o nick) the channel 
+ *      operator privileges from  a \a nickname. This mode affects the 
+ *      users in channel, not the channel itself. 
+ *      Examples: "+o tim", "-o watson".
+ *
+ * - \a p - sets (+p) or resets (-p) private channel flag. 
+ *      Private channels are shown in channel list as 'Prv', without the topic.
+ *
+ * - \a s - sets (+p) or resets (-p) secret channel flag. 
+ *      Secret channels aren't shown in channel list at all.
+ *
+ * - \a i - sets (+i) or resets (-i) invite-only channel flag. When the flag
+ *      is set, only the people who are invited by irc_cmd_invite(), can
+ *      join this channel.
+ *
+ * - \a t - sets (+t) or resets (-t) topic settable by channel operator only
+ *      flag. When the flag is set, only the channel operators can change the
+ *      channel topic.
+ *
+ * - \a n - sets (+n) or resets (-n) the protection from the clients outside 
+ *      the channel. When the \a +n mode is set, only the clients, who are in 
+ *      channel, can send the messages to the channel.
+ *
+ * - \a m - sets (+m) or resets (-m) the moderation of the channel. When the
+ *      moderation mode is set, only channel operators and the users who have
+ *      the \a +v user mode can speak in the channel.
+ *
+ * - \a v \a nickname - gives (+v nick) or takes (-v nick) from user the 
+ *      ability to speak on a moderated channel.
+ *      Examples: "+v tim", "-v watson".
+ *
+ * - \a l \a number - sets (+l 20) or removes (-l) the restriction of maximum
+ *      users in channel. When the restriction is set, and there is a number
+ *      of users in the channel, no one can join the channel anymore.
+ *
+ * - \a k \a key - sets (+k secret) or removes (-k) the password from the 
+ *      channel. When the restriction is set, any user joining the channel 
+ *      required to provide a channel key.
+ *
+ * - \a b \a mask - sets (+b *!*@*.mil) or removes (-b *!*@*.mil) the ban mask
+ *      on a user to keep him out of channel. Note that to remove the ban you 
+ *      must specify the ban mask to remove, not just "-b".
+ *
+ * Note that the actual list of channel modes depends on the IRC server, and
+ * can be bigger. If you know the popular channel modes, which aren't 
+ * mentioned here - please contact me at tim@krasnogorsk.ru
+ *
+ * Possible error responces for this command from the RFC1459:
+ * - ::LIBIRC_RFC_ERR_NEEDMOREPARAMS
+ * - ::LIBIRC_RFC_ERR_CHANOPRIVSNEEDED
+ * - ::LIBIRC_RFC_ERR_NOSUCHNICK
+ * - ::LIBIRC_RFC_ERR_NOTONCHANNEL
+ * - ::LIBIRC_RFC_ERR_KEYSET
+ * - ::LIBIRC_RFC_ERR_UNKNOWNMODE
+ * - ::LIBIRC_RFC_ERR_NOSUCHCHANNEL
+ *
+ * And the mode information is given using following reply codes:
+ * - ::LIBIRC_RFC_RPL_CHANNELMODEIS
+ * - ::LIBIRC_RFC_RPL_BANLIST
+ * - ::LIBIRC_RFC_RPL_ENDOFBANLIST
+ *
+ * \sa irc_cmd_topic irc_cmd_list
+ * \ingroup ircmd_ch
+ */
+int irc_cmd_channel_mode (irc_session_t * session, const char * channel, const char * mode);
+
+
+/*!
+ * \fn int irc_cmd_user_mode (irc_session_t * session, const char * mode)
+ * \brief Views or changes your own user mode.
+ *
+ * \param session An initiated and connected session.
+ * \param mode    A user mode, described below. If NULL, the user mode is
+ *                not changed, just the old mode is returned.
+ *
+ * \return Return code 0 means success. Other value means error, the error 
+ *  code may be obtained through irc_errno(). Any error, generated by the 
+ *  IRC server, is available through irc_callbacks_t::event_numeric.
+ *
+ * The irc_cmd_user_mode() is used to change or view the user modes.
+ * Note that, unlike channel modes, not all user modes can be changed. 
+ * The user mode is returned if the \a mode is NULL. If the \a mode
+ * is not NULL, the mode for you will be changed, and new mode will be 
+ * returned.
+ *
+ * Like channel mode, user mode is also represended by the letters combination.
+ * All the user mode letters are boolean (i.e. could only be set or reset),
+ * they are set by adding a plus sign before the letter, and reset by adding 
+ * a minus sign before the letter.
+ * 
+ * Here is the list of 'standard' user modes:
+ *
+ * - \a o - represents an IRC operator status. Could not be set directly (but
+ *      can be reset though), to set it use the IRC \a OPER command.
+ *
+ * - \a i - if set, marks a user as 'invisible' - that is, not seen by lookups 
+ *      if the user is not in a channel.
+ *
+ * - \a w - if set, marks a user as 'receiving wallops' - special messages 
+ *      generated by IRC operators using WALLOPS command.
+ *
+ * - \a s - if set, marks a user for receipt of server notices.
+ *
+ * - \a r - NON-STANDARD MODE. If set, user has been authenticated with 
+ *      NICKSERV IRC service.
+ *
+ * - \a x - NON-STANDARD MODE. If set, user's real IP is hidden by IRC 
+ *      servers, to prevent scriptkiddies to do nasty things to the user's 
+ *      computer.
+ *
+ * Note that the actual list of user modes depends on the IRC server, and
+ * can be bigger. If you know the popular user modes, which aren't 
+ * mentioned here - please contact me at tim@krasnogorsk.ru
+ *
+ * Possible error responces for this command from the RFC1459:
+ * - ::LIBIRC_RFC_ERR_NEEDMOREPARAMS
+ * - ::LIBIRC_RFC_ERR_NOSUCHNICK
+ * - ::LIBIRC_RFC_ERR_UNKNOWNMODE
+ * - ::LIBIRC_RFC_ERR_USERSDONTMATCH
+ * - ::LIBIRC_RFC_ERR_UMODEUNKNOWNFLAG
+ *
+ * And the mode information is given using reply code ::LIBIRC_RFC_RPL_UMODEIS
+ *
+ * \ingroup ircmd_oth
+ */
+int irc_cmd_user_mode (irc_session_t * session, const char * mode);
+
+
+/*!
+ * \fn int irc_cmd_nick (irc_session_t * session, const char * newnick)
+ * \brief Changes your nick.
+ *
+ * \param session An initiated and connected session.
+ * \param newnick A new nick. Must not be NULL.
+ *
+ * \return Return code 0 means success. Other value means error, the error 
+ *  code may be obtained through irc_errno(). Any error, generated by the 
+ *  IRC server, is available through irc_callbacks_t::event_numeric.
+ *
+ * This function is used to change your current nick to another nick. Note 
+ * that such a change is not always possible; for example you cannot change 
+ * nick to the existing nick, or (on some servers) to the registered nick.
+ *
+ * Possible error responces for this command from the RFC1459:
+ * - ::LIBIRC_RFC_ERR_NONICKNAMEGIVEN
+ * - ::LIBIRC_RFC_ERR_ERRONEUSNICKNAME
+ * - ::LIBIRC_RFC_ERR_NICKNAMEINUSE
+ * - ::LIBIRC_RFC_ERR_NICKCOLLISION
+ *
+ * \ingroup ircmd_oth
+ */
+int irc_cmd_nick (irc_session_t * session, const char * newnick);
+
+
+/*!
+ * \fn int irc_cmd_whois (irc_session_t * session, const char * nick)
+ * \brief Queries the information about the nick.
+ *
+ * \param session An initiated and connected session.
+ * \param nick    A nick to query the information abour. Must not be NULL. 
+ *                A comma-separated list of several nicknames may be given.
+ *
+ * \return Return code 0 means success. Other value means error, the error 
+ *  code may be obtained through irc_errno(). Any error, generated by the 
+ *  IRC server, is available through irc_callbacks_t::event_numeric.
+ *
+ * This function queries various information about the nick: username, real 
+ * name, the IRC server used, the channels user is in, idle time, away mode and so on.
+ *
+ * Possible error responces for this command from the RFC1459:
+ * - ::LIBIRC_RFC_ERR_NOSUCHSERVER
+ * - ::LIBIRC_RFC_ERR_NOSUCHNICK
+ * - ::LIBIRC_RFC_ERR_NONICKNAMEGIVEN
+ *
+ * And the information is returned using the following reply codes. The whois
+ * query is completed when ::LIBIRC_RFC_RPL_ENDOFWHOIS message is received.
+ * - ::LIBIRC_RFC_RPL_WHOISUSER
+ * - ::LIBIRC_RFC_RPL_WHOISCHANNELS
+ * - ::LIBIRC_RFC_RPL_WHOISSERVER
+ * - ::LIBIRC_RFC_RPL_AWAY
+ * - ::LIBIRC_RFC_RPL_WHOISOPERATOR
+ * - ::LIBIRC_RFC_RPL_WHOISIDLE
+ * - ::LIBIRC_RFC_RPL_ENDOFWHOIS
+ *
+ * \ingroup ircmd_oth
+ */
+int irc_cmd_whois (irc_session_t * session, const char * nick);
 
 
 /*!
@@ -399,7 +799,7 @@ int irc_cmd_join (irc_session_t * session, const char * channel, const char * ke
  *
  * \return Return code 0 means success. Other value means error, the error 
  *  code may be obtained through irc_errno(). Any error, generated by the 
- *  IRC server, is available through event_numeric.
+ *  IRC server, is available through irc_callbacks_t::event_numeric.
  *
  * This function is used to send the channel or private messages. The target
  * is determined by \a nch argument: if it describes nick, this will be a 
@@ -407,7 +807,19 @@ int irc_cmd_join (irc_session_t * session, const char * channel, const char * ke
  * depending on channel modes, you may be required to join the channel to
  * send the channel messages.
  *
- * \ingroup sendcmds
+ * Possible error responces for this command from the RFC1459:
+ * - ::LIBIRC_RFC_ERR_NORECIPIENT
+ * - ::LIBIRC_RFC_ERR_NOTEXTTOSEND
+ * - ::LIBIRC_RFC_ERR_CANNOTSENDTOCHAN
+ * - ::LIBIRC_RFC_ERR_NOTONCHANNEL
+ * - ::LIBIRC_RFC_ERR_NOTOPLEVEL
+ * - ::LIBIRC_RFC_ERR_WILDTOPLEVEL
+ * - ::LIBIRC_RFC_ERR_TOOMANYTARGETS
+ * - ::LIBIRC_RFC_ERR_NOSUCHNICK
+ *
+ * On success there is NOTHING generated.
+ *
+ * \ingroup ircmd_msg
  */
 int irc_cmd_msg  (irc_session_t * session, const char * nch, const char * text);
 
@@ -422,13 +834,26 @@ int irc_cmd_msg  (irc_session_t * session, const char * nch, const char * text);
  *
  * \return Return code 0 means success. Other value means error, the error 
  *  code may be obtained through irc_errno(). Any error, generated by the 
- *  IRC server, is available through event_numeric.
+ *  IRC server, is available through irc_callbacks_t::event_numeric.
  *
  * This function is used to send the /me message to channel or private.
  * As for irc_cmd_msg, the target is determined by \a nch argument.
  *
+ * Possible error responces for this command from the RFC1459:
+ * - ::LIBIRC_RFC_ERR_NORECIPIENT
+ * - ::LIBIRC_RFC_ERR_NOTEXTTOSEND
+ * - ::LIBIRC_RFC_ERR_CANNOTSENDTOCHAN
+ * - ::LIBIRC_RFC_ERR_NOTONCHANNEL
+ * - ::LIBIRC_RFC_ERR_NOTOPLEVEL
+ * - ::LIBIRC_RFC_ERR_WILDTOPLEVEL
+ * - ::LIBIRC_RFC_ERR_TOOMANYTARGETS
+ * - ::LIBIRC_RFC_ERR_NOSUCHNICK
+ *
+ * On success there is NOTHING generated. 
+ * However, a ::LIBIRC_RFC_RPL_AWAY reply can be also generated.            
+ *
  * \sa irc_cmd_msg
- * \ingroup sendcmds
+ * \ingroup ircmd_msg
  */
 int irc_cmd_me (irc_session_t * session, const char * nch, const char * text);
 
@@ -443,7 +868,7 @@ int irc_cmd_me (irc_session_t * session, const char * nch, const char * text);
  *
  * \return Return code 0 means success. Other value means error, the error 
  *  code may be obtained through irc_errno(). Any error, generated by the 
- *  IRC server, is available through event_numeric.
+ *  IRC server, is available through irc_callbacks_t::event_numeric.
  *
  * This function is used to send the channel or private notices. The target
  * is determined by \a nch argument: if it describes nick, this will be a 
@@ -454,8 +879,21 @@ int irc_cmd_me (irc_session_t * session, const char * nch, const char * text);
  * The only difference between message and notice is that, according to RFC 
  * 1459, you must not automatically reply to NOTICE messages.
  *
- * \ingroup sendcmds
+ * Possible error responces for this command from the RFC1459:
+ * - ::LIBIRC_RFC_ERR_NORECIPIENT
+ * - ::LIBIRC_RFC_ERR_NOTEXTTOSEND
+ * - ::LIBIRC_RFC_ERR_CANNOTSENDTOCHAN
+ * - ::LIBIRC_RFC_ERR_NOTONCHANNEL
+ * - ::LIBIRC_RFC_ERR_NOTOPLEVEL
+ * - ::LIBIRC_RFC_ERR_WILDTOPLEVEL
+ * - ::LIBIRC_RFC_ERR_TOOMANYTARGETS
+ * - ::LIBIRC_RFC_ERR_NOSUCHNICK
+ *
+ * On success there is NOTHING generated. On notices sent to target nick, 
+ * a ::LIBIRC_RFC_RPL_AWAY reply may be generated.
+ *
  * \sa irc_cmd_msg
+ * \ingroup ircmd_msg
  */
 int irc_cmd_notice (irc_session_t * session, const char * nch, const char * text);
 
@@ -471,13 +909,22 @@ int irc_cmd_notice (irc_session_t * session, const char * nch, const char * text
  *
  * \return Return code 0 means success. Other value means error, the error 
  *  code may be obtained through irc_errno(). Any error, generated by the 
- *  IRC server, is available through ::event_numeric.
+ *  IRC server, is available through irc_callbacks_t::event_numeric.
  *
  * This function is used to kick a person out of channel. Note that you must
  * be a channel operator to kick anyone.
  *
- * \sa event_numeric
- * \ingroup sendcmds
+ * Possible error responces for this command from the RFC1459:
+ * - ::LIBIRC_RFC_ERR_NEEDMOREPARAMS
+ * - ::LIBIRC_RFC_ERR_BADCHANMASK
+ * - ::LIBIRC_RFC_ERR_NOSUCHCHANNEL
+ * - ::LIBIRC_RFC_ERR_NOTONCHANNEL
+ * - ::LIBIRC_RFC_ERR_CHANOPRIVSNEEDED
+ *
+ * On success the irc_callbacks_t::event_kick event will be generated.
+ *
+ * \sa irc_callbacks_t::event_numeric
+ * \ingroup ircmd_ch
  */
 int irc_cmd_kick (irc_session_t * session, const char * nick, const char * channel, const char * reason);
 
@@ -492,7 +939,7 @@ int irc_cmd_kick (irc_session_t * session, const char * nick, const char * chann
  *
  * \return Return code 0 means success. Other value means error, the error 
  *  code may be obtained through irc_errno(). Any error, generated by the 
- *  IRC server, is available through ::event_numeric.
+ *  IRC server, is available through irc_callbacks_t::event_numeric.
  *
  * This function is used to send a CTCP request. There are four CTCP requests
  * supported by Mirc:
@@ -501,10 +948,20 @@ int irc_cmd_kick (irc_session_t * session, const char * nick, const char * chann
  *  PING    - get the client delay.
  *  TIME    - get the client local time.
  *
- * A reply to the CTCP request will be sent by the ::event_ctcp_rep callback;
+ * A reply to the CTCP request will be sent by the irc_callbacks_t::event_ctcp_rep callback;
  * be sure to define it.
  *
- * \sa event_ctcp_rep event_numeric
+ * Possible error responces for this command from the RFC1459:
+ * - ::LIBIRC_RFC_ERR_NORECIPIENT
+ * - ::LIBIRC_RFC_ERR_NOTEXTTOSEND
+ * - ::LIBIRC_RFC_ERR_CANNOTSENDTOCHAN
+ * - ::LIBIRC_RFC_ERR_NOTONCHANNEL
+ * - ::LIBIRC_RFC_ERR_NOTOPLEVEL
+ * - ::LIBIRC_RFC_ERR_WILDTOPLEVEL
+ * - ::LIBIRC_RFC_ERR_TOOMANYTARGETS
+ * - ::LIBIRC_RFC_ERR_NOSUCHNICK
+ *
+ * \sa irc_callbacks_t::event_ctcp_rep irc_callbacks_t::event_numeric
  * \ingroup ctcp
  */
 int irc_cmd_ctcp_request (irc_session_t * session, const char * nick, const char * request);
@@ -520,10 +977,20 @@ int irc_cmd_ctcp_request (irc_session_t * session, const char * nick, const char
  *
  * \return Return code 0 means success. Other value means error, the error 
  *  code may be obtained through irc_errno(). Any error, generated by the 
- *  IRC server, is available through event_numeric.
+ *  IRC server, is available through irc_callbacks_t::event_numeric.
  *
  * This function is used to send a reply to the CTCP request, if you choose
  * not to use internal CTCP reply function, irc_event_ctcp_internal().
+ *
+ * Possible error responces for this command from the RFC1459:
+ * - ::LIBIRC_RFC_ERR_NORECIPIENT
+ * - ::LIBIRC_RFC_ERR_NOTEXTTOSEND
+ * - ::LIBIRC_RFC_ERR_CANNOTSENDTOCHAN
+ * - ::LIBIRC_RFC_ERR_NOTONCHANNEL
+ * - ::LIBIRC_RFC_ERR_NOTOPLEVEL
+ * - ::LIBIRC_RFC_ERR_WILDTOPLEVEL
+ * - ::LIBIRC_RFC_ERR_TOOMANYTARGETS
+ * - ::LIBIRC_RFC_ERR_NOSUCHNICK
  *
  * \ingroup ctcp
  */
@@ -542,7 +1009,7 @@ int irc_cmd_ctcp_reply (irc_session_t * session, const char * nick, const char *
  *
  * This function generates automatic CTCP reply to remote CTCP requests. It may
  * be either called directly from the event_ctcp_rep callback, or may be
- * specified AS ::event_ctcp_rep callback to simplify the code when adding 
+ * specified as irc_callbacks_t::event_ctcp_rep callback to simplify the code when adding 
  * CTCP functionality to your bot.
  *
  * \ingroup ctcp
@@ -605,7 +1072,7 @@ void irc_target_get_host (const char * target, char *nick, size_t size);
  *
  * \return Return code 0 means success. Other value means error, the error 
  *  code may be obtained through irc_errno(). Any error, generated by the 
- *  IRC server, is available through event_numeric.
+ *  IRC server, is available through irc_callbacks_t::event_numeric.
  *
  * This function requests a DCC CHAT between you and other user. For 
  * newbies, DCC chat is like private chat, but it goes directly between
@@ -615,6 +1082,16 @@ void irc_target_get_host (const char * target, char *nick, size_t size);
  * When the chat is accepted, terminated, or some data is received, the 
  * callback function is called. See the details in irc_dcc_callback_t 
  * declaration.
+ *
+ * Possible error responces for this command from the RFC1459:
+ * - ::LIBIRC_RFC_ERR_NORECIPIENT
+ * - ::LIBIRC_RFC_ERR_NOTEXTTOSEND
+ * - ::LIBIRC_RFC_ERR_CANNOTSENDTOCHAN
+ * - ::LIBIRC_RFC_ERR_NOTONCHANNEL
+ * - ::LIBIRC_RFC_ERR_NOTOPLEVEL
+ * - ::LIBIRC_RFC_ERR_WILDTOPLEVEL
+ * - ::LIBIRC_RFC_ERR_TOOMANYTARGETS
+ * - ::LIBIRC_RFC_ERR_NOSUCHNICK
  *
  * \sa irc_dcc_callback_t irc_dcc_msg
  * \ingroup dccstuff
@@ -651,7 +1128,6 @@ int irc_dcc_msg	(irc_session_t * session, irc_dcc_t dccid, const char * text);
  * \param dccid   A DCC session ID, returned by appropriate callback.
  * \param ctx     A user-supplied DCC session context, which will be passed 
  *                to the DCC callback function. May be NULL.
- * \param nick    A nick to DCC CHAT with.
  * \param callback A DCC callback function, which will be called when 
  *                anything is said by other party. Must not be NULL.
  *
@@ -697,7 +1173,7 @@ int	irc_dcc_accept (irc_session_t * session, irc_dcc_t dccid, void * ctx, irc_dc
  * Do not use this function to close the accepted or initiated DCC session.
  * Use irc_dcc_destroy instead.
  *
- * \sa irc_dcc_accept event_dcc_chat_req event_dcc_send_req irc_dcc_destroy
+ * \sa irc_dcc_accept irc_callbacks_t::event_dcc_chat_req irc_callbacks_t::event_dcc_send_req irc_dcc_destroy
  * \ingroup dccstuff
  */
 int irc_dcc_decline (irc_session_t * session, irc_dcc_t dccid);
@@ -718,12 +1194,22 @@ int irc_dcc_decline (irc_session_t * session, irc_dcc_t dccid);
  *
  * \return Return code 0 means success. Other value means error, the error 
  *  code may be obtained through irc_errno(). Any error, generated by the 
- *  IRC server, is available through event_numeric.
+ *  IRC server, is available through irc_callbacks_t::event_numeric.
  *
  * This function generates a DCC SEND request to send the file. When it is
  * accepted, the file is sent to the remote party, and the DCC session is
  * closed. The send operation progress and result can be checked in 
  * callback. See the details in irc_dcc_callback_t declaration.
+ *
+ * Possible error responces for this command from the RFC1459:
+ * - ::LIBIRC_RFC_ERR_NORECIPIENT
+ * - ::LIBIRC_RFC_ERR_NOTEXTTOSEND
+ * - ::LIBIRC_RFC_ERR_CANNOTSENDTOCHAN
+ * - ::LIBIRC_RFC_ERR_NOTONCHANNEL
+ * - ::LIBIRC_RFC_ERR_NOTOPLEVEL
+ * - ::LIBIRC_RFC_ERR_WILDTOPLEVEL
+ * - ::LIBIRC_RFC_ERR_TOOMANYTARGETS
+ * - ::LIBIRC_RFC_ERR_NOSUCHNICK
  *
  * \sa irc_dcc_callback_t
  * \ingroup dccstuff
@@ -755,12 +1241,12 @@ int irc_dcc_destroy (irc_session_t * session, irc_dcc_t dccid);
 
 /*!
  * \fn void irc_get_version (unsigned int * high, unsigned int * low)
- * \brief Obtains a libirc version.
+ * \brief Obtains a libircclient version.
  *
  * \param high A pointer to receive the high version part.
  * \param low  A pointer to receive the low version part.
  *
- * This function returns the libirc version. You can use the version either
+ * This function returns the libircclient version. You can use the version either
  * to check whether required options are available, or to output the version.
  * The preferred printf-like format string to output the version is:
  *
@@ -779,9 +1265,9 @@ void irc_get_version (unsigned int * high, unsigned int * low);
  * \param ctx  A context.
  *
  * This function sets the user-defined context for this IRC session. This
- * context is not used by libirc. Its purpose is to store session-specific
+ * context is not used by libircclient. Its purpose is to store session-specific
  * user data, which may be obtained later by calling irc_get_ctx().
- * Note that libirc just 'carries out' this pointer. If you allocate some
+ * Note that libircclient just 'carries out' this pointer. If you allocate some
  * memory, and store its address in ctx (most common usage), it is your 
  * responsibility to free it before calling irc_destroy_session().
  *
@@ -820,7 +1306,7 @@ void * irc_get_ctx (irc_session_t * session);
  * - irc_errno() doesn't return 0 if function succeed; actually, the return
  *    value will be undefined.
  * - you should call irc_errno() IMMEDIATELY after function fails, before 
- *   calling any other libirc function.
+ *   calling any other libircclient function.
  *
  * \sa irc_strerror
  * \ingroup errors
@@ -844,12 +1330,12 @@ const char * irc_strerror (int ircerrno);
 
 /*!
  * \fn void irc_option_set (irc_session_t * session, unsigned int option)
- * \brief Sets the libirc option.
+ * \brief Sets the libircclient option.
  *
  * \param session An initiated session.
  * \param option  An option from libirc_options.h
  *
- * This function sets the libirc option, changing libirc behavior. See the
+ * This function sets the libircclient option, changing libircclient behavior. See the
  * option list for the meaning for every option.
  *
  * \sa irc_option_reset
@@ -860,12 +1346,12 @@ void irc_option_set (irc_session_t * session, unsigned int option);
 
 /*!
  * \fn void irc_option_reset (irc_session_t * session, unsigned int option)
- * \brief Resets the libirc option.
+ * \brief Resets the libircclient option.
  *
  * \param session An initiated session.
  * \param option  An option from libirc_options.h
  *
- * This function removes the previously set libirc option, changing libirc 
+ * This function removes the previously set libircclient option, changing libircclient 
  * behavior. See the option list for the meaning for every option.
  *
  * \sa irc_option_set

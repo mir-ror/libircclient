@@ -207,6 +207,20 @@ void event_channel (irc_session_t * session, const char * event, const char * or
 		irc_dcc_sendfile (session, 0, nickbuf, "irctest.c", dcc_file_recv_callback, &dccid);
 		printf ("DCC send ID: %d\n", dccid);
 	}
+
+	if ( !strcmp (params[1], "topic") )
+		irc_cmd_topic (session, params[0], 0);
+	else if ( strstr (params[1], "topic ") == params[1] )
+		irc_cmd_topic (session, params[0], params[1] + 6);
+
+	if ( strstr (params[1], "mode ") == params[1] )
+		irc_cmd_channel_mode (session, params[0], params[1] + 5);
+
+	if ( strstr (params[1], "nick ") == params[1] )
+		irc_cmd_nick (session, params[1] + 5);
+
+	if ( strstr (params[1], "whois ") == params[1] )
+		irc_cmd_whois (session, params[1] + 5);
 }
 
 

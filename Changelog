@@ -1,3 +1,16 @@
+2004-10-03
+   * Libircclient error codes are now well-documented.
+   * Modules documentation is extended.
+   * Added new methods: irc_cmd_part, irc_cmd_invite, irc_cmd_names, 
+     irc_cmd_list, irc_cmd_topic, irc_cmd_channel_mode, irc_cmd_user_mode,
+     irc_cmd_nick, irc_cmd_whois.
+   * Added the improved error handling for NULL pointers to all the irc_cmd* 
+     methods.
+   * Fixed the nickname tracking bug (after the nickname changing, all 
+     privmsgs were treaten as channel messages).
+   * All the numeric reply codes from RFC1459 are now documented. 
+   * Numeric reply codes for every command are now described.
+
 2004-09-30
    * libircclient 0.4 released
    * exported an irc_is_connected method.

@@ -220,7 +220,8 @@ typedef struct
 	 * \param params[1] mandatory, contains the changed channel mode, like 
 	 *        '+t', '-i' and so on.
 	 * \param params[2] optional, contains the mode argument (for example, a
-	 *      key for +k mode)
+	 *      key for +k mode, or user who got the channel operator status for 
+	 *      +o mode)
 	 */
 	irc_event_callback_t	event_mode;
 
@@ -293,6 +294,8 @@ typedef struct
 	 * \param origin the person, who INVITEs you.
 	 * \param params[0] mandatory, contains your nick.
 	 * \param params[1] mandatory, contains the channel name you're invited into.
+     *
+     * \sa irc_cmd_invite irc_cmd_chanmode_invite
 	 */
 	irc_event_callback_t	event_invite;
 
@@ -332,7 +335,7 @@ typedef struct
 	/*!
 	 * The "numeric" event is triggered upon receipt of any numeric response
 	 * from the server. There is a lot of such responses, see the full list
-	 * in the RFC 1459.
+	 * here: \ref rfcnumbers.
      *
      * See the params in ::irc_eventcode_callback_t specification.
 	 */
