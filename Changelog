@@ -1,9 +1,12 @@
 2004-09-12 Georgy Yunaev
-     select() timeout decreased to 0.25sec (was 1 sec). The reason: when
+   * select() timeout decreased to 0.25sec (was 1 sec). The reason: when
      the output buffer is empty, and server doesn't send anything, but a
      command was asynchronously added, it will be processed only after 
      select() timeout.
+   * Fixed bug in DCC sessions - all DCC sessions requested by bots were
+     terminated in 60 secs with TIMEOUT error.
+   * Add DCC error description in irctest example.
 
 
 2004-09-08 Georgy Yunaev
-     libircclient 0.1 released
+   * libircclient 0.1 released
