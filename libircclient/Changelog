@@ -1,0 +1,31 @@
+2004-09-30
+   * libircclient 0.4 released
+   * exported an irc_is_connected method.
+   * fixed error output in examples.
+   * fixed several errors in Win32 build (there were no multithread support)
+   * add a Win32 dsp/dsw to build the library from VC6/7
+   * add a .dsp for an example.
+
+2004-09-14 Georgy Yunaev
+   * libircclient 0.3 released
+   * Fix CTCP time bug.
+   * Added working Win32 Visual Studio build, and libs.
+   * Added ircmud example, which allows people to play MUD through IRC client.
+   * Some stuff rewritten in more portable way.
+
+2004-09-13 Georgy Yunaev
+   * Fix solaris x86/sparc compilation.
+
+2004-09-12 Georgy Yunaev
+   * libircclient 0.2 released
+   * select() timeout decreased to 0.25sec (was 1 sec). The reason: when
+     the output buffer is empty, and server doesn't send anything, but a
+     command was asynchronously added, it will be processed only after 
+     select() timeout.
+   * Fixed bug in DCC sessions - all DCC sessions requested by bots were
+     terminated in 60 secs with TIMEOUT error.
+   * Add DCC error description in irctest example.
+
+
+2004-09-08 Georgy Yunaev
+   * libircclient 0.1 released

@@ -45,8 +45,12 @@
 #ifndef INCLUDE_LIBIRC_H
 #define INCLUDE_LIBIRC_H
 
-#include <sys/select.h>	/* fd_set */
-#include <netinet/in.h>	/* sockaddr_in */
+#if !defined (WIN32)
+	#include <sys/select.h>	/* fd_set */
+	#include <netinet/in.h>	/* sockaddr_in */
+#else
+	#include <winsock.h>
+#endif
 
 #ifdef	__cplusplus
 extern "C" {
@@ -238,6 +242,21 @@ int irc_connect (irc_session_t * session,
  * \ingroup conndisc
  */
 void irc_disconnect (irc_session_t * session);
+
+
+/*!
+ * \fn int irc_is_connected (irc_session_t * session)
+ * \brief Checks whether the session is connecting/connected to the IRC server.
+ *
+ * \param session An IRC session.
+ *
+ * \return Return code 1 means that session is connecting or connected to the
+ *   IRC server, zero value means that the session has been disconnected.
+ *
+ * \sa irc_connect irc_run
+ * \ingroup conndisc
+ */
+int irc_is_connected (irc_session_t * session);
 
 
 /*!
