@@ -37,8 +37,8 @@
 		#include <pthread.h>
 		typedef pthread_mutex_t		port_mutex_t;
 
-		#if !defined (PTHREAD_MUTEX_RECURSIVE)
-			#define PTHREAD_MUTEX_RECURSIVE	PTHREAD_MUTEX_RECURSIVE_NP
+		#if !defined (PTHREAD_MUTEX_RECURSIVE) && defined (PTHREAD_MUTEX_RECURSIVE_NP)
+			#define PTHREAD_MUTEX_RECURSIVE		PTHREAD_MUTEX_RECURSIVE_NP
 		#endif
 	#endif 
 #else
@@ -69,13 +69,17 @@ static inline int libirc_mutex_init (port_mutex_t * mutex)
 #if defined (WIN32)
 	InitializeCriticalSection (mutex);
 	return 0;
-#else
+#elif defined (PTHREAD_MUTEX_RECURSIVE)
 	pthread_mutexattr_t	attr;
 
 	return (pthread_mutexattr_init (&attr)
 		|| pthread_mutexattr_settype (&attr, PTHREAD_MUTEX_RECURSIVE)
 		|| pthread_mutex_init (mutex, &attr));
-#endif
+#else /* !defined (PTHREAD_MUTEX_RECURSIVE) */
+
+	return pthread_mutex_init (mutex, 0);
+
+#endif /* defined (WIN32) */
 }
 
 
