@@ -32,8 +32,10 @@ AC_HEADER_TIME
 AC_FUNC_MALLOC
 AC_FUNC_SELECT_ARGTYPES
 AC_FUNC_STAT
-AC_CHECK_FUNCS([gethostbyname_r])
+AC_CHECK_FUNCS([gethostbyname_r localtime_r socket inet_ntoa])
 
+AC_CHECK_LIB(socket, socket, AC_DEFINE(HAVE_SOCKET) LIBS="$LIBS -lsocket")
+AC_CHECK_LIB(nsl, inet_ntoa, AC_DEFINE(HAVE_INET_NTOA) LIBS="$LIBS -lnsl")
 
 if test "$enable_debug" = "yes"; then
 	CFLAGS="-g -DENABLE_DEBUG"
@@ -46,5 +48,6 @@ if test "$disable_thread" != "yes"; then
 fi
 
 AC_SUBST(CFLAGS)
+AC_SUBST(LIBS)
 AC_CONFIG_FILES([examples/Makefile src/Makefile])
 AC_OUTPUT

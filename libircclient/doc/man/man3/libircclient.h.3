@@ -1,4 +1,4 @@
-.TH "libircclient.h" 3 "8 Sep 2004" "libirc" \" -*- nroff -*-
+.TH "libircclient.h" 3 "14 Sep 2004" "Version 0.1" "libirc" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -23,19 +23,19 @@ libircclient.h \- This file defines all prototypes and functions to use libirc.
 .ti -1c
 .RI "typedef irc_session_s \fBirc_session_t\fP"
 .br
-.RI "\fIA libirc IRC session.\fP"
+.RI "\fIA libirc IRC session. \fP"
 .ti -1c
 .RI "typedef irc_dcc_session_s \fBirc_dcc_session_t\fP"
 .br
-.RI "\fIA libirc DCC session.\fP"
+.RI "\fIA libirc DCC session. \fP"
 .ti -1c
 .RI "typedef unsigned int \fBirc_dcc_t\fP"
 .br
-.RI "\fIA DCC session identifier.\fP"
+.RI "\fIA DCC session identifier. \fP"
 .ti -1c
 .RI "typedef void(* \fBirc_dcc_callback_t\fP )(\fBirc_session_t\fP *session, \fBirc_dcc_t\fP id, int status, void *ctx, const char *data, unsigned int length)"
 .br
-.RI "\fIA common DCC callback, used to inform you about the current DCC state or event.\fP"
+.RI "\fIA common DCC callback, used to inform you about the current DCC state or event. \fP"
 .in -1c
 .SS "Functions"
 
@@ -43,190 +43,194 @@ libircclient.h \- This file defines all prototypes and functions to use libirc.
 .ti -1c
 .RI "\fBirc_session_t\fP * \fBirc_create_session\fP (\fBirc_callbacks_t\fP *callbacks)"
 .br
-.RI "\fICreates and initiates a new IRC session.\fP"
+.RI "\fICreates and initiates a new IRC session. \fP"
 .ti -1c
 .RI "void \fBirc_destroy_session\fP (\fBirc_session_t\fP *session)"
 .br
-.RI "\fIDestroys previously created IRC session.\fP"
+.RI "\fIDestroys previously created IRC session. \fP"
 .ti -1c
 .RI "int \fBirc_connect\fP (\fBirc_session_t\fP *session, const char *server, unsigned short port, const char *server_password, const char *nick, const char *username, const char *realname)"
 .br
-.RI "\fIInitiates a connection to IRC server.\fP"
+.RI "\fIInitiates a connection to IRC server. \fP"
 .ti -1c
 .RI "void \fBirc_disconnect\fP (\fBirc_session_t\fP *session)"
 .br
-.RI "\fIDisconnects a connection to IRC server.\fP"
+.RI "\fIDisconnects a connection to IRC server. \fP"
 .ti -1c
 .RI "int \fBirc_run\fP (\fBirc_session_t\fP *session)"
 .br
-.RI "\fIGoes into forever-loop, processing IRC events and generating callbacks.\fP"
+.RI "\fIGoes into forever-loop, processing IRC events and generating callbacks. \fP"
 .ti -1c
 .RI "int \fBirc_add_select_descriptors\fP (\fBirc_session_t\fP *session, fd_set *in_set, fd_set *out_set, int *maxfd)"
 .br
-.RI "\fIAdds IRC socket(s) for the descriptor set to use in select().\fP"
+.RI "\fIAdds IRC socket(s) for the descriptor set to use in select(). \fP"
 .ti -1c
 .RI "int \fBirc_process_select_descriptors\fP (\fBirc_session_t\fP *session, fd_set *in_set, fd_set *out_set)"
 .br
-.RI "\fIProcesses the IRC socket(s), which descriptor(s) are set.\fP"
+.RI "\fIProcesses the IRC socket(s), which descriptor(s) are set. \fP"
 .ti -1c
 .RI "int \fBirc_send_raw\fP (\fBirc_session_t\fP *session, const char *format,...)"
 .br
-.RI "\fISends raw data to the IRC server.\fP"
+.RI "\fISends raw data to the IRC server. \fP"
 .ti -1c
 .RI "int \fBirc_cmd_quit\fP (\fBirc_session_t\fP *session, const char *reason)"
 .br
-.RI "\fISends QUIT command to the IRC server.\fP"
+.RI "\fISends QUIT command to the IRC server. \fP"
 .ti -1c
 .RI "int \fBirc_cmd_join\fP (\fBirc_session_t\fP *session, const char *channel, const char *key)"
 .br
-.RI "\fIJoins the new IRC channel.\fP"
+.RI "\fIJoins the new IRC channel. \fP"
 .ti -1c
 .RI "int \fBirc_cmd_msg\fP (\fBirc_session_t\fP *session, const char *nch, const char *text)"
 .br
-.RI "\fISends the message to the nick or to the channel.\fP"
+.RI "\fISends the message to the nick or to the channel. \fP"
 .ti -1c
 .RI "int \fBirc_cmd_me\fP (\fBirc_session_t\fP *session, const char *nch, const char *text)"
 .br
-.RI "\fISends the /me (CTCP ACTION) message to the nick or to the channel.\fP"
+.RI "\fISends the /me (CTCP ACTION) message to the nick or to the channel. \fP"
 .ti -1c
 .RI "int \fBirc_cmd_notice\fP (\fBirc_session_t\fP *session, const char *nch, const char *text)"
 .br
-.RI "\fISends the notice to the nick or to the channel.\fP"
+.RI "\fISends the notice to the nick or to the channel. \fP"
 .ti -1c
 .RI "int \fBirc_cmd_kick\fP (\fBirc_session_t\fP *session, const char *nick, const char *channel, const char *reason)"
 .br
-.RI "\fIKick some lazy ass out of channel.\fP"
+.RI "\fIKick some lazy ass out of channel. \fP"
 .ti -1c
 .RI "int \fBirc_cmd_ctcp_request\fP (\fBirc_session_t\fP *session, const char *nick, const char *request)"
 .br
-.RI "\fIGenerates a CTCP request.\fP"
+.RI "\fIGenerates a CTCP request. \fP"
 .ti -1c
 .RI "int \fBirc_cmd_ctcp_reply\fP (\fBirc_session_t\fP *session, const char *nick, const char *reply)"
 .br
-.RI "\fIGenerates a reply to the CTCP request.\fP"
+.RI "\fIGenerates a reply to the CTCP request. \fP"
 .ti -1c
 .RI "void \fBirc_event_ctcp_internal\fP (\fBirc_session_t\fP *session, const char *event, const char *origin, const char **params, unsigned int count)"
 .br
-.RI "\fIGenerates an automatic reply to the CTCP request.\fP"
+.RI "\fIGenerates an automatic reply to the CTCP request. \fP"
 .ti -1c
 .RI "void \fBirc_target_get_nick\fP (const char *target, char *nick, size_t size)"
 .br
-.RI "\fIGets the nick part from the target.\fP"
+.RI "\fIGets the nick part from the target. \fP"
 .ti -1c
 .RI "void \fBirc_target_get_host\fP (const char *target, char *nick, size_t size)"
 .br
-.RI "\fIGets the host part from the target.\fP"
+.RI "\fIGets the host part from the target. \fP"
 .ti -1c
 .RI "int \fBirc_dcc_chat\fP (\fBirc_session_t\fP *session, void *ctx, const char *nick, \fBirc_dcc_callback_t\fP callback, \fBirc_dcc_t\fP *dccid)"
 .br
-.RI "\fIInitiates a DCC CHAT.\fP"
+.RI "\fIInitiates a DCC CHAT. \fP"
 .ti -1c
 .RI "int \fBirc_dcc_msg\fP (\fBirc_session_t\fP *session, \fBirc_dcc_t\fP dccid, const char *text)"
 .br
-.RI "\fISends the message to the specific DCC CHAT.\fP"
+.RI "\fISends the message to the specific DCC CHAT. \fP"
 .ti -1c
 .RI "int \fBirc_dcc_accept\fP (\fBirc_session_t\fP *session, \fBirc_dcc_t\fP dccid, void *ctx, \fBirc_dcc_callback_t\fP callback)"
 .br
-.RI "\fIAccepts a remote DCC CHAT or DCC RECVFILE request.\fP"
+.RI "\fIAccepts a remote DCC CHAT or DCC RECVFILE request. \fP"
 .ti -1c
 .RI "int \fBirc_dcc_decline\fP (\fBirc_session_t\fP *session, \fBirc_dcc_t\fP dccid)"
 .br
-.RI "\fIDeclines a remote DCC CHAT or DCC RECVFILE request.\fP"
+.RI "\fIDeclines a remote DCC CHAT or DCC RECVFILE request. \fP"
 .ti -1c
 .RI "int \fBirc_dcc_sendfile\fP (\fBirc_session_t\fP *session, void *ctx, const char *nick, const char *filename, \fBirc_dcc_callback_t\fP callback, \fBirc_dcc_t\fP *dccid)"
 .br
-.RI "\fISends a file via DCC.\fP"
+.RI "\fISends a file via DCC. \fP"
 .ti -1c
 .RI "int \fBirc_dcc_destroy\fP (\fBirc_session_t\fP *session, \fBirc_dcc_t\fP dccid)"
 .br
-.RI "\fIDestroys a DCC session.\fP"
+.RI "\fIDestroys a DCC session. \fP"
 .ti -1c
 .RI "void \fBirc_get_version\fP (unsigned int *high, unsigned int *low)"
 .br
-.RI "\fIObtains a libirc version.\fP"
+.RI "\fIObtains a libirc version. \fP"
 .ti -1c
 .RI "void \fBirc_set_ctx\fP (\fBirc_session_t\fP *session, void *ctx)"
 .br
-.RI "\fISets the IRC session context.\fP"
+.RI "\fISets the IRC session context. \fP"
 .ti -1c
 .RI "void * \fBirc_get_ctx\fP (\fBirc_session_t\fP *session)"
 .br
-.RI "\fIReturns the IRC session context.\fP"
+.RI "\fIReturns the IRC session context. \fP"
 .ti -1c
 .RI "int \fBirc_errno\fP (\fBirc_session_t\fP *session)"
 .br
-.RI "\fIReturns the last error code.\fP"
+.RI "\fIReturns the last error code. \fP"
 .ti -1c
 .RI "const char * \fBirc_strerror\fP (int ircerrno)"
 .br
-.RI "\fIReturns the text error message associated with this error code.\fP"
+.RI "\fIReturns the text error message associated with this error code. \fP"
 .ti -1c
 .RI "void \fBirc_option_set\fP (\fBirc_session_t\fP *session, unsigned int option)"
 .br
-.RI "\fISets the libirc option.\fP"
+.RI "\fISets the libirc option. \fP"
 .ti -1c
 .RI "void \fBirc_option_reset\fP (\fBirc_session_t\fP *session, unsigned int option)"
 .br
-.RI "\fIResets the libirc option.\fP"
+.RI "\fIResets the libirc option. \fP"
 .in -1c
-.SH "DETAILED DESCRIPTION"
+.SH "Detailed Description"
 .PP 
-This file defines all prototypes and functions to use libirc.
-.PP
-.PP
-\fBAuthor: \fP
-.in +1c
+This file defines all prototypes and functions to use libirc. 
+
+\fBAuthor:\fP
+.RS 4
 Georgy Yunaev 
+.RE
 .PP
-\fBVersion: \fP
-.in +1c
+\fBVersion:\fP
+.RS 4
 1.0 
+.RE
 .PP
-\fBDate: \fP
-.in +1c
-09.2004 libirc is a small but powerful library, which implements client-server IRC protocol. It is designed to be small, fast, portable and compatible to RFC standards, and most IRC clients. libirc features include:
-.TP
+\fBDate:\fP
+.RS 4
+09.2004 
+.RE
+.PP
+libirc is a small but powerful library, which implements client-server IRC protocol. It is designed to be small, fast, portable and compatible to RFC standards, and most IRC clients. libirc features include:
+.IP "\(bu" 2
 Full multi-threading support.
-.TP
+.IP "\(bu" 2
 Single threads handles all the IRC processing.
-.TP
-Support for single-threaded applications, and socket-based applications,  which use select()
-.TP
+.IP "\(bu" 2
+Support for single-threaded applications, and socket-based applications, which use select()
+.IP "\(bu" 2
 Synchronous and asynchronous interfaces.
-.TP
+.IP "\(bu" 2
 CTCP support with optional build-in reply code.
-.TP
+.IP "\(bu" 2
 Flexible DCC support, including both DCC chat, and DCC file transfer.
-.TP
+.IP "\(bu" 2
 Can both initiate and react to initiated DCC.
-.TP
+.IP "\(bu" 2
 Can accept or decline DCC sessions asynchronously.
-.TP
-Plain C interface and implementation (possible to use from C++ code,  obviously)
-.TP
+.IP "\(bu" 2
+Plain C interface and implementation (possible to use from C++ code, obviously)
+.IP "\(bu" 2
 Compatible with RFC 1459 and most IRC clients.
-.TP
+.IP "\(bu" 2
 Free, licensed under LGPL license.
 .PP
-Note that to use libirc, only libirc.h should be included into your  program. Do not include other libirc_* headers.
 .PP
-.SH "TYPEDEF DOCUMENTATION"
+Note that to use libirc, only libirc.h should be included into your program. Do not include other libirc_* headers.
+.SH "Typedef Documentation"
 .PP 
-.SS "typedef struct irc_dcc_session_s irc_dcc_session_t"
+.SS "typedef struct irc_dcc_session_s \fBirc_dcc_session_t\fP"
 .PP
-A libirc DCC session.
+A libirc DCC session. 
 .PP
-This structure describes a DCC session used by libirc.  Its members are internal to libirc, and should not be used directly. 
-.SS "typedef unsigned int irc_dcc_t"
+This structure describes a DCC session used by libirc. Its members are internal to libirc, and should not be used directly. 
+.SS "typedef unsigned int \fBirc_dcc_t\fP"
 .PP
-A DCC session identifier.
+A DCC session identifier. 
 .PP
 The irc_dcc_t type is a DCC session identifier, used to identify the DCC sessions in callbacks and various functions. 
-.SS "typedef struct irc_session_s irc_session_t"
+.SS "typedef struct irc_session_s \fBirc_session_t\fP"
 .PP
-A libirc IRC session.
+A libirc IRC session. 
 .PP
-This structure describes an IRC session. Its members are internal to  libirc, and should not be used directly. 
-.SH "AUTHOR"
+This structure describes an IRC session. Its members are internal to libirc, and should not be used directly. 
+.SH "Author"
 .PP 
 Generated automatically by Doxygen for libirc from the source code.

@@ -19,7 +19,10 @@
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
-#include <unistd.h>
+
+#if !defined (WIN32)
+	#include <unistd.h>
+#endif
 
 #include "libircclient.h"
 

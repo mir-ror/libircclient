@@ -45,8 +45,12 @@
 #ifndef INCLUDE_LIBIRC_H
 #define INCLUDE_LIBIRC_H
 
-#include <sys/select.h>	/* fd_set */
-#include <netinet/in.h>	/* sockaddr_in */
+#if !defined (WIN32)
+	#include <sys/select.h>	/* fd_set */
+	#include <netinet/in.h>	/* sockaddr_in */
+#else
+	#include <winsock.h>
+#endif
 
 #ifdef	__cplusplus
 extern "C" {

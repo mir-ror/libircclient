@@ -1,4 +1,4 @@
-.TH "Managing contexts." 3 "8 Sep 2004" "libirc" \" -*- nroff -*-
+.TH "Managing contexts." 3 "14 Sep 2004" "Version 0.1" "libirc" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -9,40 +9,47 @@ Managing contexts. \-
 .ti -1c
 .RI "void \fBirc_set_ctx\fP (\fBirc_session_t\fP *session, void *ctx)"
 .br
-.RI "\fISets the IRC session context.\fP"
+.RI "\fISets the IRC session context. \fP"
 .ti -1c
 .RI "void * \fBirc_get_ctx\fP (\fBirc_session_t\fP *session)"
 .br
-.RI "\fIReturns the IRC session context.\fP"
+.RI "\fIReturns the IRC session context. \fP"
 .in -1c
-.SH "FUNCTION DOCUMENTATION"
+.SH "Function Documentation"
 .PP 
 .SS "void * irc_get_ctx (\fBirc_session_t\fP * session)"
 .PP
-Returns the IRC session context.
+Returns the IRC session context. 
 .PP
-\fBParameters: \fP
-.in +1c
-.TP
-\fB\fIsession\fP\fP
-An initiated session.This function returns the IRC session context, which was set by  \fBirc_set_ctx()\fP. If no context was set, this function returns NULL.
+\fBParameters:\fP
+.RS 4
+\fIsession\fP An initiated session.
+.RE
 .PP
-\fBSee also: \fP
-.in +1c
+This function returns the IRC session context, which was set by \fBirc_set_ctx()\fP. If no context was set, this function returns NULL.
+.PP
+\fBSee also:\fP
+.RS 4
 \fBirc_set_ctx\fP 
+.RE
+.PP
+
 .SS "void irc_set_ctx (\fBirc_session_t\fP * session, void * ctx)"
 .PP
-Sets the IRC session context.
+Sets the IRC session context. 
 .PP
-\fBParameters: \fP
-.in +1c
-.TP
-\fB\fIsession\fP\fP
-An initiated session. 
-.TP
-\fB\fIctx\fP\fP
-A context.This function sets the user-defined context for this IRC session. This context is not used by libirc. Its purpose is to store session-specific user data, which may be obtained later by calling \fBirc_get_ctx()\fP. Note that libirc just 'carries out' this pointer. If you allocate some memory, and store its address in ctx (most common usage), it is your  responsibility to free it before calling \fBirc_destroy_session()\fP.
+\fBParameters:\fP
+.RS 4
+\fIsession\fP An initiated session. 
+.br
+\fIctx\fP A context.
+.RE
 .PP
-\fBSee also: \fP
-.in +1c
+This function sets the user-defined context for this IRC session. This context is not used by libirc. Its purpose is to store session-specific user data, which may be obtained later by calling \fBirc_get_ctx()\fP. Note that libirc just 'carries out' this pointer. If you allocate some memory, and store its address in ctx (most common usage), it is your responsibility to free it before calling \fBirc_destroy_session()\fP.
+.PP
+\fBSee also:\fP
+.RS 4
 \fBirc_get_ctx\fP 
+.RE
+.PP
+
