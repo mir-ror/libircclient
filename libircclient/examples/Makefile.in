@@ -2,6 +2,7 @@
 CC = @CC@
 CXX = @CXX@
 CFLAGS = -Wall @CFLAGS@
+LIBS = ../src/libircclient.a -lpthread @LIBS@
 INCLUDES=-I../include
 
 EXAMPLES=spammer censor irctest ircftp
@@ -9,16 +10,16 @@ EXAMPLES=spammer censor irctest ircftp
 all:	$(EXAMPLES)
 
 spammer:	spammer.o
-	$(CC) -o spammer spammer.o ../src/libircclient.a -lpthread
+	$(CC) -o spammer spammer.o $(LIBS)
 
 irctest:	irctest.o
-	$(CC) -o irctest irctest.o ../src/libircclient.a -lpthread
+	$(CC) -o irctest irctest.o $(LIBS)
 
 censor:	censor.o
-	$(CXX) -o censor censor.o ../src/libircclient.a -lpthread
+	$(CXX) -o censor censor.o $(LIBS)
 
 ircftp:	ircftp.o
-	$(CXX) -o ircftp ircftp.o ../src/libircclient.a -lpthread
+	$(CXX) -o ircftp ircftp.o $(LIBS)
 
 
 clean:
