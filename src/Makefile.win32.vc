@@ -31,17 +31,19 @@ $(IRCDND): $(OBJS) $(IRCDNL)
 $(IRCDNL): libircclient.def
 	lib -nologo -def:libircclient.def -out:$(IRCDNL) $(OBJS)
 
-distro:
+distro: all
 	rm -rf win32
 	mkdir win32
 	mkdir win32\lib
 	mkdir win32\include
+	mkdir win32\doc
 	cp *.lib win32/lib/
 	cp *.dll win32/lib/
 	cp *.lib win32/lib/
 	cp ../include/libircclient.h win32/include/
 	cp ../include/libirc_errors.h	win32/include/
 	cp ../include/libirc_events.h  win32/include/
+	-cp ../doc/html/* win32/doc
 	cd win32
 	zip -r ../libircclient-win32-vc-0.3.zip .
 
@@ -50,6 +52,7 @@ clean:
 	-del $(IRCDND)
 	-del $(IRCST)
 	-del $(OBJS)
+	-del *.exp
 	-rm -rf win32
 
 .c.obj:
