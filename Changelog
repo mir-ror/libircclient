@@ -1,3 +1,9 @@
+2004-10-07 Georgy Yunaev
+   * CTCP TIME reply was malformed on some platforms with buggy locales.
+   * Socket stuff rewritten to be signal-safe and more portable.
+   * Data and commands are now sent faster to IRC server.
+   * event_umode now works.
+
 2004-10-06 Georgy Yunaev
    * CHANGED BEHAVIOR: the built-in CTCP handler is used if not set. 
      Therefore, irc_event_ctcp_internal() is not public anymore.
