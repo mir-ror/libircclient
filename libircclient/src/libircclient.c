@@ -531,26 +531,17 @@ static void libirc_process_incoming_data (irc_session_t * session, int process_l
 		{
 			; /* ignore this event - not all servers generate this */
 		}
-
-	/*
-	 * The "umode" event is triggered when the client changes its personal 
-	 * mode flags.
-
-	irc_event_callback_t	event_umode;
-		else if ( !strcmp (command, "QUIT") )
-		{
-			if ( session->callbacks.event_quit )
-				(*session->callbacks.event_quit) (session, command, prefix, params, paramindex);
-		}
-	 */
-	/*
-	 * The "unknown" event is triggered upon receipt of any number of 
-	 * unclassifiable miscellaneous messages, which aren't handled by the
-     * library.
-	 */
 	 	else
+	 	{
+			/*
+			 * The "unknown" event is triggered upon receipt of any number of 
+			 * unclassifiable miscellaneous messages, which aren't handled by 
+			 * the library.
+			 */
+
 			if ( session->callbacks.event_unknown )
 				(*session->callbacks.event_unknown) (session, command, prefix, params, paramindex);
+		}
 	}
 }
 
