@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.52)
-AC_INIT(libircclient, 0.5, tim@krasnogorsk.ru)
+AC_INIT(libircclient, 1.2, tim@krasnogorsk.ru)
 AC_CONFIG_SRCDIR([include/libircclient.h])
 AC_CONFIG_HEADER([include/config.h])
 
