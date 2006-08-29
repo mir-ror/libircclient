@@ -41,4 +41,6 @@ EXPORTS
 	irc_cmd_user_mode
 	irc_cmd_nick
 	irc_cmd_whois
-
+	irc_color_strip_from_mirc
+	irc_color_convert_from_mirc
+	irc_color_convert_to_mirc functions
