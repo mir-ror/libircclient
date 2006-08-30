@@ -9,7 +9,7 @@ cp libstatic-release/*.lib win32/lib/
 cp ../../include/libircclient.h win32/include/
 cp ../../include/libirc_errors.h	win32/include/
 cp ../../include/libirc_events.h  win32/include/
-cp ../../examples/* win32/examples/
+cp -r ../../examples/* win32/examples/
 cp spammer.dsp win32/examples/
 cd win32
 zip -r ../libircclient-win32-vc-1.2.zip .
