@@ -3,6 +3,7 @@ EXPORTS
 	irc_create_session
 	irc_destroy_session
 	irc_connect
+	irc_connect6
 	irc_disconnect
 	irc_run
 	irc_add_select_descriptors
