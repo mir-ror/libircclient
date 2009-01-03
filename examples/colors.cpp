@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004 Georgy Yunaev tim@krasnogorsk.ru
+ * Copyright (C) 2004-2009 Georgy Yunaev gyunaev@ulduzsoft.com
  *
  * This example is free, and not covered by LGPL license. There is no 
  * restriction applied to their modification, redistribution, using and so on.
@@ -11,8 +11,6 @@
  * This program will test automatic color replacement features. It uses the 
  * colors itself, generates colored string in reaction to 'test' word, and
  * dumps the de-colored messages.
- *
- * $Id$
  */
 
 #include <string>

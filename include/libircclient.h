@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2004 Georgy Yunaev tim@krasnogorsk.ru
+ * Copyright (C) 2004-2009 Georgy Yunaev gyunaev@ulduzsoft.com
  *
  * This library is free software; you can redistribute it and/or modify it 
  * under the terms of the GNU Lesser General Public License as published by 
@@ -10,8 +10,6 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public 
  * License for more details.
- *
- * $Id$
  */
 
 /*! 
@@ -47,9 +45,13 @@
 
 #if !defined (WIN32)
 	#include <sys/select.h>	/* fd_set */
-	#include <netinet/in.h>	/* sockaddr_in */
 #else
-	#include <winsock.h>
+	#include <winsock2.h>
+	#include <ws2tcpip.h>
+	#if defined (ENABLE_IPV6)
+		typedef int  (WSAAPI * getaddrinfo_ptr_t)  (const char *, const char* , const struct addrinfo *, struct addrinfo **);
+		typedef void (WSAAPI * freeaddrinfo_ptr_t) (struct addrinfo*);
+	#endif
 #endif
 
 #ifdef	__cplusplus
@@ -126,6 +128,7 @@ typedef void (*irc_dcc_callback_t) (irc_session_t * session, irc_dcc_t id, int s
 
 #define IN_INCLUDE_LIBIRC_H
 #include "libirc_errors.h"
+#include "libirc_rfcnumeric.h"
 #include "libirc_events.h"
 #include "libirc_options.h"
 
@@ -227,6 +230,13 @@ int irc_connect (irc_session_t * session,
 			const char * username,
 			const char * realname);
 
+int irc_connect6 (irc_session_t * session, 
+			const char * server, 
+			unsigned short port,
+			const char * server_password,
+			const char * nick,
+			const char * username,
+			const char * realname);
 
 /*!
  * \fn void irc_disconnect (irc_session_t * session)
