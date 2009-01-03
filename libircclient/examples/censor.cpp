@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004 Georgy Yunaev tim@krasnogorsk.ru
+ * Copyright (C) 2004-2009 Georgy Yunaev gyunaev@ulduzsoft.com
  *
  * This example is free, and not covered by LGPL license. There is no 
  * restriction applied to their modification, redistribution, using and so on.
@@ -9,13 +9,13 @@
  *
  *
  * This example 'guards' the channel against using abusive language. When 
- * someone says a swear-word, it takes some action against him/her, taking 
+ * someone says a bad word, it takes some action against him/her, taking 
  * in account the number of times the person uses it. The first time, it just 
  * warns the person through a private message, the second time it warns him 
  * publically in channel, and after the second time it will kicks the insolent
  * out of the channel.
  *
- * To keep it simple, this example reacts only on 'fuck' swear-word, however 
+ * To keep it simple, this example reacts only on 'fuck' word, however 
  * is is easy to add more.
  *
  * Features used:
@@ -23,8 +23,6 @@
  * - handling 'channel' event to track the messages;
  * - handling 'nick' event to track nickname changes;
  * - generating channel and private messages, and kicking.
- *
- * $Id$
  */
 
 #include <map>

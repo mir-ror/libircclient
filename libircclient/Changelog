@@ -1,3 +1,10 @@
+2009-01-03 Georgy Yunaev
+   * libircclient 1.3 released.
+   * Added IPv6 support (thanks Lothar May)
+   * Now provides more information about ACTION (thx chromerium)
+   * Updated contact info and copyrights.
+   * Removed ircmud sample as it never worked anyway.
+
 2006-08-29 Georgy Yunaev
    * libircclient 1.2 released.
    * Windows: added missed expored functions from .def file.
