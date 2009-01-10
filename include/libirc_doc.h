@@ -69,6 +69,12 @@
  * There is html documentation (in \a doc/html) and manual pages (\a doc/man).
  * It is also recommended to check the \a examples directory, there are a 
  * few examples, they'll help you.
+ *
+ * \section cocoa Cocoa Support
+ * 
+ * There is an experimental Cocoa framework wrapper around libircclient, called
+ * <a href="../../cocoa/doc/html/index.html">IRCClient</a>. You can find the Xcode project
+ * and source in the cocoa/ directory in the current trunk.
  * 
  * \section author Author, copyright, support.
  *

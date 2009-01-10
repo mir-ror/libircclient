@@ -1,0 +1,174 @@
+2009-01-10 15|45|27.491 xcodebuild[12858:613] Unable to load platform at path /Developer/Platforms/iPhoneOS.platform
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.h|32|error: libircclient.h: No such file or directory
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.h|56|error: syntax error before ‘irc_callbacks_t’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.h|75|error: syntax error before ‘irc_session_t’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientChannel.m|51|warning: implicit declaration of function ‘irc_cmd_part’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientChannel.m|51|warning: ‘IRCClientSession’ may not respond to ‘-session’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientChannel.m|51|warning: (Messages without a matching method signature
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientChannel.m|51|warning: will be assumed to return ‘id’ and accept
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientChannel.m|51|warning: ‘...’ as arguments.)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientChannel.m|56|warning: implicit declaration of function ‘irc_cmd_invite’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientChannel.m|56|warning: ‘IRCClientSession’ may not respond to ‘-session’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientChannel.m|61|warning: implicit declaration of function ‘irc_cmd_names’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientChannel.m|61|warning: ‘IRCClientSession’ may not respond to ‘-session’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientChannel.m|66|warning: implicit declaration of function ‘irc_cmd_topic’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientChannel.m|66|warning: ‘IRCClientSession’ may not respond to ‘-session’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientChannel.m|71|warning: implicit declaration of function ‘irc_cmd_channel_mode’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientChannel.m|71|warning: ‘IRCClientSession’ may not respond to ‘-session’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientChannel.m|76|warning: implicit declaration of function ‘irc_cmd_msg’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientChannel.m|76|warning: ‘IRCClientSession’ may not respond to ‘-session’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientChannel.m|81|warning: implicit declaration of function ‘irc_cmd_me’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientChannel.m|81|warning: ‘IRCClientSession’ may not respond to ‘-session’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientChannel.m|86|warning: implicit declaration of function ‘irc_cmd_notice’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientChannel.m|86|warning: ‘IRCClientSession’ may not respond to ‘-session’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientChannel.m|91|warning: implicit declaration of function ‘irc_cmd_kick’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientChannel.m|91|warning: ‘IRCClientSession’ may not respond to ‘-session’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientChannel.m|96|warning: implicit declaration of function ‘irc_cmd_ctcp_request’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientChannel.m|96|warning: ‘IRCClientSession’ may not respond to ‘-session’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientChannel.m|101|warning: implicit declaration of function ‘irc_cmd_ctcp_reply’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientChannel.m|101|warning: ‘IRCClientSession’ may not respond to ‘-session’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.h|32|error: libircclient.h: No such file or directory
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.h|56|error: syntax error before ‘irc_callbacks_t’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.h|75|error: syntax error before ‘irc_session_t’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|22|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|23|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|24|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|25|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|26|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|27|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|28|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|29|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|30|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|31|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|32|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|33|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|34|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|35|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|36|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|37|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|38|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|39|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|44|error: no declaration of property ‘session’ found in the interface
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|58|error: ‘callbacks’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|58|error: (Each undeclared identifier is reported only once
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|58|error: for each function it appears in.)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|79|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|79|warning: implicit declaration of function ‘irc_create_session’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|86|warning: implicit declaration of function ‘irc_set_ctx’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|89|warning: implicit declaration of function ‘irc_get_version’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|101|warning: implicit declaration of function ‘irc_is_connected’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|101|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|104|warning: implicit declaration of function ‘irc_destroy_session’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|115|warning: implicit declaration of function ‘irc_connect’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|115|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|120|warning: implicit declaration of function ‘irc_disconnect’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|120|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|125|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|132|warning: implicit declaration of function ‘irc_run’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|132|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|157|warning: implicit declaration of function ‘irc_send_raw’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|157|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|162|warning: implicit declaration of function ‘irc_cmd_quit’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|162|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|170|warning: implicit declaration of function ‘irc_cmd_join’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|170|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|177|warning: implicit declaration of function ‘irc_cmd_list’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|177|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|182|warning: implicit declaration of function ‘irc_cmd_user_mode’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|182|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|187|warning: implicit declaration of function ‘irc_cmd_nick’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|187|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|192|warning: implicit declaration of function ‘irc_cmd_whois’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|192|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|197|warning: implicit declaration of function ‘irc_cmd_msg’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|197|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|202|warning: implicit declaration of function ‘irc_cmd_me’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|202|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|207|warning: implicit declaration of function ‘irc_cmd_notice’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|207|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|212|warning: implicit declaration of function ‘irc_cmd_ctcp_request’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|212|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|217|warning: implicit declaration of function ‘irc_cmd_ctcp_reply’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|217|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|262|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|264|warning: implicit declaration of function ‘irc_get_ctx’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|264|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|278|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|280|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|282|error: ‘params’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|283|error: ‘origin’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|300|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|302|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|304|error: ‘origin’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|305|error: ‘params’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|320|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|322|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|323|error: ‘origin’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|324|error: ‘params’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|355|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|357|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|359|error: ‘origin’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|360|error: ‘params’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|364|error: ‘count’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|394|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|396|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|397|error: ‘origin’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|398|error: ‘params’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|402|error: ‘count’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|418|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|420|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|421|error: ‘params’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|436|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|438|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|439|error: ‘origin’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|440|error: ‘params’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|443|error: ‘count’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|461|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|463|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|464|error: ‘origin’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|465|error: ‘params’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|469|error: ‘count’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|499|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|501|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|502|error: ‘origin’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|503|error: ‘params’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|506|error: ‘count’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|524|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|526|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|527|error: ‘origin’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|530|error: ‘count’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|531|error: ‘params’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|553|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|555|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|556|error: ‘origin’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|557|error: ‘params’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|562|error: ‘count’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|587|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|589|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|590|error: ‘origin’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|591|error: ‘params’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|612|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|614|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|615|error: ‘origin’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|620|warning: implicit declaration of function ‘irc_target_get_nick’
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|622|error: ‘params’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|657|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|659|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|661|error: ‘origin’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|662|error: ‘params’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|679|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|681|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|683|error: ‘origin’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|684|error: ‘params’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|706|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|708|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|709|error: ‘event’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|712|error: ‘origin’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|717|error: ‘count’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|718|error: ‘params’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|731|error: syntax error before ‘*’ token
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|733|error: ‘session’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|734|error: ‘event’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|735|error: ‘origin’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|739|error: ‘count’ undeclared (first use in this function)
+/Users/chrome/Development/sourceforge/libircclient/trunk/cocoa/Classes/IRCClientSession.m|740|error: ‘params’ undeclared (first use in this function)
