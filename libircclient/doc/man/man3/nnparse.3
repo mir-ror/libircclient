@@ -1,4 +1,4 @@
-.TH "Nickname parsing." 3 "3 Jan 2009" "Version 1.3" "libircclient" \" -*- nroff -*-
+.TH "Nickname parsing." 3 "10 Jan 2009" "Version 1.3" "libircclient" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -45,3 +45,6 @@ Gets the nick part from the target.
 .RE
 .PP
 For most events IRC server returns 'origin' (i.e. the person, who generated this event) in i.e. 'common' form, like nick!host@domain. However, all the irc_cmd_* functions require just a nick/ This function parses this origin, and gets the nick, storing it into user-provided buffer. A buffer of size 90 should be enough for most nicks :) 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for libircclient from the source code.
