@@ -21,3 +21,6 @@ distclean:
 
 distro: distclean
 	(cd .. && tar zcf libircclient-1.2.tar.gz libircclient-1.2)
+
+install: all
+	-cd src && make install
