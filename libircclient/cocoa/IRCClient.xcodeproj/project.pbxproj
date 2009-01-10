@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		693CA3360F188B3400BF8670 /* libircclient.c in Sources */ = {isa = PBXBuildFile; fileRef = 693CA3350F188B3400BF8670 /* libircclient.c */; };
 		694762D30F10AAAE002C0318 /* DDInvocationGrabber.h in Headers */ = {isa = PBXBuildFile; fileRef = 694762CB0F10AAAE002C0318 /* DDInvocationGrabber.h */; settings = {ATTRIBUTES = (); }; };
 		694762D40F10AAAE002C0318 /* DDInvocationGrabber.m in Sources */ = {isa = PBXBuildFile; fileRef = 694762CC0F10AAAE002C0318 /* DDInvocationGrabber.m */; };
 		694762D50F10AAAE002C0318 /* NSObject+DDExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = 694762CD0F10AAAE002C0318 /* NSObject+DDExtensions.h */; };
@@ -17,7 +18,6 @@
 		694762DA0F10AAAE002C0318 /* IRCClientSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 694762D20F10AAAE002C0318 /* IRCClientSession.m */; };
 		6947631E0F10AE32002C0318 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 6947631D0F10AE32002C0318 /* LICENSE */; };
 		694763200F10AE46002C0318 /* README in Resources */ = {isa = PBXBuildFile; fileRef = 6947631F0F10AE46002C0318 /* README */; };
-		6989EAB10F1861BF0083030A /* libircclient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6989EAB00F1861BF0083030A /* libircclient.a */; };
 		6989EABC0F1861FB0083030A /* IRCClientChannelDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 6989EABA0F1861FB0083030A /* IRCClientChannelDelegate.h */; };
 		6989EAC00F1862090083030A /* IRCClientSessionDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 6989EABE0F1862090083030A /* IRCClientSessionDelegate.h */; };
 		6989EADD0F18810C0083030A /* Doxyfile in Resources */ = {isa = PBXBuildFile; fileRef = 6989EADC0F18810C0083030A /* Doxyfile */; };
@@ -31,6 +31,7 @@
 		089C1667FE841158C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		32DBCF5E0370ADEE00C91783 /* IRCClient_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IRCClient_Prefix.pch; sourceTree = "<group>"; };
+		693CA3350F188B3400BF8670 /* libircclient.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = libircclient.c; path = ../src/libircclient.c; sourceTree = SOURCE_ROOT; };
 		694762CB0F10AAAE002C0318 /* DDInvocationGrabber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDInvocationGrabber.h; sourceTree = "<group>"; };
 		694762CC0F10AAAE002C0318 /* DDInvocationGrabber.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDInvocationGrabber.m; sourceTree = "<group>"; };
 		694762CD0F10AAAE002C0318 /* NSObject+DDExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+DDExtensions.h"; sourceTree = "<group>"; };
@@ -41,7 +42,6 @@
 		694762D20F10AAAE002C0318 /* IRCClientSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IRCClientSession.m; sourceTree = "<group>"; };
 		6947631D0F10AE32002C0318 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = SOURCE_ROOT; };
 		6947631F0F10AE46002C0318 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
-		6989EAB00F1861BF0083030A /* libircclient.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libircclient.a; path = ../src/libircclient.a; sourceTree = SOURCE_ROOT; };
 		6989EABA0F1861FB0083030A /* IRCClientChannelDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IRCClientChannelDelegate.h; sourceTree = "<group>"; };
 		6989EABE0F1862090083030A /* IRCClientSessionDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IRCClientSessionDelegate.h; sourceTree = "<group>"; };
 		6989EADC0F18810C0083030A /* Doxyfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Doxyfile; sourceTree = SOURCE_ROOT; };
@@ -56,7 +56,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				8DC2EF570486A6940098B216 /* Cocoa.framework in Frameworks */,
-				6989EAB10F1861BF0083030A /* libircclient.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,7 +124,6 @@
 		1058C7B0FEA5585E11CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				6989EAB00F1861BF0083030A /* libircclient.a */,
 				1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */,
 			);
 			name = "Linked Frameworks";
@@ -145,6 +143,7 @@
 			isa = PBXGroup;
 			children = (
 				32DBCF5E0370ADEE00C91783 /* IRCClient_Prefix.pch */,
+				693CA3350F188B3400BF8670 /* libircclient.c */,
 			);
 			name = "Other Sources";
 			sourceTree = "<group>";
@@ -235,6 +234,7 @@
 				694762D60F10AAAE002C0318 /* NSObject+DDExtensions.m in Sources */,
 				694762D80F10AAAE002C0318 /* IRCClientChannel.m in Sources */,
 				694762DA0F10AAAE002C0318 /* IRCClientSession.m in Sources */,
+				693CA3360F188B3400BF8670 /* libircclient.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -266,7 +266,10 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = IRCClient_Prefix.pch;
-				HEADER_SEARCH_PATHS = ../include;
+				HEADER_SEARCH_PATHS = (
+					../src,
+					../include,
+				);
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Frameworks";
 				LD_DYLIB_INSTALL_NAME = "../Frameworks/$(EXECUTABLE_PATH)";
@@ -291,7 +294,10 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = IRCClient_Prefix.pch;
-				HEADER_SEARCH_PATHS = ../include;
+				HEADER_SEARCH_PATHS = (
+					../src,
+					../include,
+				);
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Frameworks";
 				LD_DYLIB_INSTALL_NAME = "../Frameworks/$(EXECUTABLE_PATH)";
