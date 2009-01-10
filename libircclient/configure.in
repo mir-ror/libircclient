@@ -13,7 +13,7 @@ AC_ARG_ENABLE([debug],
             [use_debug=$enableval],
             [use_debug=no])
 
-AC_ARG_ENABLE([thread],
+AC_ARG_ENABLE([threads],
             [AS_HELP_STRING([--enable-threads],
                [compile with multithread support (yes)])],
             [use_threads=$enableval],
@@ -49,9 +49,9 @@ AC_CHECK_FUNCS([localtime_r socket])
 AC_CHECK_LIB(socket, socket, AC_DEFINE(HAVE_SOCKET) LIBS="$LIBS -lsocket")
 
 if test "$use_debug" = "yes"; then
-	CFLAGS="-g -DENABLE_DEBUG"
+	CFLAGS="${CFLAGS} -g -DENABLE_DEBUG"
 else
-	CFLAGS="-O3"
+	CFLAGS="${CFLAGS} -O3"
 fi
 
 if test "$use_ipv6" = "yes"; then
