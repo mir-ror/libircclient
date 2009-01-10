@@ -18,8 +18,8 @@
 		694762DA0F10AAAE002C0318 /* IRCClientSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 694762D20F10AAAE002C0318 /* IRCClientSession.m */; };
 		6947631E0F10AE32002C0318 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 6947631D0F10AE32002C0318 /* LICENSE */; };
 		694763200F10AE46002C0318 /* README in Resources */ = {isa = PBXBuildFile; fileRef = 6947631F0F10AE46002C0318 /* README */; };
-		6989EABC0F1861FB0083030A /* IRCClientChannelDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 6989EABA0F1861FB0083030A /* IRCClientChannelDelegate.h */; };
-		6989EAC00F1862090083030A /* IRCClientSessionDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 6989EABE0F1862090083030A /* IRCClientSessionDelegate.h */; };
+		6989EABC0F1861FB0083030A /* IRCClientChannelDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 6989EABA0F1861FB0083030A /* IRCClientChannelDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		6989EAC00F1862090083030A /* IRCClientSessionDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 6989EABE0F1862090083030A /* IRCClientSessionDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6989EADD0F18810C0083030A /* Doxyfile in Resources */ = {isa = PBXBuildFile; fileRef = 6989EADC0F18810C0083030A /* Doxyfile */; };
 		8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C1666FE841158C02AAC07 /* InfoPlist.strings */; };
 		8DC2EF570486A6940098B216 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
