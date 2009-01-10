@@ -289,10 +289,25 @@ typedef struct
      * are NOTICEs.
 	 *
 	 * \param origin the person, who generates the message.
-	 * \param params[0] mandatory, contains the channel name.
+	 * \param params[0] mandatory, contains the target nick name.
 	 * \param params[1] optional, contains the message text
 	 */
 	irc_event_callback_t	event_notice;
+
+	/*!
+	 * The "channel_notice" event is triggered upon receipt of a NOTICE
+     * message which means that someone has sent the client a public
+     * notice. According to RFC 1459, the only difference between NOTICE 
+     * and PRIVMSG is that you should NEVER automatically reply to NOTICE
+     * messages. Unfortunately, this rule is frequently violated by IRC 
+     * servers itself - for example, NICKSERV messages require reply, and 
+     * are NOTICEs.
+	 *
+	 * \param origin the person, who generates the message.
+	 * \param params[0] mandatory, contains the channel name.
+	 * \param params[1] optional, contains the message text
+	 */
+	irc_event_callback_t	event_channel_notice;
 
 	/*!
 	 * The "invite" event is triggered upon receipt of an INVITE message,

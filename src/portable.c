@@ -57,6 +57,7 @@
 	#define inline
 	#define snprintf			_snprintf
 	#define vsnprintf			_vsnprintf
+	#define strncasecmp			_strnicmp
 #endif
 
 
