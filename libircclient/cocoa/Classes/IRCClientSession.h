@@ -62,8 +62,8 @@
  */
 
 #import <Cocoa/Cocoa.h>
-#import "IRCClientSessionDelegate.h"
-#include "libircclient.h"
+#import <IRCClient/IRCClientSessionDelegate.h>
+#include <IRCClient/libircclient.h>
 
 /** @class IRCClientSession
  *	@brief Represents a connected IRC Session.

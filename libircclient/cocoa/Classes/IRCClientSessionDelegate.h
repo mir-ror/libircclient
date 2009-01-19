@@ -13,7 +13,7 @@
  */
 
 #import <Cocoa/Cocoa.h>
-#include "libircclient.h"
+#include <IRCClient/libircclient.h>
 
 /** 
  *	@file IRCClientChannelDelegate.h

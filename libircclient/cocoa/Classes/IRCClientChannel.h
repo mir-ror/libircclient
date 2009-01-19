@@ -21,7 +21,7 @@
  */
 
 #import <Cocoa/Cocoa.h>
-#import "IRCClientChannelDelegate.h"
+#import <IRCClient/IRCClientChannelDelegate.h>
 
 /** \class IRCClientChannel
  *	@brief Represents a connected IRC Channel.
