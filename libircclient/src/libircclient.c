@@ -601,9 +601,9 @@ static void libirc_process_incoming_data (irc_session_t * session, size_t proces
 					memcpy (ctcp_buf, params[1] + 1, msglen);
 					ctcp_buf[msglen] = '\0';
 
-					if ( strnstr(ctcp_buf, "DCC ", msglen) == ctcp_buf )
+					if ( !strncasecmp(ctcp_buf, "DCC ", msglen) )
 						libirc_dcc_request (session, prefix, ctcp_buf);
-					else if ( strnstr(ctcp_buf, "ACTION ", msglen) == ctcp_buf
+					else if ( !strncasecmp( ctcp_buf, "ACTION ", msglen)
 					&& session->callbacks.event_ctcp_action )
 					{
 						params[1] = ctcp_buf + 7; // the length of "ACTION "
