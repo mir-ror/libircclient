@@ -331,10 +331,10 @@ static void libirc_dcc_process_descriptors (irc_session_t * ircsession, fd_set *
 						if ( dcc->incoming_offset == 4 )
 						{
 							// The order is big-endian
-							unsigned int received_size = (dcc->incoming_buf[0] << 24) | (dcc->incoming_buf[1] << 16)
-								(dcc->incoming_buf[2] << 8) | dcc->incoming_buf[3];
-							
-							unsigned int received_size = ntohl (*((unsigned int*)dcc->incoming_buf));
+							unsigned int received_size = (dcc->incoming_buf[0] << 24) 
+										| (dcc->incoming_buf[1] << 16)
+										| (dcc->incoming_buf[2] << 8) 
+										| dcc->incoming_buf[3];
 
 							// Sent size confirmed
 							if ( dcc->file_confirm_offset == received_size )
@@ -370,7 +370,12 @@ static void libirc_dcc_process_descriptors (irc_session_t * ircsession, fd_set *
                              {
                              	dcc->state = LIBIRC_STATE_CONFIRM_SIZE;
                              	dcc->file_confirm_offset += offset;
-                             	*((unsigned int*)dcc->outgoing_buf) = htonl (dcc->file_confirm_offset);
+								
+								// Store as big endian
+								dcc->outgoing_buf[0] = (char) dcc->file_confirm_offset >> 24;
+								dcc->outgoing_buf[1] = (char) dcc->file_confirm_offset >> 16;
+								dcc->outgoing_buf[2] = (char) dcc->file_confirm_offset >> 8;
+								dcc->outgoing_buf[3] = (char) dcc->file_confirm_offset;
                              	dcc->outgoing_offset = 4;
 							}
 						}

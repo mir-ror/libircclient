@@ -28,7 +28,7 @@
 /*! \brief allows to strip origins automatically.
  *
  * For every IRC server event, the event origin is sent in standard form:
- * nick!host\@ircserver, i.e. like tim!home\@irc.krasnogorsk.ru. Such origins
+ * nick!host\@ircserver, i.e. like tim!home\@irc.freenet.org. Such origins
  * can not be used in IRC commands, and need to be stripped (i.e. host and 
  * server part should be cut off) before using. This can be done either 
  * explicitly, by calling irc_target_get_nick(), or implicitly for all the 

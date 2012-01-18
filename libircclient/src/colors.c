@@ -121,7 +121,7 @@ static char * libirc_colorparser_irc2code (const char * source, int strip)
 	unsigned int mask = 0, destlen = 0;
 	char * destline = 0, *d = 0;
 	const char *p;
-	int current_color = 1, current_bg = 0;
+	int current_bg = 0;
 
     /*
      * There will be two passes. First pass calculates the total length of
@@ -205,8 +205,6 @@ static char * libirc_colorparser_irc2code (const char * source, int strip)
 						if ( strip )
 							continue;
 
-						current_color = color;
-						
 						if ( bgcolor != -1 )
 							current_bg = bgcolor;
 

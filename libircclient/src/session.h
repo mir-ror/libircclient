@@ -17,8 +17,8 @@
 #define INCLUDE_IRC_SESSION_H
 
 
-#include "libirc_params.h"
-#include "libirc_dcc.h"
+#include "params.h"
+#include "dcc.h"
 #include "libirc_events.h"
 
 

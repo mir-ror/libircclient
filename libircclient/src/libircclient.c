@@ -16,7 +16,7 @@
 #include "sockets.c"
 
 #include "libircclient.h"
-#include "libirc_session.h"
+#include "session.h"
 
 #include "utils.c"
 #include "errors.c"
@@ -828,7 +828,7 @@ int irc_process_select_descriptors (irc_session_t * session, fd_set *in_set, fd_
 	// Hey, we've got something to read!
 	if ( FD_ISSET (session->sock, in_set) )
 	{
-		int length = session_socket_read( session );
+		int offset, length = session_socket_read( session );
 
 		if ( length < 0 )
 		{
