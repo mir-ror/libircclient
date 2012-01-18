@@ -99,7 +99,7 @@ static void libirc_event_ctcp_internal (irc_session_t * session, const char * ev
 #else
 			struct tm * ltime = localtime (&now);
 #endif
-			strftime (textbuf, sizeof(textbuf), "%a %b %e %H:%M:%S %Z %Y", ltime);
+			strftime (textbuf, sizeof(textbuf), "%a %b %d %H:%M:%S %Z %Y", ltime);
 			irc_cmd_ctcp_reply (session, nickbuf, textbuf);
 		}
 	}
