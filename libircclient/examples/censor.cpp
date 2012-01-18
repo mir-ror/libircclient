@@ -184,6 +184,16 @@ int main (int argc, char **argv)
 	// If the port number is specified in the server string, use the port 0 so it gets parsed
 	if ( strchr( argv[1], ':' ) != 0 )
 		port = 0;
+
+	// To handle the "SSL certificate verify failed" from command line we allow passing ## in front 
+	// of the server name, and in this case tell libircclient not to verify the cert
+	if ( argv[1][0] == '#' && argv[1][1] == '#' )
+	{
+		// Skip the first character as libircclient needs only one # for SSL support, i.e. #irc.freenode.net
+		argv[1]++;
+		
+		irc_option_set( s, LIBIRC_OPTION_SSL_NO_VERIFY );
+	}
 	
 	// Initiate the IRC server connection
 	if ( irc_connect (s, argv[1], port, 0, argv[2], 0, 0) )
@@ -193,7 +203,11 @@ int main (int argc, char **argv)
 	}
 
 	// and run into forever loop, generating events
-	irc_run (s);
+	if ( irc_run (s) )
+	{
+		printf ("Could not connect or I/O error: %s\n", irc_strerror (irc_errno(s)));
+		return 1;
+	}
 
-	return 1;
+	return 0;
 }
