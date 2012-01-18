@@ -122,9 +122,13 @@ static int socket_recv (socket_t * sock, void * buf, size_t len)
 {
 	int length;
 
-	while ( (length = recv (*sock, buf, len, 0)) < 0
-	&& socket_error() == EINTR )
-		continue;
+	while ( (length = recv (*sock, buf, len, 0)) < 0 )
+	{
+		int err = socket_error();
+		
+		if ( err != EINTR && err != EAGAIN )
+			break;
+	}
 
 	return length;
 }
@@ -134,9 +138,13 @@ static int socket_send (socket_t * sock, const void *buf, size_t len)
 {
 	int length;
 
-	while ( (length = send (*sock, buf, len, 0)) < 0
-	&& socket_error() == EINTR )
-		continue;
+	while ( (length = send (*sock, buf, len, 0)) < 0 )
+	{
+		int err = socket_error();
+		
+		if ( err != EINTR && err != EAGAIN )
+			break;
+	}
 
 	return length;
 }

@@ -22,7 +22,7 @@ static pthread_mutex_t * mutex_buf = 0;
 static SSL_CTX * ssl_context = 0;
 
 // OpenSSL callback to utilize static locks
-static void cb_openssl_locking_function( int mode, int n, const char *, int )
+static void cb_openssl_locking_function( int mode, int n, const char * file, int line )
 {
     if ( mode & CRYPTO_LOCK)
         pthread_mutex_lock( &mutex_buf[n] );
@@ -39,6 +39,8 @@ static unsigned long cb_openssl_id_function()
 // Initializes the SSL context. Must be called after the socket is created.
 static int ssl_init( irc_session_t * session )
 {
+	int i;
+	
 	if ( !ssl_context )
 	{
 		// Load the strings and init the library
@@ -50,7 +52,7 @@ static int ssl_init( irc_session_t * session )
 		if ( !mutex_buf )
 			return LIBIRC_ERR_NOMEM;
 
-		for ( int i = 0;  i < CRYPTO_num_locks();  i++)
+		for ( i = 0;  i < CRYPTO_num_locks();  i++)
 			pthread_mutex_init( &(mutex_buf[i]), 0 );
 
 		// Register our callbacks
@@ -107,13 +109,38 @@ static int ssl_init( irc_session_t * session )
 	return 0;
 }
 
-
-static int ssl_recv( irc_session_t * session, size_t len)
+static void ssl_handle_error( irc_session_t * session, int ssl_error )
 {
+	if ( ERR_GET_LIB(ssl_error) == ERR_LIB_SSL )
+	{
+		if ( ERR_GET_REASON(ssl_error) == SSL_R_CERTIFICATE_VERIFY_FAILED )
+		{
+			session->lasterror = LIBIRC_ERR_SSL_CERT_VERIFY_FAILED;
+			return;
+		}
+		
+		if ( ERR_GET_REASON(ssl_error) == SSL_R_UNKNOWN_PROTOCOL )
+		{
+			session->lasterror = LIBIRC_ERR_CONNECT_SSL_FAILED;
+			return;
+		}
+	}
+
+#if defined (ENABLE_DEBUG)
+	if ( IS_DEBUG_ENABLED(session) )
+		fprintf (stderr, "[DEBUG] SSL error: %s\n\t(%d, %d)\n", 
+			 ERR_error_string( ssl_error, NULL),  ERR_GET_LIB( ssl_error), ERR_GET_REASON(ssl_error) );
+#endif
+}
+
+static int ssl_recv( irc_session_t * session )
+{
+	unsigned int amount = (sizeof (session->incoming_buf) - 1) - session->incoming_offset;
+	
 	ERR_clear_error();
 
 	// Read up to m_bufferLength bytes
-	int count = SSL_read( session->ssl, session->incoming_buf + session->incoming_offset, len );
+	int count = SSL_read( session->ssl, session->incoming_buf + session->incoming_offset, amount );
 
     if ( count > 0 )
 		return count;
@@ -121,6 +148,8 @@ static int ssl_recv( irc_session_t * session, size_t len)
 		return -1; // remote connection closed
 	else
 	{
+		int ssl_error = SSL_get_error( session->ssl, count );
+		
 		// Handle SSL error since not all of them are actually errors
         switch ( ssl_error )
         {
@@ -138,7 +167,9 @@ static int ssl_recv( irc_session_t * session, size_t len)
                 session->flags |= SESSIONFL_SSL_READ_WANTS_WRITE;
 				return 0;
 		}
-		printf("Read SSL error %08X\n", ssl_error );
+
+		// This is an SSL error, handle it
+		ssl_handle_error( session, ERR_get_error() ); 
 	}
 	
 	return -1;
@@ -157,6 +188,8 @@ static int ssl_send( irc_session_t * session )
 		return -1;
     else
     {
+		int ssl_error = SSL_get_error( session->ssl, count );
+		
         switch ( ssl_error )
         {
             case SSL_ERROR_WANT_READ:
@@ -172,7 +205,9 @@ static int ssl_send( irc_session_t * session )
                 // Repeat the same write.
 				return 0;
         }
-        printf("Write SSL error %08X\n", ssl_error );
+        
+		// This is an SSL error, handle it
+		ssl_handle_error( session, ERR_get_error() ); 
     }
 
 	return -1;
@@ -187,7 +222,6 @@ static int ssl_send( irc_session_t * session )
 // Returns a positive number if we actually read something
 static int session_socket_read( irc_session_t * session )
 {
-	unsigned int amount = (sizeof (session->incoming_buf) - 1) - session->incoming_offset;
 	int length;
 
 #if defined (ENABLE_SSL)
@@ -201,11 +235,13 @@ static int session_socket_read( irc_session_t * session )
 			return 0;
 		}
 		
-		return ssl_recv( session, amount );
+		return ssl_recv( session );
 	}
 #endif
 	
-	length = socket_recv( &session->sock, session->incoming_buf + session->incoming_offset, amount );
+	length = socket_recv( &session->sock, 
+						session->incoming_buf + session->incoming_offset, 
+					    (sizeof (session->incoming_buf) - 1) - session->incoming_offset );
 	
 	// There is no "retry" errors for regular sockets
 	if ( length <= 0 )

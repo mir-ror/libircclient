@@ -61,6 +61,13 @@
 #endif
 
 
+#if defined (ENABLE_SSL)
+	#include <openssl/ssl.h>
+	#include <openssl/err.h>
+	#include <openssl/rand.h>
+#endif
+
+
 #if defined (ENABLE_THREADS)
 
 

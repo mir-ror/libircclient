@@ -32,7 +32,9 @@ static const char * libirc_strerror[LIBIRC_ERR_MAX] =
 	"IRC session terminated",
 	"IPv6 not supported",
 	"SSL not supported",
-	"SSL initialization failed"
+	"SSL initialization failed",
+	"SSL connection failed",
+	"SSL certificate verify failed",
 };
 
 

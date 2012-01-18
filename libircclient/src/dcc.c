@@ -331,10 +331,8 @@ static void libirc_dcc_process_descriptors (irc_session_t * ircsession, fd_set *
 						if ( dcc->incoming_offset == 4 )
 						{
 							// The order is big-endian
-							unsigned int received_size = (dcc->incoming_buf[0] << 24) 
-										| (dcc->incoming_buf[1] << 16)
-										| (dcc->incoming_buf[2] << 8) 
-										| dcc->incoming_buf[3];
+							const unsigned char * bptr = (const unsigned char *) dcc->incoming_buf;
+							unsigned int received_size = (bptr[0] << 24) | (bptr[1] << 16) | (bptr[2] << 8)  | bptr[3];
 
 							// Sent size confirmed
 							if ( dcc->file_confirm_offset == received_size )

@@ -34,6 +34,7 @@
  * - Plain C interface and implementation (possible to use from C++ code, 
  *   obviously)
  * - Compatible with RFC 1459 and most IRC clients.
+ * - SSL support if compiled with --enable-openssl.
  * - Free, licensed under LGPL license.
  *
  * Note that to use libircclient, only libircclient.h should be included into your 
@@ -186,8 +187,10 @@ void irc_destroy_session (irc_session_t * session);
  * \brief Initiates a connection to IRC server.
  *
  * \param session A session to initiate connections on. Must not be NULL.
- * \param server  A domain name or an IP address of the IRC server to connect 
- *                to. Must not be NULL.
+ * \param server  A domain name or an IP address of the IRC server to connect to. Cannot be NULL.
+ *                If the library is built with SSL support and the first character is hash, tries to establish the SSL connection. 
+ *                For example, the connection to "irc.example.com" is assumed to be plaintext, and connection to "#irc.example.com"
+ *                is assumed to be secured by SSL. Note that SSL will only work if the library is built with the SSL support.
  * \param port    An IRC server port, usually 6667.
  * \param server_password  An IRC server password, if the server requires it.
  *                May be NULL, in this case password will not be send to the 
@@ -231,9 +234,11 @@ int irc_connect (irc_session_t * session,
  * \brief Initiates a connection to IRC server using IPv6.
  *
  * \param session A session to initiate connections on. Must not be NULL.
- * \param server  A domain name or an IP address of the IRC server to connect 
- *                to. Must not be NULL.
- * \param port    An IRC server port, usually 6667.
+ * \param server  A domain name or an IP address of the IRC server to connect to. Cannot be NULL.
+ *                If the library is built with SSL support and the first character is hash, tries to establish the SSL connection. 
+ *                For example, the connection to "irc.example.com" is assumed to be plaintext, and connection to "#irc.example.com"
+ *                is assumed to be secured by SSL. Note that SSL will only work if the library is built with the SSL support.
+ * \param port    An IRC server port, usually 6667. 
  * \param server_password  An IRC server password, if the server requires it.
  *                May be NULL, in this case password will not be send to the 
  *                IRC server. Vast majority of IRC servers do not require passwords.

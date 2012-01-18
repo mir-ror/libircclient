@@ -12,6 +12,8 @@
  * License for more details.
  */
 
+#define IS_DEBUG_ENABLED(s)	((s)->options & LIBIRC_OPTION_DEBUG)
+
 #include "portable.c"
 #include "sockets.c"
 
@@ -34,9 +36,6 @@
 	#undef strdup
 	#define strdup _strdup
 #endif
-
-
-#define IS_DEBUG_ENABLED(s)	((s)->options & LIBIRC_OPTION_DEBUG)
 
 
 irc_session_t * irc_create_session (irc_callbacks_t	* callbacks)
@@ -208,16 +207,16 @@ int irc_connect (irc_session_t * session,
 		return 1;
 	}
 
-	// Handle the server # prefix (SSL)
-	if ( server[0] == SSL_PREFIX )
-	{
 #if defined (ENABLE_SSL)
-		server++;
-		session->flags |= SESSIONFL_SSL_CONNECTION;
-#else
-		return LIBIRC_ERR_SSL_NOT_SUPPORTED;
-#endif
+	// Init the SSL stuff
+	if ( session->flags & SESSIONFL_SSL_CONNECTION )
+	{
+		int rc = ssl_init( session );
+		
+		if ( rc != 0 )
+			return rc;
 	}
+#endif
 	
     // and connect to the IRC server
     if ( socket_connect (&session->sock, (struct sockaddr *) &saddr, sizeof(saddr)) )
@@ -268,10 +267,11 @@ int irc_connect6 (irc_session_t * session,
 	// Free the strings if defined; may be the case when the session is reused after the connection fails
 	free_ircsession_strings( session );
 
+	// Handle the server # prefix (SSL)
 	if ( server[0] == SSL_PREFIX )
 	{
 #if defined (ENABLE_SSL)
-		server += strlen( SSL_PREFIX );
+		server++;
 		session->flags |= SESSIONFL_SSL_CONNECTION;
 #else
 		session->lasterror = LIBIRC_ERR_SSL_NOT_SUPPORTED;
@@ -784,6 +784,7 @@ int irc_process_select_descriptors (irc_session_t * session, fd_set *in_set, fd_
 		return 1;
 	}
 
+	session->lasterror = 0;
 	libirc_dcc_process_descriptors (session, in_set, out_set);
 
 	// Handle "connection succeed" / "connection failed"
@@ -855,7 +856,9 @@ int irc_process_select_descriptors (irc_session_t * session, fd_set *in_set, fd_
 
 		if ( length < 0 )
 		{
-			session->lasterror = (length == 0 ? LIBIRC_ERR_CLOSED : LIBIRC_ERR_TERMINATED);
+			if ( session->lasterror == 0 )
+				session->lasterror = (length == 0 ? LIBIRC_ERR_CLOSED : LIBIRC_ERR_TERMINATED);
+			
 			session->state = LIBIRC_STATE_DISCONNECTED;
 			return 1;
 		}
@@ -890,7 +893,9 @@ int irc_process_select_descriptors (irc_session_t * session, fd_set *in_set, fd_
 
 		if ( length < 0 )
 		{
-			session->lasterror = (length == 0 ? LIBIRC_ERR_CLOSED : LIBIRC_ERR_TERMINATED);
+			if ( session->lasterror == 0 )
+				session->lasterror = (length == 0 ? LIBIRC_ERR_CLOSED : LIBIRC_ERR_TERMINATED);
+
 			session->state = LIBIRC_STATE_DISCONNECTED;
 
 			libirc_mutex_unlock (&session->mutex_session);

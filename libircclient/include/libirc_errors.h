@@ -211,8 +211,25 @@
 #define LIBIRC_ERR_SSL_INIT_FAILED			18
 
 
+/*! \brief SSL connection failed
+ * 
+ * SSL handshare failed when attempting to connect to the server. Typically this means you're trying
+ * to use SSL but attempting to connect to a non-SSL port.
+ * \ingroup errorcodes
+ */
+#define LIBIRC_ERR_CONNECT_SSL_FAILED		19
+
+
+/*! \brief SSL certificate verify failed
+ * 
+ * The server is using the self-signed certificate. Use LIBIRC_OPTION_SSL_NO_VERIFY option to connect to it.
+ * \ingroup errorcodes
+ */
+#define LIBIRC_ERR_SSL_CERT_VERIFY_FAILED	20
+
+
 // Internal max error value count.
 // If you added more errors, add them to errors.c too!
- #define LIBIRC_ERR_MAX			19
+#define LIBIRC_ERR_MAX			21
 
 #endif /* INCLUDE_IRC_ERRORS_H */
