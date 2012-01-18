@@ -151,10 +151,11 @@ int main (int argc, char **argv)
 {
 	irc_callbacks_t	callbacks;
 	irc_ctx_t ctx;
+	unsigned short port = 6667;
 
 	if ( argc != 4 )
 	{
-		printf ("Usage: %s <server> <nick> <channel>\n", argv[0]);
+		printf ("Usage: %s <[#]server[:port]> <nick> <channel>\n", argv[0]);
 		return 1;
 	}
 
@@ -180,8 +181,12 @@ int main (int argc, char **argv)
     ctx.nick = argv[2];
 	irc_set_ctx (s, &ctx);
 
+	// If the port number is specified in the server string, use the port 0 so it gets parsed
+	if ( strchr( argv[1], ':' ) != 0 )
+		port = 0;
+	
 	// Initiate the IRC server connection
-	if ( irc_connect (s, argv[1], 6667, 0, argv[2], 0, 0) )
+	if ( irc_connect (s, argv[1], port, 0, argv[2], 0, 0) )
 	{
 		printf ("Could not connect: %s\n", irc_strerror (irc_errno(s)));
 		return 1;

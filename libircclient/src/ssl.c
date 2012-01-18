@@ -138,6 +138,7 @@ static int ssl_recv( irc_session_t * session, size_t len)
                 session->flags |= SESSIONFL_SSL_READ_WANTS_WRITE;
 				return 0;
 		}
+		printf("Read SSL error %08X\n", ssl_error );
 	}
 	
 	return -1;
@@ -171,6 +172,7 @@ static int ssl_send( irc_session_t * session )
                 // Repeat the same write.
 				return 0;
         }
+        printf("Write SSL error %08X\n", ssl_error );
     }
 
 	return -1;

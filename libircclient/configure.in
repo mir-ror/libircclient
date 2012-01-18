@@ -78,7 +78,7 @@ if test "$use_openssl" = "yes"; then
 	AC_CHECK_LIB(ssl,    [SSL_library_init], [], [AC_MSG_ERROR([OpenSSL not found])])
 	AC_CHECK_HEADER([openssl/ssl.h], [], [AC_MSG_ERROR([OpenSSL headers not found; did you install the -dev package?])])
 	CFLAGS="$CFLAGS -DENABLE_OPENSSL"
-	LIBS="$LIBS -lcrypto -lssl"
+#	LIBS="$LIBS -lcrypto -lssl"
 fi
 
 

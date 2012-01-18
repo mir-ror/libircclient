@@ -31,6 +31,6 @@
 #define LIBIRC_STATE_REMOVED		10	// this state is used only in DCC
 
 
-#define SSL_PREFIX					"ssl://"
+#define SSL_PREFIX					'#'
 
 #endif /* INCLUDE_IRC_PARAMS_H */

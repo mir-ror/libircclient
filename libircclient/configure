@@ -4602,7 +4602,7 @@ fi
 
 
 	CFLAGS="$CFLAGS -DENABLE_OPENSSL"
-	LIBS="$LIBS -lcrypto -lssl"
+#	LIBS="$LIBS -lcrypto -lssl"
 fi
 
 

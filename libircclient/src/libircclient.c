@@ -36,7 +36,7 @@
 #endif
 
 
-#define IS_DEBUG_ENABLED(s)	((s)->option & LIBIRC_OPTION_DEBUG)
+#define IS_DEBUG_ENABLED(s)	((s)->options & LIBIRC_OPTION_DEBUG)
 
 
 irc_session_t * irc_create_session (irc_callbacks_t	* callbacks)
@@ -122,6 +122,7 @@ int irc_connect (irc_session_t * session,
 			const char * realname)
 {
 	struct sockaddr_in saddr;
+	char * p;
 
 	// Check and copy all the specified fields
 	if ( !server || !nick )
@@ -139,14 +140,15 @@ int irc_connect (irc_session_t * session,
 	// Free the strings if defined; may be the case when the session is reused after the connection fails
 	free_ircsession_strings( session );
 
-	// Handle the server ssl:// prefix
-	if ( strstr( server, SSL_PREFIX ) == server )
+	// Handle the server # prefix (SSL)
+	if ( server[0] == SSL_PREFIX )
 	{
 #if defined (ENABLE_SSL)
-		server += strlen( SSL_PREFIX );
+		server++;
 		session->flags |= SESSIONFL_SSL_CONNECTION;
 #else
-		return LIBIRC_ERR_SSL_NOT_SUPPORTED;
+		session->lasterror = LIBIRC_ERR_SSL_NOT_SUPPORTED;
+		return 1;
 #endif
 	}
 	
@@ -162,11 +164,19 @@ int irc_connect (irc_session_t * session,
 	session->nick = strdup (nick);
 	session->server = strdup (server);
 
+	// If port number is zero and server contains the port, parse it
+	if ( port == 0 && (p = strchr( session->server, ':' )) != 0 )
+	{
+		// Terminate the string and parse the port number
+		*p++ = '\0';
+		port = atoi( p );
+	}
+
 	// IPv4 address resolving
 	memset( &saddr, 0, sizeof(saddr) );
 	saddr.sin_family = AF_INET;
 	saddr.sin_port = htons (port);		
-	saddr.sin_addr.s_addr = inet_addr (server);
+	saddr.sin_addr.s_addr = inet_addr( session->server );
 
     if ( saddr.sin_addr.s_addr == INADDR_NONE )
     {
@@ -176,10 +186,10 @@ int irc_connect (irc_session_t * session,
 		struct hostent tmp_hostent;
 		char buf[2048];
 
-      	if ( gethostbyname_r (server, &tmp_hostent, buf, sizeof(buf), &hp, &tmp_errno) )
+      	if ( gethostbyname_r (session->server, &tmp_hostent, buf, sizeof(buf), &hp, &tmp_errno) )
       		hp = 0;
 #else
-      	hp = gethostbyname (server);
+      	hp = gethostbyname (session->server);
 #endif // HAVE_GETHOSTBYNAME_R
 		if ( !hp )
 		{
@@ -198,16 +208,16 @@ int irc_connect (irc_session_t * session,
 		return 1;
 	}
 
-#if defined (ENABLE_SSL)
-	// Init the SSL stuff
-	if ( session->flags & SESSIONFL_SSL_CONNECTION )
+	// Handle the server # prefix (SSL)
+	if ( server[0] == SSL_PREFIX )
 	{
-		int rc = ssl_init( session );
-		
-		if ( rc != 0 )
-			return rc;
-	}
+#if defined (ENABLE_SSL)
+		server++;
+		session->flags |= SESSIONFL_SSL_CONNECTION;
+#else
+		return LIBIRC_ERR_SSL_NOT_SUPPORTED;
 #endif
+	}
 	
     // and connect to the IRC server
     if ( socket_connect (&session->sock, (struct sockaddr *) &saddr, sizeof(saddr)) )
@@ -233,7 +243,7 @@ int irc_connect6 (irc_session_t * session,
 #if defined (ENABLE_IPV6)
 	struct sockaddr_in6 saddr;
 	struct addrinfo ainfo, *res = NULL;
-	char portStr[32];
+	char portStr[32], *p;
 #if defined (_WIN32)
 	int addrlen = sizeof(saddr);
 	HMODULE hWsock;
@@ -241,7 +251,6 @@ int irc_connect6 (irc_session_t * session,
 	freeaddrinfo_ptr_t freeaddrinfo_ptr;
 	int resolvesuccess = 0;
 #endif
-	sprintf(portStr, "%u", (unsigned)port);
 
 	// Check and copy all the specified fields
 	if ( !server || !nick )
@@ -259,12 +268,16 @@ int irc_connect6 (irc_session_t * session,
 	// Free the strings if defined; may be the case when the session is reused after the connection fails
 	free_ircsession_strings( session );
 
+	if ( server[0] == SSL_PREFIX )
+	{
 #if defined (ENABLE_SSL)
 		server += strlen( SSL_PREFIX );
 		session->flags |= SESSIONFL_SSL_CONNECTION;
 #else
-		return LIBIRC_ERR_SSL_NOT_SUPPORTED;
+		session->lasterror = LIBIRC_ERR_SSL_NOT_SUPPORTED;
+		return 1;
 #endif
+	}
 	
 	if ( username )
 		session->username = strdup (username);
@@ -278,12 +291,22 @@ int irc_connect6 (irc_session_t * session,
 	session->nick = strdup (nick);
 	session->server = strdup (server);
 
+	// If port number is zero and server contains the port, parse it
+	if ( port == 0 && (p = strchr( session->server, ':' )) != 0 )
+	{
+		// Terminate the string and parse the port number
+		*p++ = '\0';
+		port = atoi( p );
+	}
+	
 	memset( &saddr, 0, sizeof(saddr) );
 	saddr.sin6_family = AF_INET6;
 	saddr.sin6_port = htons (port);	
+	
+	sprintf( portStr, "%u", (unsigned)port );
 
 #if defined (_WIN32)
-	if ( WSAStringToAddressA( (LPSTR)server, AF_INET6, NULL, (struct sockaddr *)&saddr, &addrlen ) == SOCKET_ERROR )
+	if ( WSAStringToAddressA( (LPSTR)session->server, AF_INET6, NULL, (struct sockaddr *)&saddr, &addrlen ) == SOCKET_ERROR )
 	{
 		hWsock = LoadLibraryA("ws2_32");
 
@@ -301,7 +324,7 @@ int irc_connect6 (irc_session_t * session,
 				ainfo.ai_socktype = SOCK_STREAM;
 				ainfo.ai_protocol = 0;
 
-				if ( getaddrinfo_ptr(server, portStr, &ainfo, &res) == 0 && res )
+				if ( getaddrinfo_ptr(session->server, portStr, &ainfo, &res) == 0 && res )
 				{
 					resolvesuccess = 1;
 					memcpy( &saddr, res->ai_addr, res->ai_addrlen );
@@ -317,14 +340,14 @@ int irc_connect6 (irc_session_t * session,
 		}
 	}
 #else
-	if ( inet_pton( AF_INET6, server, (void*) &saddr.sin6_addr ) <= 0 )
+	if ( inet_pton( AF_INET6, session->server, (void*) &saddr.sin6_addr ) <= 0 )
 	{		
 		memset( &ainfo, 0, sizeof(ainfo) );
 		ainfo.ai_family = AF_INET6;
 		ainfo.ai_socktype = SOCK_STREAM;
 		ainfo.ai_protocol = 0;
 
-		if ( getaddrinfo( server, portStr, &ainfo, &res ) || !res )
+		if ( getaddrinfo( session->server, portStr, &ainfo, &res ) || !res )
 		{
 			session->lasterror = LIBIRC_ERR_RESOLV;
 			return 1;

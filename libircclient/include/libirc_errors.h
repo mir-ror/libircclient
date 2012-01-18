@@ -211,8 +211,8 @@
 #define LIBIRC_ERR_SSL_INIT_FAILED			18
 
 
-/*! brief Internal max error value count
- */
-#define LIBIRC_ERR_MAX			19
+// Internal max error value count.
+// If you added more errors, add them to errors.c too!
+ #define LIBIRC_ERR_MAX			19
 
 #endif /* INCLUDE_IRC_ERRORS_H */
