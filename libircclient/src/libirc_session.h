@@ -17,14 +17,16 @@
 #define INCLUDE_IRC_SESSION_H
 
 
-#ifndef IN_INCLUDE_LIBIRC_H
-	#error This file should not be included directly, include just libircclient.h
-#endif
-
-
 #include "libirc_params.h"
 #include "libirc_dcc.h"
 #include "libirc_events.h"
+
+
+// Session flags
+#define SESSIONFL_MOTD_RECEIVED			(0x00000001)
+#define SESSIONFL_SSL_CONNECTION		(0x00000002)
+#define SESSIONFL_SSL_WRITE_WANTS_READ	(0x00000004)
+#define SESSIONFL_SSL_READ_WANTS_WRITE	(0x00000008)
 
 
 struct irc_session_s
@@ -44,7 +46,7 @@ struct irc_session_s
 
 	socket_t		sock;
 	int				state;
-	int				motd_received;
+	int				flags;
 
 	char 		  *	server;
 	char		  * server_password;
@@ -62,6 +64,12 @@ struct irc_session_s
 	port_mutex_t	mutex_dcc;
 
 	irc_callbacks_t	callbacks;
+
+#if defined (ENABLE_SSL)
+	SSL 		 *	ssl;
+#endif
+
+	
 };
 
 

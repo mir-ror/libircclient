@@ -15,10 +15,6 @@
 #ifndef INCLUDE_IRC_DCC_H
 #define INCLUDE_IRC_DCC_H
 
-#ifndef IN_INCLUDE_LIBIRC_H
-	#error This file should not be included directly, include just libirclient.h
-#endif
-
 
 /*
  * This structure keeps the state of a single DCC connection.

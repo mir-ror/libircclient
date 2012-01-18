@@ -1,9 +1,9 @@
 /* 
- * Copyright (C) 2004-2009 Georgy Yunaev gyunaev@ulduzsoft.com
+ * Copyright (C) 2004-2012 George Yunaev gyunaev@ulduzsoft.com
  *
  * This library is free software; you can redistribute it and/or modify it 
  * under the terms of the GNU Lesser General Public License as published by 
- * the Free Software Foundation; either version 2 of the License, or (at your 
+ * the Free Software Foundation; either version 3 of the License, or (at your 
  * option) any later version.
  *
  * This library is distributed in the hope that it will be useful, but WITHOUT 
@@ -14,9 +14,9 @@
 
 /*! 
  * \file libircclient.h
- * \author Georgy Yunaev
- * \version 1.0
- * \date 09.2004
+ * \author George Yunaev
+ * \version 1.5
+ * \date 01.2012
  * \brief This file defines all prototypes and functions to use libircclient.
  *
  * libircclient is a small but powerful library, which implements client-server IRC
@@ -128,14 +128,9 @@ typedef void (*irc_dcc_callback_t) (irc_session_t * session, irc_dcc_t id, int s
 
 #define IN_INCLUDE_LIBIRC_H
 #include "libirc_errors.h"
-#include "libirc_rfcnumeric.h"
 #include "libirc_events.h"
 #include "libirc_options.h"
-
-#if defined (IN_BUILDING_LIBIRC)
-	#include "libirc_session.h"
-	#include "libirc_dcc.h"
-#endif
+#undef IN_INCLUDE_LIBIRC_H
 
 
 /*!

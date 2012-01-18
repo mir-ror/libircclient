@@ -16,12 +16,8 @@
 #define INCLUDE_IRC_PARAMS_H
 
 
-#ifndef IN_INCLUDE_LIBIRC_H
-	#error This file should not be included directly, include just libircclient.h
-#endif
-
 #define LIBIRC_VERSION_HIGH			0x0001
-#define LIBIRC_VERSION_LOW			0x0002
+#define LIBIRC_VERSION_LOW			0x0005
 
 #define LIBIRC_BUFFER_SIZE			1024
 #define LIBIRC_DCC_BUFFER_SIZE		1024
@@ -34,5 +30,7 @@
 #define LIBIRC_STATE_CONFIRM_SIZE	5	// Used only by DCC send to confirm the amount of sent data
 #define LIBIRC_STATE_REMOVED		10	// this state is used only in DCC
 
+
+#define SSL_PREFIX					"ssl://"
 
 #endif /* INCLUDE_IRC_PARAMS_H */

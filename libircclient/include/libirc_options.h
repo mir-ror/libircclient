@@ -1,23 +1,15 @@
 /* 
- * Copyright (C) 2004-2009 Georgy Yunaev gyunaev@ulduzsoft.com
+ * Copyright (C) 2004-2012 George Yunaev gyunaev@ulduzsoft.com
  *
  * This library is free software; you can redistribute it and/or modify it 
  * under the terms of the GNU Lesser General Public License as published by 
- * the Free Software Foundation; either version 2 of the License, or (at your 
+ * the Free Software Foundation; either version 3 of the License, or (at your 
  * option) any later version.
  *
  * This library is distributed in the hope that it will be useful, but WITHOUT 
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public 
  * License for more details.
- */
-
-/*! 
- * \file libirc_options.h
- * \author Georgy Yunaev
- * \version 1.0
- * \date 09.2004
- * \brief This file defines the options used in irc_session_options()
  */
 
 #ifndef INCLUDE_IRC_OPTIONS_H
@@ -44,6 +36,21 @@
  * \ingroup options
  */
 #define LIBIRC_OPTION_STRIPNICKS	(1 << 2)
+
+
+/*! \brief Disables the certificate verification for SSL connections
+ *
+ * By default the SSL connection authenticy is ensured by verifying that the certificate
+ * presented by the server is signed by a known trusted certificate authority. Since those
+ * typically cost money, some IRC servers use the self-signed certificates. They provide the
+ * benefits of the SSL connection but since they are not signed by the Certificate Authority,
+ * their authencity cannot be verified. This option, if set, disables the certificate 
+ * verification - the library will accept any certificate presented by the server.
+ * 
+ * This option must be set before the irc_connect function is called.
+ * \ingroup options
+ */
+#define LIBIRC_OPTION_SSL_NO_VERIFY (1 << 3)
 
 
 #endif /* INCLUDE_IRC_OPTIONS_H */
