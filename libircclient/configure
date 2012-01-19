@@ -604,6 +604,7 @@ ac_includes_default="\
 
 ac_subst_vars='LTLIBOBJS
 PREFIX
+TARGET
 LIBOBJS
 EGREP
 GREP
@@ -662,6 +663,7 @@ ac_subst_files=''
 ac_user_opts='
 enable_option_checking
 enable_debug
+enable_shared
 enable_threads
 enable_ipv6
 enable_openssl
@@ -1290,6 +1292,7 @@ Optional Features:
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --enable-debug          compile with debug information (no)
+  --enable-shared         build a shared library (no)
   --enable-threads        compile with multithread support (yes)
   --enable-ipv6           compile with IPv6 support (no)
   --enable-openssl        compile with OpenSSL support (no)
@@ -2191,6 +2194,14 @@ if test "${enable_debug+set}" = set; then :
   enableval=$enable_debug; use_debug=$enableval
 else
   use_debug=no
+fi
+
+
+# Check whether --enable-shared was given.
+if test "${enable_shared+set}" = set; then :
+  enableval=$enable_shared; build_shared=$enableval
+else
+  build_shared=no
 fi
 
 
@@ -4383,6 +4394,12 @@ else
 	CFLAGS="${CFLAGS} -O3"
 fi
 
+# Choosing the target
+TARGET="static"
+if test "$build_shared" = "yes"; then
+	TARGET="shared"
+fi
+
 if test "$use_ipv6" = "yes"; then
 	for ac_func in getaddrinfo inet_pton
 do :
@@ -4498,6 +4515,21 @@ if test "$use_threads" = "yes"; then
 	CFLAGS="$CFLAGS -DENABLE_THREADS -D_REENTRANT"
 fi
 
+
+# Checking for mingw
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking For MinGW32" >&5
+$as_echo_n "checking For MinGW32... " >&6; }
+case "$host" in
+	*-*-mingw*)
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+		LIBS="$LIBS -lz -lwsock32 -lgdi32 -lkernel32" # for openssl
+		TARGET="shared_mingw"
+    		;;
+	*) { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; } ;;
+esac
+
 if test "$use_openssl" = "yes"; then
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for CRYPTO_new_ex_data in -lcrypto" >&5
 $as_echo_n "checking for CRYPTO_new_ex_data in -lcrypto... " >&6; }
@@ -4602,7 +4634,6 @@ fi
 
 
 	CFLAGS="$CFLAGS -DENABLE_SSL"
-#	LIBS="$LIBS -lcrypto -lssl"
 fi
 
 

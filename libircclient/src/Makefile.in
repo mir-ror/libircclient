@@ -6,12 +6,13 @@ RANLIB=@RANLIB@
 INCLUDES=-I../include
 DESTDIR=
 
-
 OBJS = libircclient.o
 
-all:	lib
+all:	@TARGET@
 
-lib:	libircclient.a
+static:	libircclient.a
+shared: libircclient.so
+shared_mingw: libircclient.dll
 
 install: lib
 	-mkdir -p $(DESTDIR)@prefix@/include
@@ -22,6 +23,12 @@ install: lib
 	cp ../include/libirc_options.h  $(DESTDIR)@prefix@/include/libirc_options.h 
 	cp libircclient.a $(DESTDIR)@prefix@/lib/libircclient.a
 	cd $(DESTDIR)@prefix@/lib && ln -s libircclient.a libirc.a
+
+libircclient.so: libircclient.o
+	$(CC) -shared -s -o libircclient.so libircclient.o @LIBS@
+
+libircclient.dll: libircclient.o
+	$(CC) -shared -s -o libircclient.dll -Wl,-out-implib,libircclient.lib libircclient.o libircclient.def -lkernel32 -lwsock32 @LIBS@
 
 libircclient.a: libircclient.o
 	$(AR) libircclient.a libircclient.o

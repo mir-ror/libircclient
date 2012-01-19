@@ -57,6 +57,7 @@
 	#define snprintf			_snprintf
 	#define vsnprintf			_vsnprintf
 	#define strncasecmp			_strnicmp
+	#define EAGAIN				EWOULDBLOCK
 #endif
 
 
@@ -68,8 +69,6 @@
 
 
 #if defined (ENABLE_THREADS)
-
-
 static inline int libirc_mutex_init (port_mutex_t * mutex)
 {
 #if defined (WIN32)

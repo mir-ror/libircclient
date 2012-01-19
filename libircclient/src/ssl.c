@@ -15,11 +15,50 @@
 
 #if defined (ENABLE_SSL)
 
-// This array will store all of the mutexes available to OpenSSL
-static pthread_mutex_t * mutex_buf = 0;
-
 // Nonzero if OpenSSL has been initialized
 static SSL_CTX * ssl_context = 0;
+
+#if defined (WIN32)
+#include <windows.h>
+// This array will store all of the mutexes available to OpenSSL
+static CRITICAL_SECTION * mutex_buf = 0;
+
+// OpenSSL callback to utilize static locks
+static void cb_openssl_locking_function( int mode, int n, const char * file, int line )
+{
+    if ( mode & CRYPTO_LOCK)
+        EnterCriticalSection( &mutex_buf[n] );
+    else
+        LeaveCriticalSection( &mutex_buf[n] );
+}
+
+// OpenSSL callback to get the thread ID
+static unsigned long cb_openssl_id_function()
+{
+    return ((unsigned long) GetCurrentThreadId() );
+}
+
+static int alloc_mutexes( unsigned int total )
+{
+	int i;
+	
+	// Enable thread safety in OpenSSL
+	mutex_buf = (CRITICAL_SECTION*) malloc( total * sizeof(CRITICAL_SECTION) );
+
+	if ( !mutex_buf )
+		return -1;
+
+	for ( i = 0;  i < total;  i++)
+		InitializeCriticalSection( &(mutex_buf[i]) );
+	
+	return 0;
+}
+
+
+#else
+
+// This array will store all of the mutexes available to OpenSSL
+static pthread_mutex_t * mutex_buf = 0;
 
 // OpenSSL callback to utilize static locks
 static void cb_openssl_locking_function( int mode, int n, const char * file, int line )
@@ -36,24 +75,35 @@ static unsigned long cb_openssl_id_function()
     return ((unsigned long) pthread_self() );
 }
 
-// Initializes the SSL context. Must be called after the socket is created.
-static int ssl_init( irc_session_t * session )
+static int alloc_mutexes( unsigned int total )
 {
 	int i;
 	
+	// Enable thread safety in OpenSSL
+	mutex_buf = (pthread_mutex_t*) malloc( total * sizeof(pthread_mutex_t) );
+
+	if ( !mutex_buf )
+		return -1;
+
+	for ( i = 0;  i < total;  i++)
+		pthread_mutex_init( &(mutex_buf[i]), 0 );
+	
+	return 0;
+}
+
+#endif
+
+// Initializes the SSL context. Must be called after the socket is created.
+static int ssl_init( irc_session_t * session )
+{
 	if ( !ssl_context )
 	{
 		// Load the strings and init the library
 		SSL_load_error_strings();
 
 		// Enable thread safety in OpenSSL
-		mutex_buf = (pthread_mutex_t*) malloc( CRYPTO_num_locks() * sizeof(pthread_mutex_t) );
-
-		if ( !mutex_buf )
+		if ( alloc_mutexes( CRYPTO_num_locks() ) )
 			return LIBIRC_ERR_NOMEM;
-
-		for ( i = 0;  i < CRYPTO_num_locks();  i++)
-			pthread_mutex_init( &(mutex_buf[i]), 0 );
 
 		// Register our callbacks
 		CRYPTO_set_id_callback( cb_openssl_id_function );
