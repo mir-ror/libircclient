@@ -4523,6 +4523,7 @@ case "$host" in
 	*-*-mingw*)
 		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
+		CFLAGS="$CFLAGS -DWIN32_DLL"
 		LIBS="$LIBS -lz -lwsock32 -lgdi32 -lkernel32" # for openssl
 		TARGET="shared_mingw"
     		;;

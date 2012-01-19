@@ -91,6 +91,7 @@ AC_MSG_CHECKING([For MinGW32])
 case "$host" in
 	*-*-mingw*)
 		AC_MSG_RESULT([yes])
+		CFLAGS="$CFLAGS -DWIN32_DLL"
 		LIBS="$LIBS -lz -lwsock32 -lgdi32 -lkernel32" # for openssl
 		TARGET="shared_mingw"
     		;;
