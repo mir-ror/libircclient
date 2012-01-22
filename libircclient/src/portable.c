@@ -12,7 +12,7 @@
  * License for more details.
  */
 
-#if !defined (WIN32)
+#if !defined (_WIN32)
 	#include "config.h"
 	#include <stdio.h>
 	#include <stdarg.h>
@@ -71,7 +71,7 @@
 #if defined (ENABLE_THREADS)
 static inline int libirc_mutex_init (port_mutex_t * mutex)
 {
-#if defined (WIN32)
+#if defined (_WIN32)
 	InitializeCriticalSection (mutex);
 	return 0;
 #elif defined (PTHREAD_MUTEX_RECURSIVE)
@@ -84,13 +84,13 @@ static inline int libirc_mutex_init (port_mutex_t * mutex)
 
 	return pthread_mutex_init (mutex, 0);
 
-#endif /* defined (WIN32) */
+#endif /* defined (_WIN32) */
 }
 
 
 static inline void libirc_mutex_destroy (port_mutex_t * mutex)
 {
-#if defined (WIN32)
+#if defined (_WIN32)
 	DeleteCriticalSection (mutex);
 #else
 	pthread_mutex_destroy (mutex);
@@ -100,7 +100,7 @@ static inline void libirc_mutex_destroy (port_mutex_t * mutex)
 
 static inline void libirc_mutex_lock (port_mutex_t * mutex)
 {
-#if defined (WIN32)
+#if defined (_WIN32)
 	EnterCriticalSection (mutex);
 #else
 	pthread_mutex_lock (mutex);
@@ -110,7 +110,7 @@ static inline void libirc_mutex_lock (port_mutex_t * mutex)
 
 static inline void libirc_mutex_unlock (port_mutex_t * mutex)
 {
-#if defined (WIN32)
+#if defined (_WIN32)
 	LeaveCriticalSection (mutex);
 #else
 	pthread_mutex_unlock (mutex);

@@ -15,7 +15,7 @@
 /*
  * The sockets interface was moved out to simplify going OpenSSL integration.
  */
-#if !defined (WIN32)
+#if !defined (_WIN32)
 	#include <sys/socket.h>
 	#include <netdb.h>
 	#include <arpa/inet.h>	
@@ -47,7 +47,7 @@
 
 static int socket_error()
 {
-#if !defined (WIN32)
+#if !defined (_WIN32)
 	return errno;
 #else
 	return WSAGetLastError();
@@ -64,7 +64,7 @@ static int socket_create (int domain, int type, socket_t * sock)
 
 static int socket_make_nonblocking (socket_t * sock)
 {
-#if !defined (WIN32)
+#if !defined (_WIN32)
 	return fcntl (*sock, F_SETFL, fcntl (*sock, F_GETFL,0 ) | O_NONBLOCK) != 0;
 #else
 	unsigned long mode = 0;
@@ -75,7 +75,7 @@ static int socket_make_nonblocking (socket_t * sock)
 
 static int socket_close (socket_t * sock)
 {
-#if !defined (WIN32)
+#if !defined (_WIN32)
 	close (*sock);
 #else
 	closesocket (*sock);

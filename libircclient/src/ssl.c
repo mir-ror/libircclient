@@ -18,7 +18,7 @@
 // Nonzero if OpenSSL has been initialized
 static SSL_CTX * ssl_context = 0;
 
-#if defined (WIN32)
+#if defined (_WIN32)
 #include <windows.h>
 // This array will store all of the mutexes available to OpenSSL
 static CRITICAL_SECTION * mutex_buf = 0;
