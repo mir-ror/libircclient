@@ -21,6 +21,7 @@ install: lib
 	cp ../include/libirc_errors.h $(DESTDIR)@prefix@/include/libirc_errors.h
 	cp ../include/libirc_events.h  $(DESTDIR)@prefix@/include/libirc_events.h 
 	cp ../include/libirc_options.h  $(DESTDIR)@prefix@/include/libirc_options.h 
+	cp ../include/libirc_rfcnumeric.h  $(DESTDIR)@prefix@/include/libirc_rfcnumeric.h 
 	cp libircclient.so $(DESTDIR)@prefix@/lib/
 	cp libircclient.a $(DESTDIR)@prefix@/lib/
 

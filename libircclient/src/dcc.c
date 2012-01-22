@@ -529,18 +529,35 @@ static int libirc_new_dcc_session (irc_session_t * session, unsigned long ip, un
 
 	if ( !ip )
 	{
-		struct sockaddr_in saddr;
 		unsigned long arg = 1;
 
 		setsockopt (dcc->sock, SOL_SOCKET, SO_REUSEADDR, (char*)&arg, sizeof(arg));
 
-		memset (&saddr, 0, sizeof(saddr));
-		saddr.sin_family = AF_INET;
-		memcpy (&saddr.sin_addr, &session->local_addr, sizeof(session->local_addr));
-        saddr.sin_port = htons (0);
+#if defined (ENABLE_IPV6)
+		if ( session->flags & SESSIONFL_USES_IPV6 )
+		{
+			struct sockaddr_in6 saddr6;
 
-		if ( bind (dcc->sock, (struct sockaddr *) &saddr, sizeof(saddr)) < 0 )
-			goto cleanup_exit_error;
+			memset (&saddr6, 0, sizeof(saddr6));
+			saddr6.sin6_family = AF_INET;
+			memcpy (&saddr6.sin6_addr, &session->local_addr6, sizeof(session->local_addr6));
+			saddr6.sin6_port = htons (0);
+
+			if ( bind (dcc->sock, (struct sockaddr *) &saddr6, sizeof(saddr6)) < 0 )
+				goto cleanup_exit_error;
+		}
+		else
+#endif
+		{
+			struct sockaddr_in saddr;
+			memset (&saddr, 0, sizeof(saddr));
+			saddr.sin_family = AF_INET;
+			memcpy (&saddr.sin_addr, &session->local_addr, sizeof(session->local_addr));
+			saddr.sin_port = htons (0);
+
+			if ( bind (dcc->sock, (struct sockaddr *) &saddr, sizeof(saddr)) < 0 )
+				goto cleanup_exit_error;
+		}
 
 		if ( listen (dcc->sock, 5) < 0 )
 			goto cleanup_exit_error;

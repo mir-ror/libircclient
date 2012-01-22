@@ -25,10 +25,6 @@
 #ifndef INCLUDE_IRC_RFCNUMERIC_H
 #define INCLUDE_IRC_RFCNUMERIC_H
 
-#ifndef IN_INCLUDE_LIBIRC_H
-	#error This file should not be included directly, include just libircclient.h
-#endif
-
 
 /*! \brief 001 Welcome to the Internet Relay Network
                \<nick\>!\<user\>\@\<host\>

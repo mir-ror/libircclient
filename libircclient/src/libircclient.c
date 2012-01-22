@@ -214,7 +214,10 @@ int irc_connect (irc_session_t * session,
 		int rc = ssl_init( session );
 		
 		if ( rc != 0 )
-			return rc;
+		{
+			session->lasterror = rc;
+			return 1;
+		}
 	}
 #endif
 	
@@ -226,7 +229,7 @@ int irc_connect (irc_session_t * session,
     }
 
     session->state = LIBIRC_STATE_CONNECTING;
-    session->flags = 0; // reset in case of reconnect
+    session->flags = SESSIONFL_USES_IPV6; // reset in case of reconnect
 	return 0;
 }
 

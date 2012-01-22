@@ -27,7 +27,8 @@
 #define SESSIONFL_SSL_CONNECTION		(0x00000002)
 #define SESSIONFL_SSL_WRITE_WANTS_READ	(0x00000004)
 #define SESSIONFL_SSL_READ_WANTS_WRITE	(0x00000008)
-#define SESSIONFL_DEBUG					(0x00000010)
+#define SESSIONFL_USES_IPV6				(0x00000010)
+
 
 
 struct irc_session_s
@@ -56,10 +57,10 @@ struct irc_session_s
 	char		  *	nick;
 
 #if defined( ENABLE_IPV6 )
-	struct in6_addr	local_addr;
-#else
-	struct in_addr	local_addr;
+	struct in6_addr	local_addr6;
 #endif
+
+	struct in_addr	local_addr;
 	irc_dcc_t		dcc_last_id;
 	irc_dcc_session_t * dcc_sessions;
 	port_mutex_t	mutex_dcc;
