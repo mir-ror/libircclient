@@ -671,7 +671,7 @@ static void libirc_process_incoming_data (irc_session_t * session, size_t proces
 				/* 
 				 * Check for CTCP request (a CTCP message starts from 0x01 
 				 * and ends by 0x01
-                 */
+				 */
 				if ( params[1][0] == 0x01 && params[1][msglen-1] == 0x01 )
 				{
 					char ctcp_buf[128];
@@ -705,12 +705,12 @@ static void libirc_process_incoming_data (irc_session_t * session, size_t proces
 				else if ( !strncasecmp (params[0], session->nick, strlen(session->nick) ) )
 				{
 					if ( session->callbacks.event_privmsg )
-						(*session->callbacks.event_privmsg) (session, command, prefix, params, paramindex);
+						(*session->callbacks.event_privmsg) (session, "PRIVMSG", prefix, params, paramindex);
 				}
 				else
 				{
 					if ( session->callbacks.event_channel )
-						(*session->callbacks.event_channel) (session, command, prefix, params, paramindex);
+						(*session->callbacks.event_channel) (session, "CHANNEL", prefix, params, paramindex);
 				}
 			}
 		}
