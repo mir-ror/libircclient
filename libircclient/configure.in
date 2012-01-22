@@ -69,6 +69,7 @@ fi
 # Choosing the target
 TARGET="static"
 if test "$build_shared" = "yes"; then
+	CFLAGS="$CFLAGS -fpic"
 	TARGET="shared"
 fi
 

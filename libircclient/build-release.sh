@@ -58,5 +58,5 @@ cp $BUILDDIR/src/libircclient.lib $BINDIR/  || exit 1
 
 zip -r $RELEASEDIR/$PKGDIR-win32-dll-openssl.zip $PKGDIR || exit 1
 
-#rm -rf "$BUILDDIR" "$PKGDIR"
+rm -rf "$BUILDDIR" "$PKGDIR"
 echo "Done! Version $CURRENTVER released!"
