@@ -539,7 +539,7 @@ static int libirc_new_dcc_session (irc_session_t * session, unsigned long ip, un
 			struct sockaddr_in6 saddr6;
 
 			memset (&saddr6, 0, sizeof(saddr6));
-			saddr6.sin6_family = AF_INET;
+			saddr6.sin6_family = AF_INET6;
 			memcpy (&saddr6.sin6_addr, &session->local_addr6, sizeof(session->local_addr6));
 			saddr6.sin6_port = htons (0);
 
