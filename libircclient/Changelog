@@ -1,3 +1,10 @@
+2012-01-22 George Yunaev
+   * Fixed PRIVMSG events incorrectly reported as CHANNEL (thx Dennis Bretjes)
+   * Added -fpic option for the shared library; fixed make install
+   * WIN32 macro replaced by _WIN32 (Lothar May)
+   * Fixed IPv6 and IPv4 connections being used simultaneously (Lothar May)
+   * Fixed DCC file transfer with IPv6 build (Lothar May)
+
 2012-01-18 George Yunaev
    * libircclient 1.5 released.
    * Added SSL support
