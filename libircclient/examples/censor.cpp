@@ -32,7 +32,7 @@
 #include <errno.h>
 #include <string.h>
 
-#if !defined (WIN32)
+#if !defined (_WIN32)
 	#include <unistd.h>
 #endif
 

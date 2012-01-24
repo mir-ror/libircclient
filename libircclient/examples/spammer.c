@@ -17,7 +17,7 @@
 #include <errno.h>
 #include <string.h>
 
-#if defined (WIN32)
+#if defined (_WIN32)
 	#include <windows.h>
 
 	#define CREATE_THREAD(id,func,param)	(CreateThread(0, 0, func, param, 0, id) == 0)
