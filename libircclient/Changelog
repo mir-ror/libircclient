@@ -1,4 +1,5 @@
 2012-01-22 George Yunaev
+   * libircclient 1.6 released.
    * Fixed PRIVMSG events incorrectly reported as CHANNEL (thx Dennis Bretjes)
    * Added -fpic option for the shared library; fixed make install
    * WIN32 macro replaced by _WIN32 (Lothar May)
