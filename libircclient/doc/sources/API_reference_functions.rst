@@ -229,11 +229,7 @@ you should put your own descriptors into the sets, call this function to add the
 When it returns, you should call :c:func:`irc_process_select_descriptors` which will handle the events and calls your callbacks(!). Then you can process 
 your sockets events from set. See the example.
 
-What if you use epoll? It is not supported directly by the library, but if necessart, it could be emulated by converting descriptors between select and epoll as following:
- * Call irc_add_select_descriptors with an empty FD_SET
- * Extract the descriptors from the fd_set arrays (remember fd_array is a bitarray, not the value array). There may be more than one descriptor in case there are DCC sessions.
- * Pass those descriptors to poll/epoll using relevant events (i.e. use the EPOLLIN for the descriptors in the *in_set*)
- * For those descriptors which triggered the events, fill up the relevant in_set and out_set structures (again, remember the bitmasks!) and pass them to :c:func:`irc_process_select_descriptors`
+What if you use epoll? :ref:`See the FAQ <faq_epoll>`
  
 **Return value:**
 

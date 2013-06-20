@@ -11,10 +11,9 @@ Because on Win32 you have to initialize the Winsock API before using it:
 
 .. sourcecode:: c
 
-  WORD wVersionRequested = MAKEWORD (1, 1);
   WSADATA wsaData;
  
-  if ( WSAStartup (wVersionRequested, &wsaData) != 0 )
+  if ( WSAStartup ( MAKEWORD (2, 2), &wsaData) != 0 )
       // report an error
  
   // Now you can use libircclient
@@ -58,7 +57,7 @@ The IRC protocol itself is asynchronous and server-driven. For you, this means t
 Why the irc_cmd_join function does not return an error?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A typical example is the :ref:`api_irc_cmd_join` call always returns success even when you attempt to join a password-protected 
+A typical example is the :c:func:`irc_cmd_join` call always returns success even when you attempt to join a password-protected 
 channel. Then some time later the IRC server returns an error. This is because the irc_cmd family of functions return 
 success when the command is sent to the IRC server. The asynchronous nature of IRC makes it impossible to obtain the 
 command result immediately. Please read the question above.
@@ -115,6 +114,21 @@ idea how to write it.
 When I am made a chanop (+o) why do I not receive the event_umode?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Becoming a channel operator channes the **channel mode**, not user mode. Therefore you will receive event_mode_ and not event_umode_
+Becoming a channel operator channes the **channel mode**, not user mode. Therefore you will receive :c:member:`event_mode` and not :c:member:`event_umode`
 
 If you receive the event_umode with +o this means your user is an IRC server operator.
+
+
+.. _faq_epoll:
+
+What if my application uses epoll?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The library only directly supports the select()-based loops for historic reasons, so epoll and other polling methods are not supported directly by the library.
+However but if necessart, it could be emulated by converting descriptors between select and epoll as following:
+ * Call irc_add_select_descriptors with an empty FD_SET
+ * Extract the descriptors from the fd_set arrays (remember fd_array is a bitarray, not the value array). There may be more than one descriptor in case there are DCC sessions.
+ * Pass those descriptors to poll/epoll using relevant events (i.e. use the EPOLLIN for the descriptors in the *in_set*)
+ * For those descriptors which triggered the events, fill up the relevant in_set and out_set structures (again, remember the bitmasks!) and pass them to :c:func:`irc_process_select_descriptors`
+ 
+While this is cumbersome, the operations are very simple (basically bitmask operations on a small structure) and will not add any significant slowdown to your application.

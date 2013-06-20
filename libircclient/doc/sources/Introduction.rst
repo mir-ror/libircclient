@@ -35,14 +35,14 @@ Features
  - Comprehensive documentation, examples and the FAQ;
 
 
-What it is not suitable for
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Known issues
+~~~~~~~~~~~~
 
 Even though possible by using multiple sessions, the library is not suitable to connect to a large number of IRC servers simultaneously. If you still want to use it, you'd have to overcome the following:
 
- - You cannot use the main loop in irc_run_ because it only supports one session. You would have to use :ref:`irc_add_select_descriptors_` and :ref:`irc_process_select_descriptors`_
- - You'd have to handle reconnections separately by processing the relevant irc_process_select_descriptors_ return values
- - If you wish to use poll/epoll() instead of select() you'd have to write more logic as it is not directly supported. See irc_process_select_descriptors_ documentation.
+ - You cannot use the main loop in :c:func:`irc_run` because it only supports one session. You would have to use :c:func:`irc_add_select_descriptors`
+ - You'd have to handle reconnections separately by processing the relevant :c:func:`irc_process_select_descriptors` return values
+ - If you wish to use poll/epoll() instead of select() you'd have to write more logic as it is not directly supported. See the :c:func:`documentation <irc_process_select_descriptors>`.
  - The library is not optimized to have a low per-connection memory footprint, each non-SSL connection uses at least 4K, with around 32K per connection for SSL.
 
 
