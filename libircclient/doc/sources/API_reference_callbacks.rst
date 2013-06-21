@@ -126,7 +126,8 @@ This callback is called for all DCC functions when state change occurs.
 For DCC CHAT, the callback is called as following:
   * *status* is :c:macro:`LIBIRC_ERR_CLOSED`: connection is closed by remote peer. After returning from the callback, the DCC session is automatically destroyed
   * *status* is nonzero but not :c:macro:`LIBIRC_ERR_CLOSED`: socket I/O error  (connect error, accept error, recv error, send error). After returning from the callback, the DCC session is automatically destroyed
-  * *status* is zero: new chat message received, *data* contains the message (a null-terminated string), *length* contains the string length without null terminator
+  * *status* is zero and *length* is zero: the remote side accepted the chat request
+  * *status* is zero and *length* is nonzero: new chat message received, *data* contains the message (a null-terminated string), *length* contains the string length without null terminator
   
 
 For DCC SEND, while file is being sent, the callback is called as following:

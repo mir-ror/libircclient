@@ -42,7 +42,7 @@ Even though possible by using multiple sessions, the library is not suitable to 
 
  - You cannot use the main loop in :c:func:`irc_run` because it only supports one session. You would have to use :c:func:`irc_add_select_descriptors`
  - You'd have to handle reconnections separately by processing the relevant :c:func:`irc_process_select_descriptors` return values
- - If you wish to use poll/epoll() instead of select() you'd have to write more logic as it is not directly supported. See the :c:func:`documentation <irc_process_select_descriptors>`.
+ - If you wish to use poll/epoll() instead of select() you'd have to write more logic as it is not directly supported. See the :ref:`FAQ <faq_epoll>`.
  - The library is not optimized to have a low per-connection memory footprint, each non-SSL connection uses at least 4K, with around 32K per connection for SSL.
 
 

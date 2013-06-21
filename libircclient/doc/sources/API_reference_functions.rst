@@ -336,7 +336,7 @@ irc_cmd_part
 +-------------+-------------------------------------------------------------------------------------------------------------------------+
 | *session*   | IRC session handle                                                                                                      |
 +-------------+-------------------------------------------------------------------------------------------------------------------------+
-| *channel*   | Channel name to join. Cannot be NULL.                                                                                   |
+| *channel*   | Channel name to leave. Cannot be NULL.                                                                                  |
 +-------------+-------------------------------------------------------------------------------------------------------------------------+
 
 
@@ -1414,6 +1414,8 @@ irc_color_strip_from_mirc
 
 This function strips all the ANSI color codes from the message, and returns a new message with no color information. Useful for the bots which react to strings,
 to make sure the bot is not confused if the string uses colors.
+
+This function does not modify the message which doesn't use colors.
 
 **Return value:**
 
