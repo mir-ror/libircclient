@@ -35,18 +35,18 @@ svn export . "$BUILDDIR/" || exit 1
 (cd $BUILDDIR/doc && make singlehtml && make man && make latexpdf) || exit 1
 
 # Package the documentations
-cp $BUILDDIR/doc/latex/Libircclient.pdf $RELEASEDIR/$PKGDIR.pdf
-zip -r $RELEASEDIR/$PKGDIR-html.zip $BUILDDIR/doc/singlehtml 
+cp $BUILDDIR/doc/_build/latex/Libircclient.pdf $RELEASEDIR/$PKGDIR.pdf || exit 1
+(cd $BUILDDIR/doc/_build/singlehtml && zip -r ../$PKGDIR-html.zip .)
+mv $BUILDDIR/doc/_build/$PKGDIR-html.zip $RELEASEDIR/ || exit 1
 
 # Source package
 svn export . "$PKGDIR/" || exit 1
 mkdir $PKGDIR/man
-cp $BUILDDIR/doc/man/libircclient.1 $PKGDIR/man/ || exit 1
+cp $BUILDDIR/doc/_build/man/libircclient.1 $PKGDIR/man/ || exit 1
 tar zcf "$RELEASEDIR/$PKGDIR.tar.gz" $PKGDIR/ || exit 1
 rm -rf $PKGDIR/*
 
 # win32
-svn export . "$BUILDDIR/" || exit 1
 export PATH=$PATH:/usr/toolchains/windows-x86-mingw-qtsdl/bin/
 (cd $BUILDDIR && ./configure --enable-shared --host=i686-pc-mingw32 && make)  || exit 1
 
