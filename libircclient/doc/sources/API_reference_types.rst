@@ -9,10 +9,10 @@ irc_session_t
 
 .. c:type:: typedef struct irc_session_s irc_session_t
 
-The IRC session handle created by callind irc_create_session_. Most of the library function calls expect this handle as a parameter. You can create as many handles as you want.
+The IRC session handle created by callind :c:func:`irc_create_session`. Most of the library function calls expect this handle as a parameter. You can create as many handles as you want.
 Each handle could be used to establish a single IRC connection to an IRC server as a single user.
 
-Once the handle is not used anymore, it should be destroyed by calling irc_destroy_session_.
+Once the handle is not used anymore, it should be destroyed by calling :c:func:`irc_destroy_session`.
 
 
 irc_dcc_session_t
@@ -355,11 +355,11 @@ This event uses the dedicated irc_eventcode_callback_t_ callback. See the callba
 
 This event is triggered when someone attempts to establish the DCC CHAT with you.
 
-This event uses the dedicated irc_event_dcc_chat_t_ callback. See the callback documentation.
+This event uses the dedicated :c:type:`irc_event_dcc_chat_t` callback. See the callback documentation.
 
 
 .. c:member:: event_dcc_send_req
 
 This event is triggered when someone attempts to send you the file via DCC SEND.
 
-This event uses the dedicated irc_event_dcc_send_t_ callback. See the callback documentation.
+This event uses the dedicated :c:type:`irc_event_dcc_send_t` callback. See the callback documentation.

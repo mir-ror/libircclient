@@ -28,10 +28,20 @@ if [ -d "$PKGDIR" ]; then
 	rm -rf "$PKGDIR"
 fi
 
-# Store the source code
-svn export . "$PKGDIR/" || exit 1
+# Export the build directory to build the documentation
+svn export . "$BUILDDIR/" || exit 1
+
+# Build the documentation
+(cd $BUILDDIR/doc && make singlehtml && make man && make latexpdf) || exit 1
+
+# Package the documentations
+cp $BUILDDIR/doc/latex/Libircclient.pdf $RELEASEDIR/$PKGDIR.pdf
+zip -r $RELEASEDIR/$PKGDIR-html.zip $BUILDDIR/doc/singlehtml 
 
 # Source package
+svn export . "$PKGDIR/" || exit 1
+mkdir $PKGDIR/man
+cp $BUILDDIR/doc/man/libircclient.1 $PKGDIR/man/ || exit 1
 tar zcf "$RELEASEDIR/$PKGDIR.tar.gz" $PKGDIR/ || exit 1
 rm -rf $PKGDIR/*
 
@@ -48,6 +58,8 @@ mkdir "$PKGDIR/include"
 cp include/*.h "$PKGDIR/include"  || exit 1
 mkdir "$PKGDIR/examples"
 cp examples/*.c* $PKGDIR/examples  || exit 1
+mkdir "$PKGDIR/doc"
+cp $RELEASEDIR/$PKGDIR.pdf "$PKGDIR/doc/" || exit 1
 
 zip -r $RELEASEDIR/$PKGDIR-win32-dll.zip $PKGDIR || exit 1
 

@@ -593,7 +593,7 @@ static void libirc_process_incoming_data (irc_session_t * session, size_t proces
 	{
 		// We use SESSIONFL_MOTD_RECEIVED flag to check whether it is the first
 		// RPL_ENDOFMOTD or ERR_NOMOTD after the connection.
-		if ( (code == 376 || code == 422) && !(session->flags & SESSIONFL_MOTD_RECEIVED ) )
+		if ( (code == 1 || code == 376 || code == 422) && !(session->flags & SESSIONFL_MOTD_RECEIVED ) )
 		{
 			session->flags |= SESSIONFL_MOTD_RECEIVED;
 

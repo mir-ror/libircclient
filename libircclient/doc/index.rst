@@ -11,7 +11,6 @@ Libircclient technical documentation
 =====================
 
 .. toctree::
-   :maxdepth: 3
 
    sources/Introduction
 
@@ -21,7 +20,6 @@ Libircclient technical documentation
 =====================
 
 .. toctree::
-   :maxdepth: 3
    
    sources/Writing_code
 
@@ -30,7 +28,6 @@ Libircclient technical documentation
 =====================
 
 .. toctree::
-   :maxdepth: 3
    
    sources/API_reference_callbacks
    sources/API_reference_functions
@@ -42,7 +39,6 @@ Libircclient technical documentation
 =====================
 
 .. toctree::
-   :maxdepth: 3
    
    sources/Appendix_FAQ
    sources/Appendix_LGPL
