@@ -850,7 +850,10 @@ int irc_process_select_descriptors (irc_session_t * session, fd_set *in_set, fd_
 	}
 
 	if ( session->state != LIBIRC_STATE_CONNECTED )
+	{
+		session->lasterror = LIBIRC_ERR_STATE;
 		return 1;
+	}
 
 	// Hey, we've got something to read!
 	if ( FD_ISSET (session->sock, in_set) )
