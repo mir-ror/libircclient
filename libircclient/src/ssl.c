@@ -63,6 +63,9 @@ static pthread_mutex_t * mutex_buf = 0;
 // OpenSSL callback to utilize static locks
 static void cb_openssl_locking_function( int mode, int n, const char * file, int line )
 {
+    (void)file;
+    (void)line;
+
     if ( mode & CRYPTO_LOCK)
         pthread_mutex_lock( &mutex_buf[n] );
     else
@@ -77,7 +80,7 @@ static unsigned long cb_openssl_id_function()
 
 static int alloc_mutexes( unsigned int total )
 {
-	int i;
+	unsigned i;
 	
 	// Enable thread safety in OpenSSL
 	mutex_buf = (pthread_mutex_t*) malloc( total * sizeof(pthread_mutex_t) );
