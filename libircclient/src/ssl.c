@@ -33,14 +33,14 @@ static void cb_openssl_locking_function( int mode, int n, const char * file, int
 }
 
 // OpenSSL callback to get the thread ID
-static unsigned long cb_openssl_id_function()
+static unsigned long cb_openssl_id_function(void)
 {
     return ((unsigned long) GetCurrentThreadId() );
 }
 
 static int alloc_mutexes( unsigned int total )
 {
-	int i;
+	unsigned int i;
 	
 	// Enable thread safety in OpenSSL
 	mutex_buf = (CRITICAL_SECTION*) malloc( total * sizeof(CRITICAL_SECTION) );
