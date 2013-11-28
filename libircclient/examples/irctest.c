@@ -267,7 +267,7 @@ int main (int argc, char **argv)
 	irc_callbacks_t	callbacks;
 	irc_ctx_t ctx;
 	irc_session_t * s;
-	unsigned short port;
+	unsigned short port = 6667;
 
 	if ( argc != 4 )
 	{
