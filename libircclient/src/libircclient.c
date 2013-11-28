@@ -101,6 +101,11 @@ void irc_destroy_session (irc_session_t * session)
 	libirc_mutex_destroy (&session->mutex_session);
 #endif
 
+#if defined (ENABLE_SSL)
+	if ( session->ssl )
+		SSL_free( session->ssl );
+#endif
+	
 	/* 
 	 * delete DCC data 
 	 * libirc_remove_dcc_session removes the DCC session from the list.
