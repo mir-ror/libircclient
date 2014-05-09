@@ -94,10 +94,16 @@ static void libirc_event_ctcp_internal (irc_session_t * session, const char * ev
 			irc_cmd_ctcp_reply (session, nickbuf, params[0]);
 		else if ( !strcmp (params[0], "VERSION") )
 		{
-			unsigned int high, low;
-			irc_get_version (&high, &low);
+			if ( !session->ctcp_version )
+			{
+				unsigned int high, low;
+				irc_get_version (&high, &low);
 
-			sprintf (textbuf, "VERSION libirc by Georgy Yunaev ver.%d.%d", high, low);
+				snprintf (textbuf, sizeof (textbuf), "VERSION libircclient by Georgy Yunaev ver.%d.%d", high, low);
+			}
+			else
+				snprintf (textbuf, sizeof (textbuf), "VERSION %s", session->ctcp_version);
+
 			irc_cmd_ctcp_reply (session, nickbuf, textbuf);
 		}
 		else if ( !strcmp (params[0], "FINGER") )

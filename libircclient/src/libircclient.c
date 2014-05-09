@@ -93,6 +93,10 @@ static void free_ircsession_strings (irc_session_t * session)
 void irc_destroy_session (irc_session_t * session)
 {
 	free_ircsession_strings( session );
+
+	// The CTCP VERSION must be freed only now
+	if ( session->ctcp_version )
+		free (session->ctcp_version);
 	
 	if ( session->sock >= 0 )
 		socket_close (&session->sock);
@@ -1159,6 +1163,15 @@ void irc_set_ctx (irc_session_t * session, void * ctx)
 void * irc_get_ctx (irc_session_t * session)
 {
 	return session->ctx;
+}
+
+
+void irc_set_ctcp_version (irc_session_t * session, const char * version)
+{
+	if ( session->ctcp_version )
+		free(session->ctcp_version);
+
+	session->ctcp_version = strdup(version);
 }
 
 
