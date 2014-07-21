@@ -47,7 +47,7 @@ tar zcf "$RELEASEDIR/$PKGDIR.tar.gz" $PKGDIR/ || exit 1
 rm -rf $PKGDIR/*
 
 # win32
-export PATH=$PATH:/usr/toolchains/windows-x86-mingw-qtsdl/bin/
+export PATH=$PATH:/usr/toolchains/windows-x86-complete/bin/
 (cd $BUILDDIR && ./configure --enable-shared --host=i686-pc-mingw32 && make)  || exit 1
 
 BINDIR="$PKGDIR/bin"

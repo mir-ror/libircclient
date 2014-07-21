@@ -117,6 +117,8 @@ void irc_destroy_session (irc_session_t * session)
 	while ( session->dcc_sessions )
 		libirc_remove_dcc_session (session, session->dcc_sessions, 0);
 
+	libirc_mutex_destroy (&session->mutex_dcc);
+
 	free (session);
 }
 
