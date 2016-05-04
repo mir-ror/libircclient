@@ -15,7 +15,7 @@
 /*! 
  * \file libircclient.h
  * \author George Yunaev
- * \version 1.5
+ * \version 1.9
  * \date 01.2012
  * \brief This file defines all prototypes and functions to use libircclient.
  *
@@ -46,7 +46,7 @@
 
 #include <stdlib.h>
 
-#if !defined (WIN32)
+#if !defined (_WIN32)
 	#include <sys/select.h>	/* fd_set */
 #else
 	#include <winsock2.h>
