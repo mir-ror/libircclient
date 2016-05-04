@@ -134,20 +134,13 @@ static inline void libirc_mutex_unlock (port_mutex_t * mutex)
 #if defined (WIN32_DLL)
 BOOL WINAPI DllMain (HINSTANCE hinstDll, DWORD fdwReason, LPVOID lpvReserved)
 {
-	WORD wVersionRequested = MAKEWORD (1, 1);
-    WSADATA wsaData;
-
 	switch(fdwReason)
 	{
 		case DLL_PROCESS_ATTACH:
-			if ( WSAStartup (wVersionRequested, &wsaData) != 0 )
-				return FALSE;
-
 			DisableThreadLibraryCalls (hinstDll);
 			break;
 
 		case DLL_PROCESS_DETACH:
-			WSACleanup();
 			break;
 	}
 

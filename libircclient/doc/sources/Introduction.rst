@@ -49,7 +49,7 @@ Even though possible by using multiple sessions, the library is not suitable to 
 Author
 ~~~~~~
 
-This library is created by George Yunaev, copyright 2004-2013.
+This library is created by George Yunaev, copyright 2004-2016. Please see http://www.ulduzsoft.com/linux/libircclient
 
 
 License

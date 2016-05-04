@@ -48,7 +48,7 @@ rm -rf $PKGDIR/*
 
 # win32
 export PATH=$PATH:/usr/toolchains/windows-x86-complete/bin/
-(cd $BUILDDIR && ./configure --enable-shared --host=i686-pc-mingw32 && make)  || exit 1
+(cd $BUILDDIR && ./configure --enable-shared --host=i686-w64-mingw32.static && make)  || exit 1
 
 BINDIR="$PKGDIR/bin"
 mkdir -p $BINDIR
@@ -64,7 +64,7 @@ cp $RELEASEDIR/$PKGDIR.pdf "$PKGDIR/doc/" || exit 1
 zip -r $RELEASEDIR/$PKGDIR-win32-dll.zip $PKGDIR || exit 1
 
 # And the SSL version
-(cd $BUILDDIR && make distclean && ./configure --enable-shared --host=i686-pc-mingw32 --enable-openssl && make clean && make)  || exit 1
+(cd $BUILDDIR && make distclean && ./configure --enable-shared --host=i686-w64-mingw32.static --enable-openssl && make clean && make)  || exit 1
 cp $BUILDDIR/src/libircclient.dll $BINDIR/  || exit 1
 cp $BUILDDIR/src/libircclient.lib $BINDIR/  || exit 1
 

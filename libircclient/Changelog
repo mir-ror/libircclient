@@ -1,3 +1,20 @@
+2016-05-03 George Yunaev
+   * libircclient 1.9 released.
+   * Fixed a few minor Win32 compatibility bugs.
+   * Fixed an error if the TCP connection to the IRC server couldn't be established under 250ms.
+   * Fixed a potential deadlock caused by WSAStartup() being called in DllMain()
+
+2014-05-10 George Yunaev
+   * libircclient 1.8 released.
+   * A few minor bugfixes and minor feature enchancements.
+   
+2013-06-23 George Yunaev
+   * libircclient 1.7 released.
+   * Documentation rewritten using RST, and is now much better.
+   * Fixed a race condition when multiple threads attempt to call irc_connect while using SSL.
+   * Merged a fix for the IRC servers which (incorrectly) terminate lines with CR instead of CRLF as required by RFC.
+   * Several small bugfixes.
+
 2012-01-22 George Yunaev
    * libircclient 1.6 released.
    * Fixed PRIVMSG events incorrectly reported as CHANNEL (thx Dennis Bretjes)
