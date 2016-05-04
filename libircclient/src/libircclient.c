@@ -802,9 +802,12 @@ int irc_process_select_descriptors (irc_session_t * session, fd_set *in_set, fd_
 	libirc_dcc_process_descriptors (session, in_set, out_set);
 
 	// Handle "connection succeed" / "connection failed"
-	if ( session->state == LIBIRC_STATE_CONNECTING 
-	&& FD_ISSET (session->sock, out_set) )
+	if ( session->state == LIBIRC_STATE_CONNECTING )
 	{
+        // If the socket is not connected yet, wait longer - it is not an error
+        if ( !FD_ISSET (session->sock, out_set) )
+            return 0;
+        
 		// Now we have to determine whether the socket is connected 
 		// or the connect is failed
 		struct sockaddr_storage saddr, laddr;
